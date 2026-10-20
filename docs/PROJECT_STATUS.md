@@ -11,7 +11,7 @@
 ## Status
 | Area | Status |
 |---|---|
-| Requirements discussion | Confirmed core rules; PRD draft pending |
+| Requirements discussion | Confirmed core rules; requirements baseline v1.0 and PRD v0.2 committed |
 | Development | Not started |
 | Formula parity testing | Not started |
 | Live Malaysian market-data API validation | Not started |
@@ -37,7 +37,12 @@
 ## Change log
 | Date | Action | Evidence |
 |---|---|---|
+| 2026-10-21 | Created requirements baseline docs/REQUIREMENTS.md and linked PRD v0.2; documentation only. | GitHub commits 70fbbb3, 53f7fbb |
 | 2026-10-21 | Initialized project status with user-confirmed discussion decisions; no implementation or deployment claimed. | User discussion |
 
+## Document links
+- [Requirements baseline](REQUIREMENTS.md)
+- [PRD v0.2](../prd/PRD文档.md)
+
 ## Next action
-Draft PRD and acceptance tests; verify formula and data-source feasibility before coding.
+Validate Excel formula parity and Bursa Malaysia market-data provider feasibility; refine acceptance tests before coding.
