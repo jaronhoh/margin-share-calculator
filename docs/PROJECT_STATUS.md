@@ -1,3 +1,17 @@
+# 当前状态 — 2026-10-22 Version 6（本节取代下方历史状态）
+
+- [指定Owner-only测试站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site) 已部署为 **Version 6**，状态succeeded；只修改此Site。
+- 源码2ef90edcdabff515c7d073b2238fe2d00e803bee；部署appgdep_6ad8e8b665348191bcc1f748e8c4732b。
+- 三项修改均已实现：默认开始2015-01-01；完整预填Excel Table1 A3:B26的24条MAYBANK股息（2015-05-26–2026-10-22，每股RM6.99），逐条保留来源/日期状态；每日累计、次月1日资本化及独立流水字段。
+- PASS：24引擎测试；24条来源逐项一致；JSON导出实际下载核对；线上浏览器；两种策略各4313日截至今天回归，共69008项勾稽检查。另完成原4018日窗口和4383日全缓存窗口。
+- **FAIL：Excel缓存数值等价**。截至今天每种策略贷款/LSR/日息各4282/4313行超容差；首差2015-02-01，当前文件资本化缓存全为零。详细股数差异与未来缓存范围见报告。
+- 新文件含70个未来日期缓存，不作历史行情。当前快照无旧文件的负交易；旧报告仅保留为历史。
+- Owner唯一允许用户；外部访客/群组/编辑者均0，revision1未变。原Excel校验值未变，没有修改源文件。
+- PRD v0.7、Requirements v1.4、[最新测试与部署报告](analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md)已同步。
+- 仍待：实际付款日外部验证、行情API/公众假期/公司行动、Excel应用完整公式重算。Site价格仍合成，未声称真实历史行情通过。
+
+---
+
 # 当前状态 — 2026-10-22（以本节为准）
 
 - 指定 Owner-only 测试 Site 已更新为 **Version 5**：[打开站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site)；部署 succeeded。
