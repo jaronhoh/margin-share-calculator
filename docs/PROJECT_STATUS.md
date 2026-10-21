@@ -57,8 +57,6 @@
 | 2026-10-21 | Confirmed H3/I3 are shares and corrected audit/PRD interpretation. | User choice B |
 | 2026-10-21 | Created requirements baseline docs/REQUIREMENTS.md and linked PRD v0.2; documentation only. | GitHub commits 70fbbb3, 53f7fbb |
 | 2026-10-21 | Initialized project status with user-confirmed discussion decisions; no implementation or deployment claimed. | User discussion |
-| 2026-10-21 09:44 MYT | Deployed isolated Owner-only synthetic PoC Site version 1; 14 engine tests and five Excel seed-value comparisons passed; full workbook parity remains unverified. | Sites deployment appgdep_6ad818dce2d48191a18e54a7e92121ff; source a612e8c0ab65168e06461b3fb79408dbdef6724a |
-| 2026-10-21 | Added synthetic PoC test/deployment report; original xlsx was unavailable for 4,018-row recalculation. | docs/analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md
 | 2026-10-21 09:44 MYT | Deployed isolated Owner-only synthetic PoC Site version 1; verified 14 engine tests and five Excel seed-value comparisons; full workbook parity remains unverified. | Sites deployment appgdep_6ad818dce2d48191a18e54a7e92121ff; source a612e8c0ab65168e06461b3fb79408dbdef6724a |
 | 2026-10-21 | Added synthetic PoC test/deployment report; original xlsx was not available for a 4,018-row recalculation. | docs/analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md
 
