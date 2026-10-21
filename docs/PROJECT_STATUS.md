@@ -1,6 +1,6 @@
 # Margin Share Calculator — Project Status
 
-> Updated: 2026-10-21 10:08 (Asia/Kuala_Lumpur)
+> Updated: 2026-10-21 10:13 (Asia/Kuala_Lumpur)
 
 ## Identity
 - Repository: jaronhoh/margin-share-calculator
@@ -13,11 +13,11 @@
 | Area | Status |
 |---|---|
 | Requirements / PRD | Baseline v1.2 and PRD v0.5 on main; core rules confirmed, technical decisions remain open |
-| Development | Isolated synthetic daily-engine PoC implemented; Site version 3 source commit 2eb511c692d36ee949e105f1bfc8788fb24240cb |
+| Development | Isolated synthetic daily-engine PoC implemented; Site version 4 source commit 396b79a41608796bf44092614820cc9a480bb89d |
 | Automated tests | 16 PASS, 0 FAIL |
 | Excel comparison | All 4,018 cached daily rows compared in both strategy branches; expected differences quantified; Excel-app formula recalculation not run |
 | Live Malaysian market-data API validation | Not started |
-| Isolated Site deployment | Site version 3 deployed successfully; Owner-only access verified |
+| Isolated Site deployment | Site version 4 deployed successfully; Owner-only access verified |
 | Product production release | Not deployed; no existing or production Site modified |
 
 ## Decisions
@@ -61,6 +61,7 @@
 | 2026-10-21 | Added synthetic PoC test/deployment report; original xlsx was not available for a 4,018-row recalculation. | docs/analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md |
 | 2026-10-21 09:53 MYT | Updated isolated Owner-only Site to version 2; 15 automated tests pass and full 4,018-row Excel cache comparison completed for both risk strategies. | Sites deployment appgdep_6ad81aeadab88191a7c88e1f22bfe16f; source 51f6f3c6fc705308987f12b4b08966d3b3608009 |
 | 2026-10-21 10:08 MYT | Updated the isolated Owner-only Site to version 3 with opening-price labeling and start-date alignment, editable dividend events, stock-code input, and JSON persistence. Re-ran 16 tests and both full Excel-cache strategy comparisons; Owner-only access remains verified. | Sites deployment appgdep_6ad81e834c4c8191962ecb15554afa03; source 2eb511c692d36ee949e105f1bfc8788fb24240cb |
+| 2026-10-21 10:13 MYT | Moved dividend editing to a dedicated screen with separate navigation and a save-and-return flow; current backtest settings are preserved. Deployed and verified Site version 4; Owner-only access unchanged. | Sites deployment appgdep_6ad81fc26a0c8191805b5009fffe9141; source 396b79a41608796bf44092614820cc9a480bb89d |
 | 2026-10-21 | Replaced initial sample-only report with full cached-row comparison results and limitations. | GitHub report commit 708ddafbde8fd776f7b93038b0a06e07694d959a
 
 ## Document links
