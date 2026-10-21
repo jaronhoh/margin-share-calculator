@@ -13,7 +13,7 @@
 |---|---|
 | Requirements discussion | Confirmed core rules; requirements baseline v1.0 and PRD v0.2 committed |
 | Development | Not started |
-| Formula parity testing | Not started |
+| Formula parity testing | Phase 1 audit documented; initial share units clarified; full parity pending |
 | Live Malaysian market-data API validation | Not started |
 | Deployment | Not started |
 
@@ -27,6 +27,11 @@
 - Single-page application with separate advanced-settings panel. Optional brokerage, clearing, stamp-duty costs; disabled by default for Excel comparison.
 - Opening the page restores defaults. Export/import full JSON simulation configuration, including main inputs, advanced settings and manual data overrides. End date defaults to today.
 
+## Confirmed Excel clarification
+- H3=11,400 own-funded shares; I3=17,100 margin-funded shares.
+- K4=28,500 total shares; I4=I3×F4 converts shares to loan amount (RM156,807 at RM9.17).
+- Correct initial price date remains open.
+
 ## Open questions / implementation risks
 - Confirm exact top-up accounting (collateral cash versus loan repayment) and sell-to-repay algebra, minimum trade lot and rounding.
 - Confirm forced-sale handling at force-sell threshold, and what happens when top-up funds or sellable shares are insufficient.
@@ -37,6 +42,7 @@
 ## Change log
 | Date | Action | Evidence |
 |---|---|---|
+| 2026-10-21 | Confirmed H3/I3 are shares and corrected audit/PRD interpretation. | User choice B |
 | 2026-10-21 | Created requirements baseline docs/REQUIREMENTS.md and linked PRD v0.2; documentation only. | GitHub commits 70fbbb3, 53f7fbb |
 | 2026-10-21 | Initialized project status with user-confirmed discussion decisions; no implementation or deployment claimed. | User discussion |
 
