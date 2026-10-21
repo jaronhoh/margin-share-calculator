@@ -30,7 +30,11 @@
 ## Confirmed Excel clarification
 - H3=11,400 own-funded shares; I3=17,100 margin-funded shares.
 - K4=28,500 total shares; I4=I3×F4 converts shares to loan amount (RM156,807 at RM9.17).
-- Correct initial price date remains open.
+- User confirmed RM9.17 is that day's MAYBANK price; independent historical market-data verification remains open.
+
+## Price clarification (2026-10-21)
+- User confirmed F4=RM9.17 is MAYBANK's share price on the relevant day; initial financed share quantity is converted at this price.
+- Historical source/date verification has not been completed.
 
 ## Open questions / implementation risks
 - Confirm exact top-up accounting (collateral cash versus loan repayment) and sell-to-repay algebra, minimum trade lot and rounding.
@@ -42,6 +46,7 @@
 ## Change log
 | Date | Action | Evidence |
 |---|---|---|
+| 2026-10-21 | User confirmed RM9.17 is that day's MAYBANK share price; synchronized requirements and PRD. | User clarification |
 | 2026-10-21 | Confirmed H3/I3 are shares and corrected audit/PRD interpretation. | User choice B |
 | 2026-10-21 | Created requirements baseline docs/REQUIREMENTS.md and linked PRD v0.2; documentation only. | GitHub commits 70fbbb3, 53f7fbb |
 | 2026-10-21 | Initialized project status with user-confirmed discussion decisions; no implementation or deployment claimed. | User discussion |
