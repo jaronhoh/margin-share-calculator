@@ -1,3 +1,16 @@
+# 当前状态 — 2026-10-22（以本节为准）
+
+- 指定 Owner-only 测试 Site 已更新为 **Version 5**：[打开站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site)；部署 succeeded。
+- 源码提交 12d178343377eb8b0c9312f60c8dab0a4b63b0f2；部署 appgdep_6ad8e1b5715c8191a029d80d67fa2967。
+- 已实现：默认开始日 2015-01-01；**次月1日**一次资本化替代旧月末规则；逐日显示日息/待资本化累计/资本化金额/资本化后贷款余额；月初筛选。
+- 已执行：24 引擎测试 PASS，0 FAIL；合成 4,018 日 × 两策略配置独立回归 PASS，48,216 数值检查；线上浏览器检查 PASS。
+- 未完成：原 Excel Table1 全量 MAYBANK 股息预填；新版 Excel 全期差异验证未运行。当前没有可访问的原始工作簿/提取数据，需用户重新上传。默认股息列表为空并显示待导入，不代表实际无股息。
+- 访问权限不变：唯一 Owner，0 外部访客、0 群组、0 编辑者，revision 1。没有修改其他 Sites。
+- PRD v0.6 / Requirements v1.3 已补充新规则与验收要求。实际行情 API 尚未接入。
+- [本次测试与部署报告](analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md)。下方 v4 状态是历史记录，旧月末规则及测试结果已被本节取代。
+
+---
+
 # Margin Share Calculator — Project Status
 
 > Updated: 2026-10-21 10:13 (Asia/Kuala_Lumpur)
