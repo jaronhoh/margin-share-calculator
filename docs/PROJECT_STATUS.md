@@ -1,3 +1,18 @@
+# 最新状态：Version 8 月末资本化（2026-10-22）
+
+- [指定Owner-only测试站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/) 已部署 **Version 8**，状态 succeeded。
+- 用户已明确确认改回**每月最后一天资本化**。次月1日规则已被取代，以下历史章节仅保留历史证据。
+- 日初本金计息→月末累计利息（含当天）加入本金→股息偿债→Margin Call→再融资。次月1日按更新本金计息，无重复资本化。
+- 流水筛选改为每月最后一天；待资本化为日终余额，月末入账后为零。24条Excel股息、2015-01-01默认开始日及全宽布局均保留。
+- 源码提交 b1650de22b681e02625510a2774c9956ac012d3f；部署 appgdep_6ad8eb7cab5c8191916ce14a07cff3c9。
+- PASS：25引擎测试；两策略配置各4018日独立合成回归（48216项数值检查）；24条股息来源测试；三个Excel缓存日期范围均完成两种策略回归，贷款/利息/股数勾稽通过。
+- 线上浏览器 PASS：2015-01-31资本化RM665.89，待资本化RM0.00；2015-02-28资本化RM604.01，待资本化RM0.00，无页面错误。
+- Excel缓存数值等价仍FAIL：首差2015-01-31；缓存资本化全为零。未执行Excel应用重算，付款日尚未外部核实，Site股价仍为合成。
+- 权限不变：唯一Owner；外部访客/群组/编辑者均0，revision1。未修改其他站点。
+- PRD v0.8、Requirements v1.5已同步月末规则；[测试报告](analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md)。
+
+---
+
 # 当前状态 — 2026-10-22 Version 6（本节取代下方历史状态）
 
 - [指定Owner-only测试站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site) 已部署为 **Version 6**，状态succeeded；只修改此Site。
