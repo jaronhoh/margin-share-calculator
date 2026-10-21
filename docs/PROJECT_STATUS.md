@@ -64,7 +64,8 @@
 
 ## Document links
 - [Requirements baseline](REQUIREMENTS.md)
-- [PRD v0.5](../prd/PRD文档.md)\n- [Synthetic Site PoC test and deployment report](analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md)
+- [PRD v0.5](../prd/PRD文档.md)
+- [Synthetic Site PoC test and deployment report](analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md)
 
 ## Next action
 Obtain the original Leverage Calculator.xlsx for full row-by-row comparison; resolve the remaining business rules and Bursa data-provider feasibility before treating this PoC as product-ready.
