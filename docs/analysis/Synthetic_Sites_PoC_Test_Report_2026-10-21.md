@@ -3,8 +3,8 @@
 ## 环境与范围
 - GitHub 项目：`jaronhoh/margin-share-calculator`，默认分支 `main`。
 - 隔离 ChatGPT Site：[Margin Share Calculator Synthetic PoC](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site)
-- Site version 2，部署状态 `succeeded`；部署时间 2026-10-21 09:53（Asia/Kuala_Lumpur）。
-- Site 源码提交：`51f6f3c6fc705308987f12b4b08966d3b3608009`（Site 自有源仓库）。部署 ID：`appgdep_6ad81aeadab88191a7c88e1f22bfe16f`。
+- Site version 3，部署状态 `succeeded`；部署时间 2026-10-21 10:08（Asia/Kuala_Lumpur）。
+- Site 源码提交：`2eb511c692d36ee949e105f1bfc8788fb24240cb`（Site 自有源仓库）。部署 ID：`appgdep_6ad81e834c4c8191962ecb15554afa03`。
 - Sites 访问策略复核：Owner 为唯一允许查看者，外部访客 0、群组 0。没有改动现有或生产 Site。
 - Site 页面只使用合成行情/股息。源工作簿和逐日提取数据没有放入 Site 或 GitHub。
 
@@ -14,9 +14,9 @@
 - 再融资按新增贷款与新增股票抵押市值联立求解；追缴现金计入抵押资产，卖股所得偿还贷款。
 - Excel 的交易日标记控制风险动作/再融资，利息按每个日历日累计。
 - 强平线规则仍未确认；触及后引擎停止并报告，不模拟未批准的动作。
-- 自动测试：`node tests/engine.test.mjs`，**15 PASS，0 FAIL**。覆盖种子值、日息、1/2 月末资本化、股息、再融资、两种追缴策略、费用、交易日门控、无负交易和未决强平停止。
+- 自动测试：`node tests/engine.test.mjs`，**16 PASS，0 FAIL**。覆盖种子值、日息、1/2 月末资本化、股息、再融资、两种追缴策略、费用、交易日门控、无负交易和未决强平停止。
 
-## Excel 全期逐日缓存差异核对
+## Site v3 界面修正\n- 逐日流水价格列改为“开盘价”；合成序列首日现在严格等于输入的开始日开盘价，后续才开始合成价格变动。引擎使用通用 `price` 字段，不再称作 `close`。\n- 新增可编辑股息事件表：付款日、每股 MYR 金额，可添加和删除；匹配同日事件会合计，非法日期/金额会被拒绝。\n- 新增股票代码输入框（默认 `1155.KL`），用于标记回测情景；不会联网查询行情。\n- JSON 配置导入/导出包含股票代码与股息事件。Site 仍只使用合成行情和股息。\n\n## Excel 全期逐日缓存差异核对
 通过本地只读提取工作簿已保存的缓存值，并用 `tests/excel-diff.mjs` 运行引擎。日期为 2015-01-01 至 2025-12-31，共 **4,018 个日历日**；输入包括缓存股价、付款日股息及工作簿交易日标记。分别用现金补仓和卖股还款策略运行，两个分支都完成 4,018 日且未触发 80% 强平停止。
 
 | 项目 | Excel 缓存 | 修正引擎结果 |
