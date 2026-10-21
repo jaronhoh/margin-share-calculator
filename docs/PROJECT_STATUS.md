@@ -36,6 +36,9 @@
 - User confirmed F4=RM9.17 is MAYBANK's share price on the relevant day; initial financed share quantity is converted at this price.
 - Historical source/date verification has not been completed.
 
+## Latest confirmed decision
+- 2026-10-21: Initial financing loan value uses margin-funded share count multiplied by the selected stock's price on the backtest start date; Excel MAYBANK example F4=RM9.17.
+
 ## Open questions / implementation risks
 - Confirm exact top-up accounting (collateral cash versus loan repayment) and sell-to-repay algebra, minimum trade lot and rounding.
 - Confirm forced-sale handling at force-sell threshold, and what happens when top-up funds or sellable shares are insufficient.
@@ -47,6 +50,7 @@
 | Date | Action | Evidence |
 |---|---|---|
 | 2026-10-21 | User confirmed RM9.17 is that day's MAYBANK share price; synchronized requirements and PRD. | User clarification |
+| 2026-10-21 | User confirmed F4=RM9.17 is the MAYBANK start-date price; synchronized requirements, PRD and audit. | User confirmation |
 | 2026-10-21 | Confirmed H3/I3 are shares and corrected audit/PRD interpretation. | User choice B |
 | 2026-10-21 | Created requirements baseline docs/REQUIREMENTS.md and linked PRD v0.2; documentation only. | GitHub commits 70fbbb3, 53f7fbb |
 | 2026-10-21 | Initialized project status with user-confirmed discussion decisions; no implementation or deployment claimed. | User discussion |
