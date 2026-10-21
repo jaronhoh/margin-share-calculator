@@ -60,6 +60,7 @@
 | 2026-10-21 09:44 MYT | Deployed isolated Owner-only synthetic PoC Site version 1; verified 14 engine tests and five Excel seed-value comparisons; full workbook parity remains unverified. | Sites deployment appgdep_6ad818dce2d48191a18e54a7e92121ff; source a612e8c0ab65168e06461b3fb79408dbdef6724a |
 | 2026-10-21 | Added synthetic PoC test/deployment report; original xlsx was not available for a 4,018-row recalculation. | docs/analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md |
 | 2026-10-21 09:53 MYT | Updated isolated Owner-only Site to version 2; 15 automated tests pass and full 4,018-row Excel cache comparison completed for both risk strategies. | Sites deployment appgdep_6ad81aeadab88191a7c88e1f22bfe16f; source 51f6f3c6fc705308987f12b4b08966d3b3608009 |
+| 2026-10-21 10:08 MYT | Updated the isolated Owner-only Site to version 3 with opening-price labeling and start-date alignment, editable dividend events, stock-code input, and JSON persistence. Re-ran 16 tests and both full Excel-cache strategy comparisons; Owner-only access remains verified. | Sites deployment appgdep_6ad81e834c4c8191962ecb15554afa03; source 2eb511c692d36ee949e105f1bfc8788fb24240cb |
 | 2026-10-21 | Replaced initial sample-only report with full cached-row comparison results and limitations. | GitHub report commit 708ddafbde8fd776f7b93038b0a06e07694d959a
 
 ## Document links
