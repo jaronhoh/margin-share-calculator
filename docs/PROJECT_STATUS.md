@@ -1,6 +1,6 @@
 # Margin Share Calculator — Project Status
 
-> Updated: 2026-10-21 09:44 (Asia/Kuala_Lumpur)
+> Updated: 2026-10-21 10:08 (Asia/Kuala_Lumpur)
 
 ## Identity
 - Repository: jaronhoh/margin-share-calculator
@@ -13,11 +13,11 @@
 | Area | Status |
 |---|---|
 | Requirements / PRD | Baseline v1.2 and PRD v0.5 on main; core rules confirmed, technical decisions remain open |
-| Development | Isolated synthetic daily-engine PoC implemented; Site version 2 source commit 51f6f3c6fc705308987f12b4b08966d3b3608009 |
-| Automated tests | 15 PASS, 0 FAIL |
+| Development | Isolated synthetic daily-engine PoC implemented; Site version 3 source commit 2eb511c692d36ee949e105f1bfc8788fb24240cb |
+| Automated tests | 16 PASS, 0 FAIL |
 | Excel comparison | All 4,018 cached daily rows compared in both strategy branches; expected differences quantified; Excel-app formula recalculation not run |
 | Live Malaysian market-data API validation | Not started |
-| Isolated Site deployment | Site version 2 deployed successfully; Owner-only access verified |
+| Isolated Site deployment | Site version 3 deployed successfully; Owner-only access verified |
 | Product production release | Not deployed; no existing or production Site modified |
 
 ## Decisions
@@ -68,4 +68,4 @@
 - [Synthetic Site PoC test and deployment report](analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md)
 
 ## Next action
-Review the full-row differences; resolve the remaining business rules and Bursa data-provider feasibility before treating this PoC as product-ready.
+Review the full-row differences; resolve the remaining business rules and Bursa data-provider feasibility before treating this PoC as product-ready. Site v3 remains synthetic-only and is not product-ready.
