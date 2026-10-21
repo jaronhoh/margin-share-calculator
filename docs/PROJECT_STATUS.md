@@ -1,12 +1,12 @@
 # Margin Share Calculator — Project Status
 
-> Updated: 2026-10-21 (Asia/Kuala_Lumpur)
+> Updated: 2026-10-21 09:44 (Asia/Kuala_Lumpur)
 
 ## Identity
 - Repository: jaronhoh/margin-share-calculator
 - Branch: main
 - Product: 马来西亚股票融资计算器（Margin Share Calculator）
-- Source reference: user-provided Leverage Calculator.xlsx; formula equivalence pending verification.
+- Source reference: user-provided Leverage Calculator.xlsx; formula equivalence pending verification.\n- Isolated test Site: [Margin Share Calculator Synthetic PoC](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site) (Owner-only; no production Site modified).
 
 ## Status
 | Area | Status |
@@ -54,10 +54,12 @@
 | 2026-10-21 | Confirmed H3/I3 are shares and corrected audit/PRD interpretation. | User choice B |
 | 2026-10-21 | Created requirements baseline docs/REQUIREMENTS.md and linked PRD v0.2; documentation only. | GitHub commits 70fbbb3, 53f7fbb |
 | 2026-10-21 | Initialized project status with user-confirmed discussion decisions; no implementation or deployment claimed. | User discussion |
+| 2026-10-21 09:44 MYT | Deployed isolated Owner-only synthetic PoC Site version 1; verified 14 engine tests and five Excel seed-value comparisons; full workbook parity remains unverified. | Sites deployment appgdep_6ad818dce2d48191a18e54a7e92121ff; source a612e8c0ab65168e06461b3fb79408dbdef6724a |
+| 2026-10-21 | Added synthetic PoC test/deployment report; original xlsx was not available for a 4,018-row recalculation. | docs/analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md
 
 ## Document links
 - [Requirements baseline](REQUIREMENTS.md)
-- [PRD v0.2](../prd/PRD文档.md)
+- [PRD v0.5](../prd/PRD文档.md)\n- [Synthetic Site PoC test and deployment report](analysis/Synthetic_Sites_PoC_Test_Report_2026-10-21.md)
 
 ## Next action
-Validate Excel formula parity and Bursa Malaysia market-data provider feasibility; refine acceptance tests before coding.
+Obtain the original Leverage Calculator.xlsx for full row-by-row comparison; resolve the remaining business rules and Bursa data-provider feasibility before treating this PoC as product-ready.
