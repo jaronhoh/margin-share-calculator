@@ -1,3 +1,9 @@
+# 部署阻断已解除 — 2026-10-23 Version 10
+
+原报告中的DNS BLOCKED是历史结果。当前在获准网络环境中完成官方源码同步、推送和原Owner-only Site Version10部署，状态succeeded。收盘价和大图与Neutral主题一并上线；另修复待部署源码重复计算Table2股息的问题。部署ID `appgdep_6adb6c030ad481919bce58a42c17dcd2`；[最新完整报告](NEUTRAL_THEME_V10_TEST_REPORT_2026-10-23.md)。受限沙箱DNS失败仍可复现，不代表Site服务全局故障。
+
+---
+
 # MAYBANK 收盘价与趋势图更新记录 — 2026-10-23
 
 ## 用户请求

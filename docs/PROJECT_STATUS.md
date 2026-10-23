@@ -1,3 +1,17 @@
+# 最新状态：Version 10 Neutral主题与收盘价已上线（2026-10-23）
+
+- **PASS 部署**：原 Owner-only Site Version 10，succeeded；[原URL](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)。未创建新项目，未修改其他 Sites 或生产系统。
+- 实际使用 shadcn/ui 默认 Neutral 亮/暗语义 token 与一致控件风格，保留太阳/月亮；图表使用中性灰实线/虚线。覆盖按钮、输入、导航、表格、图表坐标、Tooltip、焦点、禁用/悬停状态。
+- 收盘价4,314日与大趋势图一并上线；修复此前待部署分支的Table1/Table2股息重复相加，唯一股息输入为24条可编辑事件。月末资本化引擎和股息来源文件未改。
+- **PASS 验证**：25引擎检查、48,216独立数值回归、24条股息；本地Chromium 1440/390亮暗；线上正常Owner登录IAB实际1440/389亮暗。星期、17公式、月末资本化、分页、图表日期及收盘价通过；浏览器错误0。
+- **PASS 权限**：唯一Owner、访客/群组/编辑者0、revision1未变；未登录仍有登录门槛，正常Owner账户已登录验证。
+- 源码 `1456d82377237f2e1b0b0ce138d8b761d886d009`；部署 `appgdep_6adb6c030ad481919bce58a42c17dcd2`；版本ID `appgprj_6ad816b7dd508191a8632550d36f375f~appgver_26c9d77dbe848191b1df598af226a8a0`。
+- **DNS诊断**：受限沙箱仍无法解析GitHub/Sites Git；使用获准网络执行后官方源码同步、推送和部署成功。原DNS部署BLOCKED已解除；没有改变DNS/系统网络设置。
+- **历史FAIL保留**：Excel缓存公式数值等价，本次未重跑；股息付款日、交易假日、真机触摸、完整屏幕阅读器与第二非Owner账户拒绝路径未验证。
+- [完整测试及部署报告](analysis/NEUTRAL_THEME_V10_TEST_REPORT_2026-10-23.md)。GitHub文档提交与Sites发布独立；未声称CI运行。下方均为历史记录。
+
+---
+
 # 最新状态：MAYBANK收盘价导入待部署（2026-10-23）
 
 - 请求：趋势图扩大至结果区大图；行情字段使用Excel收盘价。

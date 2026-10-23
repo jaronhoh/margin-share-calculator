@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD 草案 v0.9
+# Margin Share Calculator — PRD 草案 v0.10
 
 > 状态：已建立需求基线，核心业务规则已确认；技术细节与异常场景待验证。2026-10-21，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
@@ -119,3 +119,13 @@
 
 ## UI v9 — 2026-10-23
 保留Version 8月末资本化、2015-01-01开始日及24条MAYBANK股息。太阳/月亮切换亮暗主题，覆盖回测/股息页、图表、表格及提示；仅主题可本地保存。逐日流水增加UTC日期对应中文星期，每100行分页。趋势图左轴贷款MYR（窄屏k表示千）、右轴LSR百分比、横轴日期；逐日提示精确日期及两个指标，支持pointer与键盘Home/End/左右键。17列标题支持焦点、悬停、点击公式说明，Escape关闭，说明单位/条件/事件顺序及模型限制。股息日期未核实、行情合成、卖股向下取整、净资产当前口径不变。真实手机触摸及完整悬停矩阵尚未实测；详见docs/analysis/UI_V9_TEST_REPORT_2026-10-23.md。
+
+
+## UI v10 — Neutral主题与Excel收盘价（2026-10-23）
+本节取代旧青绿主题与旧合成行情描述。整站采用 https://ui.shadcn.com/docs/theming 的默认Neutral亮暗语义token：background/foreground、card、popover、primary、secondary、muted、accent、destructive、border、input、ring及radius。现有无构建HTML控件实际消费这些token，统一按钮、表单、导航、表格、Tooltip、状态与焦点；保留太阳/月亮切换与主题保存。无需为了使用React组件而重写已运行的计算器；不声称已安装React/Radix组件。
+
+图表chart-1/chart-2派生为中性灰，实线/虚线区分贷款/LSR，避免默认图表色板的Teal。灰底辅助文字使用可访问派生前景色；普通文字抽样>=4.5:1、曲线>=3:1。保留中文星期、17列公式及键盘/点击说明、日期X轴及MYR/LSR双Y轴与日期提示。
+
+行情使用用户提供Excel导出的MAYBANK 1155.KL Table2收盘价，2015-01-01至2026-10-23共4,314日；不插值或补造。结束日当前使用缓存最后一天；数据范围外明确报错。Table2股息仅用于来源勾稽，不再次叠加到可编辑Table1的24条事件，防止双倍股息。默认2015-01-01、月末资本化及现有业务规则保留；大趋势图响应高度420–900px。
+
+实际验收与限制以[Version 10报告](../docs/analysis/NEUTRAL_THEME_V10_TEST_REPORT_2026-10-23.md)为准。原Owner-only Site已部署Version10，源码1456d82377237f2e1b0b0ce138d8b761d886d009；历史Excel缓存公式等价FAIL未因主题更新而改称PASS。
