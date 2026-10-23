@@ -1,3 +1,14 @@
+# 最新状态：Version 11 趋势图全宽修复（2026-10-23）
+
+- PASS：原Owner-only站点已部署Version11，succeeded；URL不变。
+- 修复内部viewBox宽度上限900造成的左右留白：改用实际容器宽高，容器尺寸变化自动重绘；仅保留双Y轴标签边距。数据、业务引擎、Neutral主题未改变。
+- PASS本地：2152/1440/390px亮暗六组合与现有浏览器回归；宽高逐项匹配，无页面横向溢出，日期提示/股息/月末流水正常，错误0。
+- PASS线上：实际2152/1440/389px亮暗六组合，内部绘图宽1648/936/285与SVG匹配。原唯一Owner、revision1、访客/群组/编辑者0不变。
+- 源码 `5c32075223beec791bcb17b6fd64f4ad325ceab6`；部署 `appgdep_6adb6de75ba881919fb1dfc7cfbd5c97`。
+- [修复测试报告](analysis/CHART_WIDTH_V11_2026-10-23.md)。历史Excel公式等价FAIL仍保留。
+
+---
+
 # 最新状态：Version 10 Neutral主题与收盘价已上线（2026-10-23）
 
 - **PASS 部署**：原 Owner-only Site Version 10，succeeded；[原URL](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)。未创建新项目，未修改其他 Sites 或生产系统。
