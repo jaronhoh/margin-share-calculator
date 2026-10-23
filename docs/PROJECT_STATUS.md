@@ -1,3 +1,16 @@
+# 最新状态：MAYBANK收盘价导入待部署（2026-10-23）
+
+- 请求：趋势图扩大至结果区大图；行情字段使用Excel收盘价。
+- 用户提供CSV已解析：Table2含4,314条连续日历日，2015-01-01至2026-10-23，MAYBANK 1155.KL。首日Close RM9.17、次日RM9.12、末日RM9.97；Table2股息合计RM6.99，与Table1的24条既有事件金额合计相同。
+- 本地实现提交：`08a3278f8d32674eef2b59525e5aa77ee0e0a5e8`；包含收盘价JSON资源、回测使用该收盘价、日期范围校验与大趋势图。月末资本化引擎及24条事件未改。
+- **PASS本地**：引擎25项；两策略各4,018日回归48,216数值检查；股息24项；浏览器显示起始日RM9.17及次日RM9.12，共4,314日。
+- **部署BLOCKED**：原Site当前仍Version 9。官方Sites源码工作流推送失败，Git远端 `git.chatgpt-team.site` DNS无法解析。修复本地origin配置并重新签发凭证后复试仍失败。没有新Site版本或部署ID，不可称已上线。
+- 原Owner-only策略没有变更。等待该Site源仓库DNS恢复后，从同一提交推送、打包并部署。
+- **限制**：此数据接入验证不代表Excel整表公式/业务等价；历史缓存等价FAIL保留，本次未重跑。股息实际付款日、公众假期交易日仍未确认。
+- [详细收盘价实施及部署报告](analysis/MAYBANK_CLOSE_PRICE_UPDATE_2026-10-23.md)
+
+---
+
 # 最新状态：Version 9 UI增强（2026-10-23）
 
 - 原Owner-only测试Site Version 9部署 **succeeded**：[打开](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)。未修改其他站点。
