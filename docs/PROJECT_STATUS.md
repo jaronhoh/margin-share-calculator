@@ -1,3 +1,19 @@
+# 最新状态：Version 9 UI增强（2026-10-23）
+
+- 原Owner-only测试Site Version 9部署 **succeeded**：[打开](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)。未修改其他站点。
+- 部署ID：appgdep_6adb64986b3c81919d468b6e755e8edc；版本ID：appgprj_6ad816b7dd508191a8632550d36f375f~appgver_3b127f64ffe08191a53e77d49fd83a18。
+- Sites源码提交：4fed96f3a07cdd4d109bc47a60b9d00ba829ac50；GitHub为独立文档仓库，PRD v0.9及本次报告已更新；未声称CI运行。
+- 四项UI已实现：太阳/月亮亮暗主题；中文星期；日期X轴及MYR/LSR双Y轴、精确日期数值提示；17列公式说明。流水每页100行，可查看完整范围。
+- Version 8引擎与股息文件零改动，2015-01-01默认日与24条股息保留。
+- **PASS**：25引擎检查、两策略各4018日独立回归48216数值检查、24股息逐条校验。IAB浏览器1440及390px两主题、分页、星期、图表键盘及窄屏点击提示、日息公式、月末筛选已实际检查；移动溢出发现后修复复查。对比度抽样亮色最低5.856:1、暗色最低9.362:1。
+- **PASS 线上**：未登录显示登录门槛；已有Owner账户登录成功，显示UI v9；2015-01-31星期六，资本化RM665.89，待资本化0，资本化公式可打开；错误日志为空。
+- **PASS 权限配置**：部署后重新读取，唯一Owner；外部访客/群组/编辑者均0，revision1不变。未用第二个非Owner账户测试拒绝路径。
+- **未执行**：真实手机触摸、完整鼠标悬停矩阵、完整屏幕阅读器/Tooltip视觉矩阵；pointer事件已实现及窄屏点击检查不能等同真机触摸通过。
+- **历史FAIL仍存在**：Excel缓存数值等价；本次未重跑Excel缓存。真实行情接入、付款日核实、Excel应用重算仍待处理。
+- [测试报告](analysis/UI_V9_TEST_REPORT_2026-10-23.md)。以下内容为历史记录。
+
+---
+
 # 最新状态：Version 8 月末资本化（2026-10-22）
 
 - [指定Owner-only测试站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/) 已部署 **Version 8**，状态 succeeded。
