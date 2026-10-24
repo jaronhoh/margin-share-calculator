@@ -8,6 +8,8 @@ assert.match(html, /股票价格（RM\/股）/);
 assert.match(html, /右外轴：股票价格 RM\/股/);
 assert.match(html, /回测使用价格：/);
 assert.match(html, /prices=rows\.map\(r=>r\.price\)/);
+assert.match(html, /minP=prices\.length\?Math\.min\(\.\.\.prices\):0,maxP=prices\.length\?Math\.max\(\.\.\.prices\):0/);
+assert.equal((html.match(/if\(prices\.length\)el\('text',\{x:W-3,y:/g) || []).length, 2);
 assert.match(html, /if\(!Number\.isFinite\(r\.price\)\|\|r\.price<=0\)\{pen=false;return '';\}/);
 assert.match(html, /priceVisible=!priceVisible/);
 assert.match(html, /drawChart\(lastResult\.rows\)/);
