@@ -5,7 +5,7 @@
 - GitHub 基线读取时 `main` HEAD 为 `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`；交接 SHA `7539a1e902307531998bde8549f5357a03d8bb6c` 已过时。仓库基线只有文档，无应用源码。
 - 本轮已将当前 Site 源码、测试和报告添加到 GitHub 功能分支 `feat/p3-f05-reviewed-market-data`，Draft PR #1 打开：[PR #1](https://github.com/jaronhoh/margin-share-calculator/pull/1)。PR 对比 `main` ahead 24 commits / behind 0，未合并。
 - **GitHub Actions：PASS**，`Site source tests` run 19 / run ID `40115682576`（8/8）成功；后续说明记录于本状态文件更新中。
-- 现有 Site：开始时 Version 30；F05-only 已部署为 Version 31。原 URL `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/`、custom Owner-only 唯一 Owner、外部访客/群组/编辑者均为0、访问策略 revision 1 均保持不变。
+- 现有 Site：开始时 Version 30；F05-only 已部署为 Version 32。原 URL `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/`、custom Owner-only 唯一 Owner、外部访客/群组/编辑者均为0、访问策略 revision 1 均保持不变。
 - Site 源码检出初始 HEAD `34e19990cd6f6101ec43fffacf2f862d62759119`；该检出本地 `main` 比其本地 `origin/main` 多一个历史提交。本轮工作另在 `feat/f05-stock-price-p3`。
 
 ## F05 股票价格图表
@@ -42,7 +42,7 @@
 
 ## 发布与剩余状态
 
-- Sites：**F05-only 已部署**为 Version 31，部署 `appgdep_6adce98c5b788191adac888a2969a339` succeeded；原 URL、Owner-only 权限及现有数据不变。P3 API/股息审核流程未部署。
+- Sites：**F05-only 已部署**为 Version 31，部署 `appgdep_6adcea6455bc8191a110c499ae457bf2` succeeded；原 URL、Owner-only 权限及现有数据不变。P3 API/股息审核流程未部署。
 - 本地 Sites 源码分支 `feat/f05-stock-price-p3` 最新提交 `2e5e8521e7e17394eb82f2295c468d94f1f35cd5`；GitHub 对应应用快照位于 PR #1 分支。PR HEAD `ff1d9c50f4ac58e77c4168c61b319a9bacadc8fd`，尚为 Draft、未合并；自动 API/CORS 授权与浏览器验收门槛仍未解决。
 - Sites 兼容性：实现只使用现有静态 HTML/ES modules、File API 和本地 JSON 下载，不需要后台服务；CSV/JSON 导入仍需真实 Site 浏览器验收。已知数据约束见上文。
 - 回滚：本地功能分支与提交可回退；用户会话内导入可恢复默认；已确认数据需先导出 JSON 快照，关闭页面不会持久保存。Site 部署未进行，无线上回滚需求。
