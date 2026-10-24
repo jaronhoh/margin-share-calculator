@@ -14,6 +14,8 @@ validateDividends(DEFAULT_DIVIDENDS);
 const modified=normalizeDividend({...DEFAULT_DIVIDENDS[0],perShare:.4});assert.equal(modified.source,'excel-edited');assert.equal(modified.originalPerShare,.31);
 assert.equal(normalizeDividend({...modified,perShare:.31}).source,'excel-table1');
 assert.equal(normalizeDividend({date:'2026-10-22',perShare:.31}).source,'manual');
+const confirmed={date:'2021-07-20',paymentDate:'2021-07-20',exDate:'2021-06-28',recordDate:'2021-06-29',perShare:.39,source:'user-dividend-csv-confirmed',sourceFile:'verified.csv',sourceRow:2,dateType:'confirmed-payment-date',duplicateConfirmed:true};
+assert.deepEqual(normalizeDividend(JSON.parse(JSON.stringify(confirmed))),confirmed);
 const copy=defaultDividends();copy[0].perShare=1;assert.equal(defaultDividends()[0].perShare,.31);
 assert.deepEqual(JSON.parse(JSON.stringify(defaultDividends())).map(normalizeDividend),defaultDividends());
 assert.throws(()=>validateDividends([{date:'2026-02-30',perShare:.3}]));
