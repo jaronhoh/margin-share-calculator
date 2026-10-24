@@ -4,8 +4,6 @@ on:
   pull_request:
     paths:
       - 'site-source/**'
-      - 'docs/PROJECT_STATUS.md'
-      - 'docs/analysis/P3_F05_IMPLEMENTATION_TEST_REPORT_2026-10-25.md'
       - '.github/workflows/site-source-tests.yml'
   workflow_dispatch:
 
