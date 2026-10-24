@@ -32,6 +32,7 @@ The request used `period1=1420070400`, `period2=1792886400`, `interval=1d`, and 
 ## F05 chart
 
 - **PASS — automated regression:** the chart reads the exact backtest row price, uses a separate outer right price axis while retaining the LSR right axis, includes a price legend toggle and Tooltip row, and leaves missing-price gaps unconnected. Empty price data omits price ticks instead of producing non-finite labels.
+- **PASS — GitHub CI:** follow-up `Site source tests` run 10 (`40115049863`) succeeded for test commit `4f8c816e849c31e0024a34ab2c846a958d36888a`; the later report-only commits do not change the tested source.
 - **PASS — date-filter implementation review:** the chart redraw is driven by the filtered backtest result.
 - **BLOCKED — rendered desktop/mobile and light/dark matrix:** browser-based visual and interaction acceptance could not run under this environment's URL/process security controls. AC-F05-PRICE-05 is not certified.
 
