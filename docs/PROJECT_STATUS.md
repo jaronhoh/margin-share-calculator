@@ -14,7 +14,7 @@
 - **PASS**：脚本语法检查、`git diff --check`；27项引擎测试；48,216项合成日账比较；276,096项 P0 oracle 断言及17,256项财富守恒；24条股息、费用和整手回归测试。
 - **PASS**：新增 F05 图表回归检查，确认曲线绑定回测价格、独立价格轴、图例开关、Tooltip 标签和缺失值留白；并修正完全无价格数据时价格轴会出现非有限刻度的问题。
 - **PASS**：完整 Node 自动化回归 8/8 测试文件通过（包括 P0 oracle 与 F05 静态检查）。
-- **PASS GitHub CI**：Follow-up `Site source tests` run 10 / run ID `40115049863`，测试提交 `4f8c816e849c31e0024a34ab2c846a958d36888a` 成功。
+- **PASS GitHub CI**：Follow-up `Site source tests` run 19 / run ID `40115682576`（8/8 测试文件）成功。
 - **PASS**：真实 Chromium 图表交互/桌面与移动/亮暗主题验收（1440×900 与 390×844 共4组）；价格轴、图例、日期过滤、Tooltip、Escape、周末沿用标签通过，页面无横向溢出。
 - **NOT RUN**：`tests/excel-regression.mjs` 需要工作簿路径参数，本次无该参数。
 
@@ -42,7 +42,7 @@
 
 ## 发布与剩余状态
 
-- Sites：**F05-only 已部署**为 Version 31，部署 `appgdep_6adcea6455bc8191a110c499ae457bf2` succeeded；原 URL、Owner-only 权限及现有数据不变。P3 API/股息审核流程未部署。
+- Sites：**F05-only 已部署**为 Version 32，源提交 `a086b353b6c1627c79d3851d7c1957b10fb0c26a`，部署 `appgdep_6adcea6455bc8191a110c499ae457bf2` succeeded；原 URL、Owner-only 权限及现有数据不变。P3 API/股息审核流程未部署。
 - 本地 Sites 源码分支 `feat/f05-stock-price-p3` 最新提交 `2e5e8521e7e17394eb82f2295c468d94f1f35cd5`；GitHub 对应应用快照位于 PR #1 分支。PR HEAD `ff1d9c50f4ac58e77c4168c61b319a9bacadc8fd`，尚为 Draft、未合并；自动 API/CORS 授权与浏览器验收门槛仍未解决。
 - Sites 兼容性：实现只使用现有静态 HTML/ES modules、File API 和本地 JSON 下载，不需要后台服务；CSV/JSON 导入仍需真实 Site 浏览器验收。已知数据约束见上文。
 - 回滚：本地功能分支与提交可回退；用户会话内导入可恢复默认；已确认数据需先导出 JSON 快照，关闭页面不会持久保存。Site 部署未进行，无线上回滚需求。
