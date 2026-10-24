@@ -5,7 +5,7 @@
 - GitHub 基线读取时 `main` HEAD 为 `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`；交接 SHA `7539a1e902307531998bde8549f5357a03d8bb6c` 已过时。仓库基线只有文档，无应用源码。
 - 本轮已将当前 Site 源码、测试和报告添加到 GitHub 功能分支 `feat/p3-f05-reviewed-market-data`，Draft PR #1 打开：[PR #1](https://github.com/jaronhoh/margin-share-calculator/pull/1)。PR 对比 `main` ahead 24 commits / behind 0，未合并。
 - **GitHub Actions：PASS**，`Site source tests` run 37 / run ID `40117557075`，8/8 测试文件通过，运行于 P3 源码/测试 HEAD `9202648699493ffe1c9493468c0997eab91c5c79`。
-- 现有 Site：开始时 Version 30；本轮 F05 独立发布为 **Version 32**，URL `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/` 不变。部署后复核仍为 custom Owner-only，唯一 Owner，外部访客/群组/编辑者均为0，访问策略 revision 1；不含未完成 P3 功能。
+- 现有 Site：开始时 Version 30；此前 F05 发布后为 **Version 32**（非本轮 P3 部署），URL `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/` 不变。此前部署复核仍为 custom Owner-only，唯一 Owner，外部访客/群组/编辑者均为0，访问策略 revision 1；不含本轮 P3 功能。
 - Site 源码检出初始 HEAD `34e19990cd6f6101ec43fffacf2f862d62759119`；该检出本地 `main` 比其本地 `origin/main` 多一个历史提交。本轮工作另在 `feat/f05-stock-price-p3`。
 
 ## F05 股票价格图表
@@ -27,6 +27,11 @@
 - **P2 Excel 等价性：计算测试 PASS，Excel 等价 BLOCKED**。引擎回归与独立数值检查通过；仍存在实质性 Excel 对比差异，且工作簿曾出现修复警告。此轮未改变 P1/P2 财务规则，也未声称与 Excel 完全一致。
 
 ## P3 行情/API 与安全判断
+
+- **2026-10-25 Yahoo 接入继续开发**：新增“从 Yahoo Finance 更新”按钮，使用 Chart 请求参数获取 Maybank `1155.KL`；解析只采用未调整 `close`，日期转换为 `Asia/Kuala_Lumpur`，检查错误、空数据、重复日期及异常价格。API 价格进入现有差异预览/人工选择/候选回测/九指标/确认保存流程。周末沿用价会单独标识；API 未提供的工作日不会补造，而会阻止候选并说明缺日。股息事件可转入现有股息审核，Ex-Date 保持独立且 Payment Date 必须人工确认；拆股/股息来源元数据随 JSON 快照保存。
+- **实现测试**：新增 `tests/yahoo-chart.test.mjs`，验证 Chart 结构、KL 日期、原始 Close、除息/付款日分离、拆股事件、错误/空数据/429/重复日及请求参数；完整测试 **9/9 文件通过**。直接打开 Yahoo Chart 的浏览器实测成功，返回 Maybank MYR 日线数据。
+- **仍待验证**：浏览器安全策略拒绝了跨域测试页，未绕过限制。因此 Site 页面中的 fetch 尚未完成 CORS/生产运行时验证；GitHub PR 和 Sites 发布也尚未包含本次新改动。若实际 Site 阻止跨域，界面会显示请求失败，CSV 后备仍可用。
+- **规则边界**：Yahoo 不返回除息日以外的付款日；不自动将 Ex-Date 入账。没有 Bursa 休市日历时，缺失工作日不前值填补，候选明确失败；周末前值只标注为沿用价格。原始24条股息及两项审计金额差异未改动。
 
 - **2026-10-25 持续开发更新**：价格 CSV 的差异审核流程已扩展为“候选回测→九项比较→最终确认→本地快照保存”，保留人工价格来源及既有修正，使用 localStorage 原子保存并在失败时恢复原快照/会话。页面重新载入后会校验并恢复已确认快照；恢复默认同时清除已保存快照。
 - 新增股息 CSV 候选审核：分别保留 Ex-Date、Record Date、Payment Date；未提供且未人工确认付款日的事件不能进入候选回测。相近日期/金额的疑似重复事件显示既有日期、金额及来源，必须显式确认；导入股息先做候选回测和九项比较，最终确认才写入快照。原始 Excel 24 条及其人工修改不被自动更改。
