@@ -1,3 +1,11 @@
+# F05 股票价格趋势图需求（2026-10-24）
+
+- **PRD v0.15 已提交**：`prd/PRD文档.md`；Commit `9d408bcadff72aeab5404fbb5a4f42204a43ab4c`。
+- **已确认**：在现有趋势图加入股票价格 RM/股曲线、独立可辨识刻度、图例开关及 Tooltip；保留原有市值/贷款/净资产/LSR，不创建独立图表。
+- **待完成**：前端实现、回归测试及 Sites 部署；现有 Site Version 30 / UI v24 的最后已验证发布记录不变。
+
+---
+
 # P3 PRD 更新记录（2026-10-24）
 
 - **GitHub PRD v0.14 已提交**：`prd/PRD文档.md`；Commit `3bdddff96e4cab279679af3bfefc56e810c90b78`。
