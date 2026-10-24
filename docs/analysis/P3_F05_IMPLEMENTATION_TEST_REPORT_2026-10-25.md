@@ -68,7 +68,7 @@ The named P0 business rules remain covered by those engine and oracle tests: dai
 
 ## GitHub and Sites
 
-- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The branch is based on `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`, ahead 24 commits and behind 0.
+- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The branch is based on `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`, ahead 27 commits and behind 0; latest tested source head `ff1d9c50f4ac58e77c4168c61b319a9bacadc8fd`.
 - GitHub Actions: **PASS**, `Site source tests` run 2 (`40114438329`): 8/8 test files passed. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and run 2 passed.
 - Local Site-source checkout commit: `471c3abd5d90e7b538ad9446f84b8903d723d45e`.
 - Sites: **not deployed**. Existing Version 30 / UI v24, URL, owner-only policy, settings and production data remain untouched.
