@@ -4,7 +4,7 @@
 
 - GitHub 基线读取时 `main` HEAD 为 `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`；交接 SHA `7539a1e902307531998bde8549f5357a03d8bb6c` 已过时。仓库基线只有文档，无应用源码。
 - 本轮已将当前 Site 源码、测试和报告添加到 GitHub 功能分支 `feat/p3-f05-reviewed-market-data`，Draft PR #1 打开：[PR #1](https://github.com/jaronhoh/margin-share-calculator/pull/1)。PR 对比 `main` ahead 24 commits / behind 0，未合并。
-- **GitHub Actions：PASS**，`Site source tests` run 19 / run ID `40115682576`，8/8 测试文件通过。GitHub PR #1 最新已核实 HEAD 为文档提交 `3da5029c67c0f57ac0fd710b51f56fe291d9dd5c`。
+- **GitHub Actions：PASS**，`Site source tests` run 37 / run ID `40117557075`，8/8 测试文件通过，运行于 P3 源码/测试 HEAD `9202648699493ffe1c9493468c0997eab91c5c79`。
 - 现有 Site：开始时 Version 30；本轮 F05 独立发布为 **Version 32**，URL `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/` 不变。部署后复核仍为 custom Owner-only，唯一 Owner，外部访客/群组/编辑者均为0，访问策略 revision 1；不含未完成 P3 功能。
 - Site 源码检出初始 HEAD `34e19990cd6f6101ec43fffacf2f862d62759119`；该检出本地 `main` 比其本地 `origin/main` 多一个历史提交。本轮工作另在 `feat/f05-stock-price-p3`。
 
@@ -54,7 +54,7 @@
 ## 发布与剩余状态
 
 - Sites：**F05 已部署**至 Version 32（部署 succeeded）；原生产 URL、Owner-only 访问权限及现有数据保持不变。P3 API/股息审核流程未部署。
-- 本地 Sites 源码分支 `feat/f05-stock-price-p3` 包含本轮实现提交 `1bd59bd`；PR #1 现有远端 HEAD 已在下一次 GitHub 同步前重新核实为 `3da5029c67c0f57ac0fd710b51f56fe291d9dd5c`。PR 仍为 Draft、未合并；自动 API 授权/运行时门槛仍未解决。
+- 本地 Sites 源码分支 `feat/f05-stock-price-p3` 包含实现提交 `1bd59bd` 与状态文档提交 `e25d0ff`；GitHub PR #1 源码/测试 HEAD `9202648699493ffe1c9493468c0997eab91c5c79` 已通过 CI run37。最终状态文档同步提交完成后，PR HEAD 会前进，但不再改动源码。PR 保持 Draft、未合并。
 - Sites 兼容性：实现只使用现有静态 HTML/ES modules、File API 和本地 JSON 下载，不需要后台服务；CSV/JSON 导入仍需真实 Site 浏览器验收。已知数据约束见上文。
 - 回滚：本地功能分支与提交可回退；用户会话内导入可恢复默认；已确认行情快照保存在本地浏览器，可导出 JSON 备份并用恢复默认清除。Site 部署未进行，无线上回滚需求。
 - 总体：F05 已开发、测试、提交并部署至 Version 32。P3 的 CSV 差异审核、股息人工确认、候选回测对比与快照持久化已在本地实现，自动化及本地浏览器主要路径通过；Yahoo 自动 API 因授权/网络约束仍未接入。当前 P3 尚非自动行情 API 完整交付。GitHub PR #1 仍 Draft/未合并，P3 未部署 Sites。
