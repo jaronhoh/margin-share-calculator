@@ -54,3 +54,13 @@ export function buildPriceSnapshot(current,incoming,selectedDates,manualPriceDat
   for(let i=1;i<rows.length;i++)if(Date.parse(rows[i].date+'T00:00:00Z')-Date.parse(rows[i-1].date+'T00:00:00Z')!==86400000)throw new Error(`完整行情快照缺少 ${new Date(Date.parse(rows[i-1].date+'T00:00:00Z')+86400000).toISOString().slice(0,10)}；不会自动填补。`);
   return{rows,manualPriceDates:[...manual].sort()};
 }
+
+export function commitSnapshot(storage,key,snapshot,commit,rollback=()=>{}){
+  const previous=storage.getItem(key),serialized=JSON.stringify(snapshot);
+  try{storage.setItem(key,serialized);commit();return previous;}
+  catch(error){let rollbackError;try{rollback(error);}catch(e){rollbackError=e;}try{if(previous===null)storage.removeItem(key);else storage.setItem(key,previous);}catch(e){rollbackError??=e;}const detail=error?.message||String(error);throw new Error(`保存失败，${rollbackError?'回滚期间也发生错误：'+(rollbackError.message||rollbackError):'原有数据已恢复'}。${detail}`);}
+}
+
+export function restoreSnapshot(storage,key,previous){
+  if(previous===null)storage.removeItem(key);else storage.setItem(key,previous);
+}
