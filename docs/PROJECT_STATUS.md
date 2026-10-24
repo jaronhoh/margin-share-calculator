@@ -4,7 +4,7 @@
 
 - GitHub 基线读取时 `main` HEAD 为 `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`；交接 SHA `7539a1e902307531998bde8549f5357a03d8bb6c` 已过时。仓库基线只有文档，无应用源码。
 - 本轮已将当前 Site 源码、测试和报告添加到 GitHub 功能分支 `feat/p3-f05-reviewed-market-data`，Draft PR #1 打开：[PR #1](https://github.com/jaronhoh/margin-share-calculator/pull/1)。PR 对比 `main` ahead 24 commits / behind 0，未合并。
-- **GitHub Actions：PASS**，最新 `Site source tests` run 6 / run ID `40114613077`，PR 分支 HEAD `ff1d9c50f4ac58e77c4168c61b319a9bacadc8fd`。
+- **GitHub Actions：PASS**，F05 跟进 `Site source tests` run 10 / run ID `40115049863`，测试提交 `4f8c816e849c31e0024a34ab2c846a958d36888a`；其后提交仅更新文档。PR 当前文档 HEAD `226b7673b2201f35726a56627d96f1ce4088cc9a`。
 - 现有 Site：Version 30，URL `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/`，custom Owner-only，唯一 Owner，外部访客/群组/编辑者均为0，访问策略 revision 1。此轮未修改线上 Site。
 - Site 源码检出初始 HEAD `34e19990cd6f6101ec43fffacf2f862d62759119`；该检出本地 `main` 比其本地 `origin/main` 多一个历史提交。本轮工作另在 `feat/f05-stock-price-p3`。
 
