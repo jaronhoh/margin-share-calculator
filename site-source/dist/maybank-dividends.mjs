@@ -1,0 +1,233 @@
+export const DIVIDEND_SOURCE = {
+  "stockCode": "1155.KL",
+  "stockName": "MAYBANK",
+  "workbook": "Leverage Calculator.xlsx",
+  "sheet": "Margin Risk Calculator - Table1",
+  "range": "A3:B26",
+  "header": [
+    "Payment Date",
+    "Dividend"
+  ],
+  "sha256": "4420e1219ab05d6b62e04c31bcafa01e7c92d2bb89457e9764f7b0b14f96e771",
+  "count": 24,
+  "totalPerShare": "6.99",
+  "dateType": "来自 Excel，尚未确认是否为实际付款日"
+};
+export const DEFAULT_DIVIDENDS = [
+  {
+    "date": "2026-10-22",
+    "perShare": 0.31,
+    "sourceRow": 3,
+    "source": "excel-table1",
+    "originalDate": "2026-10-22",
+    "originalPerShare": 0.31,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2026-03-26",
+    "perShare": 0.33,
+    "sourceRow": 4,
+    "source": "excel-table1",
+    "originalDate": "2026-03-26",
+    "originalPerShare": 0.33,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2025-09-26",
+    "perShare": 0.3,
+    "sourceRow": 5,
+    "source": "excel-table1",
+    "originalDate": "2025-09-26",
+    "originalPerShare": 0.3,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2025-03-26",
+    "perShare": 0.32,
+    "sourceRow": 6,
+    "source": "excel-table1",
+    "originalDate": "2025-03-26",
+    "originalPerShare": 0.32,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2024-09-26",
+    "perShare": 0.29,
+    "sourceRow": 7,
+    "source": "excel-table1",
+    "originalDate": "2024-09-26",
+    "originalPerShare": 0.29,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2024-03-26",
+    "perShare": 0.31,
+    "sourceRow": 8,
+    "source": "excel-table1",
+    "originalDate": "2024-03-26",
+    "originalPerShare": 0.31,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2023-09-27",
+    "perShare": 0.29,
+    "sourceRow": 9,
+    "source": "excel-table1",
+    "originalDate": "2023-09-27",
+    "originalPerShare": 0.29,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2023-03-24",
+    "perShare": 0.3,
+    "sourceRow": 10,
+    "source": "excel-table1",
+    "originalDate": "2023-03-24",
+    "originalPerShare": 0.3,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2022-10-19",
+    "perShare": 0.28,
+    "sourceRow": 11,
+    "source": "excel-table1",
+    "originalDate": "2022-10-19",
+    "originalPerShare": 0.28,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2022-04-14",
+    "perShare": 0.3,
+    "sourceRow": 12,
+    "source": "excel-table1",
+    "originalDate": "2022-04-14",
+    "originalPerShare": 0.3,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2021-10-21",
+    "perShare": 0.28,
+    "sourceRow": 13,
+    "source": "excel-table1",
+    "originalDate": "2021-10-21",
+    "originalPerShare": 0.28,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2021-06-28",
+    "perShare": 0.39,
+    "sourceRow": 14,
+    "source": "excel-table1",
+    "originalDate": "2021-06-28",
+    "originalPerShare": 0.39,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2021-01-15",
+    "perShare": 0.14,
+    "sourceRow": 15,
+    "source": "excel-table1",
+    "originalDate": "2021-01-15",
+    "originalPerShare": 0.14,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2020-05-06",
+    "perShare": 0.39,
+    "sourceRow": 16,
+    "source": "excel-table1",
+    "originalDate": "2020-05-06",
+    "originalPerShare": 0.39,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2019-10-02",
+    "perShare": 0.25,
+    "sourceRow": 17,
+    "source": "excel-table1",
+    "originalDate": "2019-10-02",
+    "originalPerShare": 0.25,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2019-06-07",
+    "perShare": 0.32,
+    "sourceRow": 18,
+    "source": "excel-table1",
+    "originalDate": "2019-06-07",
+    "originalPerShare": 0.32,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2018-10-30",
+    "perShare": 0.25,
+    "sourceRow": 19,
+    "source": "excel-table1",
+    "originalDate": "2018-10-30",
+    "originalPerShare": 0.25,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2018-07-06",
+    "perShare": 0.32,
+    "sourceRow": 20,
+    "source": "excel-table1",
+    "originalDate": "2018-07-06",
+    "originalPerShare": 0.32,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2017-11-01",
+    "perShare": 0.23,
+    "sourceRow": 21,
+    "source": "excel-table1",
+    "originalDate": "2017-11-01",
+    "originalPerShare": 0.23,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2017-06-06",
+    "perShare": 0.32,
+    "sourceRow": 22,
+    "source": "excel-table1",
+    "originalDate": "2017-06-06",
+    "originalPerShare": 0.32,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2016-10-25",
+    "perShare": 0.2,
+    "sourceRow": 23,
+    "source": "excel-table1",
+    "originalDate": "2016-10-25",
+    "originalPerShare": 0.2,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2016-06-03",
+    "perShare": 0.3,
+    "sourceRow": 24,
+    "source": "excel-table1",
+    "originalDate": "2016-06-03",
+    "originalPerShare": 0.3,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2015-11-11",
+    "perShare": 0.24,
+    "sourceRow": 25,
+    "source": "excel-table1",
+    "originalDate": "2015-11-11",
+    "originalPerShare": 0.24,
+    "dateType": "unverified-payment-date"
+  },
+  {
+    "date": "2015-05-26",
+    "perShare": 0.33,
+    "sourceRow": 26,
+    "source": "excel-table1",
+    "originalDate": "2015-05-26",
+    "originalPerShare": 0.33,
+    "dateType": "unverified-payment-date"
+  }
+];
