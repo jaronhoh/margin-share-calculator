@@ -3,6 +3,8 @@
 ## Release summary
 
 - F05 chart changes and a reviewed CSV price-update workflow are implemented on local branch `feat/f05-stock-price-p3`.
+- Follow-up F05 hardening: an empty valid-price series now omits the RM/share tick labels and title instead of rendering invalid numeric ticks. The F05 static regression and the full eight-file Node suite pass after this change.
+- **F05 visual acceptance remains BLOCKED**: local preview HTTP serving is denied by the workspace, the installed headless Chromium process is denied by macOS process policy, and the in-app browser rejects `file:` URLs. No security workaround was attempted. Therefore desktop/mobile, light/dark, and live chart-interaction acceptance are still not certified.
 - The Yahoo Chart URL returned live Maybank history in a read-only browser request. Automatic Yahoo integration is not enabled: the endpoint is undocumented, CORS was blocked from this environment, its automated-use permission is not established, and its trading-day-only data cannot be safely treated as continuous daily inputs.
 - This is **not a complete P3 release**. The dividend review pipeline, real-browser acceptance, and several failure-path tests remain open. The existing Site was not deployed.
 
@@ -29,9 +31,9 @@ The request used `period1=1420070400`, `period2=1792886400`, `interval=1d`, and 
 
 ## F05 chart
 
-- **PASS — automated static regression:** the existing chart reads the exact backtest row price, uses a separate outer right price axis while retaining the LSR right axis, includes a price legend toggle and Tooltip row, and leaves missing-price gaps unconnected.
+- **PASS — automated regression:** the chart reads the exact backtest row price, uses a separate outer right price axis while retaining the LSR right axis, includes a price legend toggle and Tooltip row, and leaves missing-price gaps unconnected. Empty price data omits price ticks instead of producing non-finite labels.
 - **PASS — date-filter implementation review:** the chart redraw is driven by the filtered backtest result.
-- **NOT RUN — rendered desktop/mobile and light/dark matrix:** browser-based visual and interaction acceptance was unavailable. AC-F05-PRICE-05 is not certified.
+- **BLOCKED — rendered desktop/mobile and light/dark matrix:** browser-based visual and interaction acceptance could not run under this environment's URL/process security controls. AC-F05-PRICE-05 is not certified.
 
 ## P0 regression and test matrix
 
@@ -62,14 +64,14 @@ The named P0 business rules remain covered by those engine and oracle tests: dai
 | JSON metadata compatibility | PASS | Existing automated tests; browser flow not exercised |
 | Rebacktest result comparison | NOT RUN | Implemented in UI path, not exercised in browser |
 | F05 price/axis/toggle/Tooltip/gaps | PASS | Static regression only |
-| F05 desktop/mobile, light/dark UI | NOT RUN | Real-browser rendering unavailable |
+| F05 desktop/mobile, light/dark UI | BLOCKED | Local server denied; Chromium launch denied; in-app browser rejects local file URL |
 | P0 automated regression | PASS | 8 test files; counts above |
 | Excel cache equivalence | BLOCKED | Existing audited mismatch remains; no workbook path provided |
 
 ## GitHub and Sites
 
-- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The branch is based on `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`, ahead 27 commits and behind 0; latest tested source head `ff1d9c50f4ac58e77c4168c61b319a9bacadc8fd`.
-- GitHub Actions: **PASS**, `Site source tests` run 2 (`40114438329`): 8/8 test files passed. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and run 2 passed.
-- Local Site-source checkout commit: `471c3abd5d90e7b538ad9446f84b8903d723d45e`.
+- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The branch is based on `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`, ahead 27 commits and behind 0; latest head `ff1d9c50f4ac58e77c4168c61b319a9bacadc8fd`.
+- GitHub Actions: **PASS**, latest `Site source tests` run 6 (`40114613077`): 8/8 test files passed. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and subsequent runs passed.
+- Local Site-source checkout commit: `2e5e8521e7e17394eb82f2295c468d94f1f35cd5`.
 - Sites: **not deployed**. Existing Version 30 / UI v24, URL, owner-only policy, settings and production data remain untouched.
 - The two audited dividend amount discrepancies (2021-06-28 RM0.39 vs RM0.385; 2021-01-15 RM0.14 vs RM0.135) and the existing 24 manual rows are unchanged.
