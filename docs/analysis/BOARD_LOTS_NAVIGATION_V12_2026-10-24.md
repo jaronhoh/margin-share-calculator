@@ -17,6 +17,8 @@
 
 ## Publication status
 
-Sites synchronization and native publication are **BLOCKED**: the configured Site Git service hostname `git.chatgpt-team.site` again failed DNS resolution during the official push workflow. Current live publication remains Version 11. No V12 save/version, deployment ID, or online acceptance is claimed. Site access was re-read as `custom` Owner-only, with the sole owner allowed, zero external visitors/groups/editors, revision 1.
+**PASS — deployed to the original Owner-only Site.** Native Sites deployment appgdep_6adbf4b6bcd0819188e8521e9bda0aae succeeded as Version 12 at https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site. Saved version ID: appgprj_6ad816b7dd508191a8632550d36f375f~appgver_a354b71d6bc081919a3d70707d0aaed4; source commit: cb49a26bfa3b394637df488f032a91c1efbba03f.
 
-Local Site source commit: `cb49a26bfa3b394637df488f032a91c1efbba03f`. Excel cached-formula parity remains a known historical FAIL and is not changed by this release.
+Owner access re-check: custom Owner-only, sole owner allowed, zero external visitors/groups/editors, revision 1. Online owner-authenticated browser check confirmed UI v12, 58% trigger, 100-share lot, page 3 jump and date locate for 2020-02-29; no visible page error. A query parameter was used to bypass stale browser edge cache on the first reload.
+
+Excel cached-formula parity remains a known historical FAIL and was not rerun for this release.
