@@ -4,9 +4,9 @@
 
 - F05 chart changes and a reviewed CSV price-update workflow are implemented on local branch `feat/f05-stock-price-p3`.
 - Follow-up F05 hardening: an empty valid-price series now omits the RM/share tick labels and title instead of rendering invalid numeric ticks. The F05 static regression and the full eight-file Node suite pass after this change.
-- **F05 visual acceptance PASS**: Chromium acceptance passed at 1440×900 and 390×844 in Light/Dark. The price axis, legend toggle, date filter, Tooltip, Escape dismissal, non-trading carry-forward label, and no-horizontal-overflow checks passed.
+- **F05 visual acceptance: PASS**: after requesting the supported local-preview network permission, Chromium verified 1440×900 and 390×844 in light and dark themes. The first mobile pass found a legend overflow; the responsive legend was fixed and the entire four-case matrix then passed without horizontal overflow.
 - The Yahoo Chart URL returned live Maybank history in a read-only browser request. Automatic Yahoo integration is not enabled: the endpoint is undocumented, CORS was blocked from this environment, its automated-use permission is not established, and its trading-day-only data cannot be safely treated as continuous daily inputs.
-- This is **not a complete P3 release**. Dividend review and several failure-path tests remain open. F05 was separately deployed to the existing Site as Version 32.
+- This is **not a complete automatic-API P3 release**. The reviewed dividend-import pipeline and local snapshot persistence have since been implemented and tested as recorded in the continuation section below; provider authorization, runtime/API error tests and some failure-injection gates remain open. F05 was separately verified and deployed to the existing Site as Version 32.
 
 ## P3 API evidence and decisions
 
@@ -31,10 +31,11 @@ The request used `period1=1420070400`, `period2=1792886400`, `interval=1d`, and 
 
 ## F05 chart
 
-- **PASS — automated regression:** the chart reads the exact backtest row price, uses a separate outer right price axis while retaining the LSR right axis, includes a price legend toggle and Tooltip row, and leaves missing-price gaps unconnected. Empty price data omits price ticks instead of producing non-finite labels.
-- **PASS — GitHub CI:** follow-up `Site source tests` run 19 (`40115682576`) passed 8/8 files on commit `716469da9cd444dc92e26b151ef0e20a165376c2`. The final tooltip carry-forward behavior is included in the deployed source commit.
-- **PASS — date-filter implementation review:** the chart redraw is driven by the filtered backtest result.
-- **PASS — rendered desktop/mobile and light/dark matrix:** Chromium at 1440×900 and 390×844 in both themes; AC-F05-PRICE-05 passed with no horizontal overflow.
+- **PASS — automated regression:** the chart reads the exact backtest row price, uses a separate outer right price axis while retaining the LSR right axis, includes a price legend toggle and Tooltip row, leaves missing-price gaps unconnected, and omits price ticks when no valid price exists.
+- **PASS — real-browser matrix:** Chromium tested 1440×900 and 390×844 in both themes. Price-axis tick bounds remained inside the chart; hiding/restoring the legend removed/restored exactly one price path; keyboard Tooltip showed 2015-01-02 RM9.12 plus the existing financial series; Escape hid it; no page errors or horizontal page overflow.
+- **PASS — date filtering and actual input prices:** setting 2015-01-01 through 2015-01-03 produced matching x-axis dates and three price points, matching the ledger's RM9.17/RM9.12/RM9.12.
+- **PASS — non-trading carry-forward label:** Jan 3 and Jan 4 tooltips explicitly identify the reused 2015-01-02 close RM9.12.
+- **PASS — GitHub CI:** follow-up `Site source tests` run 19 (`40115682576`) passed on the responsive F05 test commit. The later weekend-label change was locally tested and is included in the Site release commit; it is not yet on the GitHub PR branch.
 
 ## P0 regression and test matrix
 
@@ -59,20 +60,34 @@ The named P0 business rules remain covered by those engine and oracle tests: dai
 | API empty response / rate limit | NOT RUN | Not induced |
 | Price duplicate/invalid data | PASS | CSV parser automated test |
 | Manual price protection | PASS | Merge/provenance unit test; human review required to select conflicts |
-| Dividend duplicate detection/approval | NOT RUN | Dividend API pipeline not implemented |
-| Ex-Date vs Payment Date | PASS | Live event compared with issuer audit; API event not treated as paid date |
-| Cancel/apply rollback UI | NOT RUN | No real-browser/failure injection |
-| JSON metadata compatibility | PASS | Existing automated tests; browser flow not exercised |
-| Rebacktest result comparison | NOT RUN | Implemented in UI path, not exercised in browser |
-| F05 price/axis/toggle/Tooltip/gaps | PASS | Static regression only |
-| F05 desktop/mobile, light/dark UI | PASS | Chromium 1440×900 and 390×844, Light/Dark; chart interactions and no horizontal overflow verified |
+| Dividend duplicate detection/approval | PASS | New CSV review unit tests and local browser review; explicit approval is required |
+| Ex-Date vs Payment Date | PASS | Missing Payment Date is rejected; Ex-Date is never substituted |
+| Cancel update | PASS | Local browser confirms original 24 dividends / price range remain unchanged |
+| Snapshot rollback | PASS | Unit injected storage and post-commit failures; browser quota injection NOT RUN |
+| JSON metadata compatibility | PASS | Automated import/export shape and dividend provenance tests; local browser download/re-import preserved 4,314 rows and 24 dividend events |
+| Rebacktest result comparison | PASS | Local browser generated the required 9 comparison metrics for price and dividend candidates |
+| F05 price/axis/toggle/Tooltip/gaps | PASS | Automated and real-browser assertions |
+| F05 desktop/mobile, light/dark UI | PASS | Chromium 1440×900 and 390×844, both themes; no horizontal overflow |
 | P0 automated regression | PASS | 8 test files; counts above |
 | Excel cache equivalence | BLOCKED | Existing audited mismatch remains; no workbook path provided |
 
 ## GitHub and Sites
 
-- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The latest PR update records verified F05 browser and Sites deployment status.
-- GitHub Actions: **PASS**, follow-up `Site source tests` run 19 (`40115682576`): 8/8 test files passed on source/test commit `716469da9cd444dc92e26b151ef0e20a165376c2`. Later PR commits update documentation. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and subsequent runs passed.
+- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. P3 remains incomplete, so the combined PR was not merged. The latest previously verified PR head was `716469da9cd444dc92e26b151ef0e20a165376c2`.
+- GitHub Actions: **PASS**, follow-up `Site source tests` run 19 (`40115682576`): 8/8 test files passed on source/test commit `716469da9cd444dc92e26b151ef0e20a165376c2`. Separate responsive and chart changes were locally tested after this run and deployed to the Site; they have not yet been synchronized to the PR branch. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and subsequent runs passed.
 - Local Site-source checkout commit: `2e5e8521e7e17394eb82f2295c468d94f1f35cd5`.
-- Sites: **F05-only deployed** as Version 32 from source commit `a086b353b6c1627c79d3851d7c1957b10fb0c26ad`; deployment `appgdep_6adcea6455bc8191a110c499ae457bf2` succeeded. Original URL, UI v24 baseline, custom Owner-only policy and existing data are preserved; incomplete P3 was not included.
+- Sites: **PASS — deployed** F05-only source commit `a086b353b6c1627c79d3851d7c1957b10fb0c26a` as Version 32; deployment `appgdep_6adcea6455bc8191a110c499ae457bf2` succeeded. Existing URL and custom Owner-only access policy remain unchanged; P3 is not included in this deployment.
 - The two audited dividend amount discrepancies (2021-06-28 RM0.39 vs RM0.385; 2021-01-15 RM0.14 vs RM0.135) and the existing 24 manual rows are unchanged.
+
+## P3 implementation continuation — 2026-10-25
+
+- **Implemented:** `dist/dividend-data.mjs` parses CSV with separate ex, record, and payment dates; validates dates/amounts/duplicates; annotates candidate provenance; identifies suspicious same-amount/near-date duplicates. Approval rejects missing manually confirmed payment dates and requires a separate confirmation for suspected duplicates.
+- **Implemented:** Dividend review UI lets users select candidates, enter/confirm a payment date, see existing source conflicts, run a candidate backtest, compare all nine required metrics, cancel, or confirm and save. The original 24 Excel events remain intact; imported confirmed events preserve source file/row/date metadata through JSON normalization.
+- **Implemented:** Price update and dividend approval now save full compatible JSON snapshots in browser localStorage only after final confirmation. Startup validates and restores the saved snapshot; stale candidate signatures are rejected; failed storage writes or apply callbacks trigger in-memory and stored-snapshot rollback. Reset restores defaults and clears the saved local snapshot.
+- **PASS — local browser:** Price CSV synthetic row appeared as one new record; generated 9-metric comparison; cancel left end date unchanged. A separate synthetic run confirmed save and apply, then reload restored the 4,315-row snapshot through 2026-10-24. The local snapshot was cleared with Restore Defaults after the test.
+- **PASS — local browser:** Dividend candidate with missing payment date was rejected; after entering a payment date and explicitly approving a suspected duplicate, candidate backtest showed 9 metrics. Cancel left all 24 original Excel events active.
+- **PASS — local browser:** Exported the full JSON configuration and re-imported the downloaded file; the app retained 4,314 daily prices and all 24 dividend events without validation errors.
+- **PASS — automated:** Expanded `market-data.test.mjs` now covers parse/approval date semantics, duplicate detection/approval, original-24 immutability, atomic snapshot write, quota failure rollback, post-commit failure rollback and restore. Dividend provenance JSON normalization has an explicit roundtrip assertion.
+- **PASS — complete local regression:** `node --test tests/*.test.mjs`: 8/8 files, 0 failures; 27 engine cases, 48,216 daily numeric checks, 276,096 P0 oracle checks, 17,256 wealth conservation checks, source-dividend assertions, P3 market/dividend checks and F05 static checks.
+- **BLOCKED — automatic provider:** no Yahoo Chart integration was added. The live endpoint remains undocumented, official terms restrict automated data collection absent explicit permission, current terminal DNS lookup failed, and Site CORS/runtime support plus provider error/rate-limit behavior remain unverified. No public proxy or paid service was added. Existing CSV/manual workflows remain the data-update route.
+- **Sites:** unchanged at Version 32. No P3 changes were deployed.
