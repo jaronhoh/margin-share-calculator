@@ -74,5 +74,5 @@
 - **Yahoo / Site 实测**：直接 Chart 数据返回 Maybank MYR 与 `Asia/Kuala_Lumpur` 的收盘价；新增同源 Worker 消除浏览器跨域请求路径。生产 Site 的更新按钮成功取回数据并运行候选回测。差异预览为新增2条、相同0条、冲突11条；候选回测九项比较成功。因11条既有日期收盘价冲突，已取消此次更新，没有保存候选，也没有改动原始价格或股息快照。取消后原结束日期仍为2026-10-23。
 - **价格/股息边界**：本轮不自动接受价格冲突、不覆盖人工价格、不以 Adj Close 替代 Close；非交易日沿用价明确标注，缺价不伪造。Yahoo 股息 Ex-Date 不当作 Payment Date；Yahoo 没有确认付款日期的事件不会计入回测。现有24条 Excel 股息记录及两项金额差异保持不变。
 - **已提交到 Sites 并部署**：既有 URL 保持 `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/`，部署 Version 36，源提交 `300a5ec009042b0b6cfca6ec6abd1ba002adafe9`，部署 `appgdep_6adcf5548b5081918ceb7e1fa6f99b4b` 成功。未创建 Site、未改 URL/Owner-only 权限，也未应用任何行情数据。
-- **GitHub 状态**：现有 PR #1 的功能提交已同步至 head `0ad98a8009af803e3f49b8791cedd14eec95a0c8`；GitHub Actions `Site source tests` run 50（ID `40120053273`）成功。PR 当时仍为 Draft/open、未合并；CI 已通过，随后待转为 Ready 并检查仓库合并条件。不要将 Sites 部署等同于 GitHub 合并。
+- **GitHub 状态**：PR #1 已合并；Squash commit `ae3b48b37253762d489bd668d2bfb53a0d2de13c`。GitHub Actions `Site source tests` run 50（ID `40120053273`）在功能代码提交 `0ad98a8009af803e3f49b8791cedd14eec95a0c8` 上成功；合并前 PR 显示可合并且无待评审。Sites 部署仍是独立状态。
 - **仍需关注**：11条 Yahoo/现有收盘价冲突需人工选定来源；Yahoo 可能限流，Worker 将429显示为错误并保留 CSV/人工导入。历史公司行动及缺少交易日历的日期不作推断。

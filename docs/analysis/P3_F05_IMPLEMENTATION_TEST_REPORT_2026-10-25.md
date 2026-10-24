@@ -131,5 +131,5 @@ This addendum supersedes earlier statements in this report that Yahoo Site-origi
 ### GitHub and Sites lifecycle
 
 - **Sites source/deployment:** implemented and deployed to the existing Site as **Version 36**, source commit `300a5ec009042b0b6cfca6ec6abd1ba002adafe9`, deployment `appgdep_6adcf5548b5081918ceb7e1fa6f99b4b` succeeded. Existing URL and Owner-only policy remain unchanged. This is a Sites deployment only; it does not indicate a GitHub merge.
-- **GitHub:** PR [#1](https://github.com/jaronhoh/margin-share-calculator/pull/1) contains the Worker implementation at head `0ad98a8009af803e3f49b8791cedd14eec95a0c8`. GitHub Actions `Site source tests` run 50 (`40120053273`) completed successfully. At the time of this report update, the PR was Draft/open/unmerged and ready for the final merge-condition check.
-- **State labels:** developed = yes; locally tested = yes; Sites source committed and deployed = yes; GitHub commit/PR updated = yes; GitHub CI for the feature head = PASS; merged = pending final repository gate.
+- **GitHub:** PR [#1](https://github.com/jaronhoh/margin-share-calculator/pull/1) was merged by squash as commit `ae3b48b37253762d489bd668d2bfb53a0d2de13c`. GitHub Actions `Site source tests` run 50 (`40120053273`) passed on implementation commit `0ad98a8009af803e3f49b8791cedd14eec95a0c8`; the PR reported mergeable and had no pending reviews at merge time.
+- **State labels:** developed = yes; locally tested = yes; Sites source committed and deployed = yes; GitHub PR merged = yes; GitHub CI = PASS; market conflicts saved = no.
