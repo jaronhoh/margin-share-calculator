@@ -1,0 +1,19 @@
+name: Site source tests
+
+on:
+  pull_request:
+    paths:
+      - 'site-source/**'
+      - '.github/workflows/site-source-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  node-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+        working-directory: site-source
