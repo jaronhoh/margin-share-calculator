@@ -54,7 +54,7 @@
 ## 发布与剩余状态
 
 - Sites：**F05 已部署**至 Version 32（部署 succeeded）；原生产 URL、Owner-only 访问权限及现有数据保持不变。P3 API/股息审核流程未部署。
-- 本地 Sites 源码分支 `feat/f05-stock-price-p3` 包含实现提交 `1bd59bd` 与状态文档提交 `e25d0ff`；GitHub PR #1 源码/测试 HEAD `9202648699493ffe1c9493468c0997eab91c5c79` 已通过 CI run37。最终状态文档同步提交完成后，PR HEAD 会前进，但不再改动源码。PR 保持 Draft、未合并。
+- 本地 Sites 源码分支 `feat/f05-stock-price-p3` 包含实现提交 `1bd59bd`；GitHub PR #1 的源码/测试提交 `9202648699493ffe1c9493468c0997eab91c5c79` 已通过 CI run37。之后的 GitHub 提交仅同步状态文档，未改动测试通过的代码。PR 保持 Draft、未合并。
 - Sites 兼容性：实现只使用现有静态 HTML/ES modules、File API 和本地 JSON 下载，不需要后台服务；CSV/JSON 导入仍需真实 Site 浏览器验收。已知数据约束见上文。
 - 回滚：本地功能分支与提交可回退；用户会话内导入可恢复默认；已确认行情快照保存在本地浏览器，可导出 JSON 备份并用恢复默认清除。Site 部署未进行，无线上回滚需求。
 - 总体：F05 已开发、测试、提交并部署至 Version 32。P3 的 CSV 差异审核、股息人工确认、候选回测对比与快照持久化已在本地实现，自动化及本地浏览器主要路径通过；Yahoo 自动 API 因授权/网络约束仍未接入。当前 P3 尚非自动行情 API 完整交付。GitHub PR #1 仍 Draft/未合并，P3 未部署 Sites。
