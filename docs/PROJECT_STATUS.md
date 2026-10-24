@@ -76,3 +76,13 @@
 - **已提交到 Sites 并部署**：既有 URL 保持 `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/`，部署 Version 36，源提交 `300a5ec009042b0b6cfca6ec6abd1ba002adafe9`，部署 `appgdep_6adcf5548b5081918ceb7e1fa6f99b4b` 成功。未创建 Site、未改 URL/Owner-only 权限，也未应用任何行情数据。
 - **GitHub 状态**：PR #1 已合并；Squash commit `ae3b48b37253762d489bd668d2bfb53a0d2de13c`。GitHub Actions `Site source tests` run 50（ID `40120053273`）在功能代码提交 `0ad98a8009af803e3f49b8791cedd14eec95a0c8` 上成功；合并前 PR 显示可合并且无待评审。Sites 部署仍是独立状态。
 - **仍需关注**：11条 Yahoo/现有收盘价冲突需人工选定来源；Yahoo 可能限流，Worker 将429显示为错误并保留 CSV/人工导入。历史公司行动及缺少交易日历的日期不作推断。
+
+---
+
+# 最新状态：关闭网页后保留最后一次计算器参数（2026-10-25）
+
+- **已开发**：计算器在本浏览器本地自动保存全部回测输入、配股/费用模式、已确认的行情快照及来源、股息和人工价格修正、主题、价格曲线显示状态与流水筛选。修改后短暂防抖保存，离开页面时再尝试即时保存；重开页面自动恢复并重算。不会把用户数据上传到服务器。
+- **已测试**：自动保存/读取/清除、完整配置往返、损坏 JSON、非法快照、浏览器存储配额失败等单元测试通过；本地浏览器实测改年利率到 6.25%，页面重载后参数面板恢复 6.25%，页面提示已恢复。完整套件 11/11 文件通过，0失败，`git diff --check` 通过。
+- **GitHub**：功能分支 `feat/persist-last-settings`，PR #2 已打开；GitHub Actions `Site source tests` run 52 成功。尚未合并。
+- **Sites**：已部署至 Version 37，部署 succeeded；源提交 `eb190a124d94bff2ff5252b13c051d6369fc2617`。原生产 URL、owner-only 权限及现有行情数据保持不变。
+- **存储范围**：保存在同一浏览器配置文件的本地存储；清除浏览器网站数据、使用无痕窗口或更换浏览器/设备时不会同步。可继续使用 JSON 导出备份。
