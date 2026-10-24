@@ -6,7 +6,7 @@
 - Follow-up F05 hardening: an empty valid-price series now omits the RM/share tick labels and title instead of rendering invalid numeric ticks. The F05 static regression and the full eight-file Node suite pass after this change.
 - **F05 visual acceptance PASS**: Chromium acceptance passed at 1440×900 and 390×844 in Light/Dark. The price axis, legend toggle, date filter, Tooltip, Escape dismissal, non-trading carry-forward label, and no-horizontal-overflow checks passed.
 - The Yahoo Chart URL returned live Maybank history in a read-only browser request. Automatic Yahoo integration is not enabled: the endpoint is undocumented, CORS was blocked from this environment, its automated-use permission is not established, and its trading-day-only data cannot be safely treated as continuous daily inputs.
-- This is **not a complete P3 release**. Dividend review and several failure-path tests remain open. F05 was separately deployed to the existing Site as Version 31.
+- This is **not a complete P3 release**. Dividend review and several failure-path tests remain open. F05 was separately deployed to the existing Site as Version 32.
 
 ## P3 API evidence and decisions
 
@@ -32,7 +32,7 @@ The request used `period1=1420070400`, `period2=1792886400`, `interval=1d`, and 
 ## F05 chart
 
 - **PASS — automated regression:** the chart reads the exact backtest row price, uses a separate outer right price axis while retaining the LSR right axis, includes a price legend toggle and Tooltip row, and leaves missing-price gaps unconnected. Empty price data omits price ticks instead of producing non-finite labels.
-- **PASS — GitHub CI:** follow-up `Site source tests` run 19 (`40115682576`) passed 8/8 files on commit `716469da9cd444dc92e26b151ef0e20a165376c2`. The final Site-only tooltip carry-forward refinement was locally tested and is included in the deployed source commit.
+- **PASS — GitHub CI:** follow-up `Site source tests` run 19 (`40115682576`) passed 8/8 files on commit `716469da9cd444dc92e26b151ef0e20a165376c2`. The final tooltip carry-forward behavior is included in the deployed source commit.
 - **PASS — date-filter implementation review:** the chart redraw is driven by the filtered backtest result.
 - **PASS — rendered desktop/mobile and light/dark matrix:** Chromium at 1440×900 and 390×844 in both themes; AC-F05-PRICE-05 passed with no horizontal overflow.
 
@@ -74,5 +74,5 @@ The named P0 business rules remain covered by those engine and oracle tests: dai
 - GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The latest recorded PR branch head is documentation-only commit `226b7673b2201f35726a56627d96f1ce4088cc9a`.
 - GitHub Actions: **PASS**, follow-up `Site source tests` run 10 (`40115049863`): 8/8 test files passed on source/test commit `4f8c816e849c31e0024a34ab2c846a958d36888a`. Later commits only update status/report documentation. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and subsequent runs passed.
 - Local Site-source checkout commit: `2e5e8521e7e17394eb82f2295c468d94f1f35cd5`.
-- Sites: **F05-only deployed** as Version 31 from source commit `96a87b332ed5355c7f21b8f77e11bdb024fb5d6d`; deployment `appgdep_6adce98c5b788191adac888a2969a339` succeeded. Original URL, UI v24 baseline, custom Owner-only policy and existing data are preserved; incomplete P3 was not included.
+- Sites: **F05-only deployed** as Version 31 from source commit `96a87b332ed5355c7f21b8f77e11bdb024fb5d6d`; deployment `appgdep_6adcea6455bc8191a110c499ae457bf2` succeeded. Original URL, UI v24 baseline, custom Owner-only policy and existing data are preserved; incomplete P3 was not included.
 - The two audited dividend amount discrepancies (2021-06-28 RM0.39 vs RM0.385; 2021-01-15 RM0.14 vs RM0.135) and the existing 24 manual rows are unchanged.
