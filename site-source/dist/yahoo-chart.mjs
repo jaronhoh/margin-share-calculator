@@ -48,7 +48,11 @@ export async function fetchYahooChart(ticker,{startDate,endDate,fetchImpl=global
   const period1=Math.floor(Date.parse(`${start}T00:00:00Z`)/1000);
   const period2=Math.floor(Date.parse(`${end}T00:00:00Z`)/1000)+86400;
   if(!fetchImpl)throw new Error('当前浏览器不支持网络请求。');
-  const response=await fetchImpl(buildYahooChartUrl(ticker,{period1,period2}),{headers:{Accept:'application/json'}});
+  const upstreamUrl=new URL(buildYahooChartUrl(ticker,{period1,period2}));
+  // The deployed Site fetches Yahoo through its own same-origin Worker route.
+  // Browser requests directly to Yahoo are rejected by CORS in the Site runtime.
+  upstreamUrl.searchParams.set('ticker',String(ticker).trim().toUpperCase());
+  const response=await fetchImpl(`/api/yahoo-chart${upstreamUrl.search}`,{headers:{Accept:'application/json'}});
   if(!response?.ok){const status=response?.status||0;throw new Error(status===429?'Yahoo 暂时限制请求（HTTP 429），请稍后再试。':`Yahoo 请求失败（HTTP ${status||'网络错误'}）。`);}
   let payload;try{payload=await response.json();}catch{throw new Error('Yahoo 返回的内容不是有效 JSON。');}
   const parsed=parseYahooChart(payload,{ticker});

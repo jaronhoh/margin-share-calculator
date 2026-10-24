@@ -102,3 +102,34 @@ The named P0 business rules remain covered by those engine and oracle tests: dai
 - **BLOCKED — browser CORS verification:** Browser security policy rejected a cross-origin test page and forbids protocol workarounds. No workaround was attempted. The actual Site-origin request therefore remains unverified; UI catches network/CORS failures and leaves CSV import available.
 - **GitHub:** Local implementation commit `91bb081bb805d0a67f599e6e5b0a65e4391238e4`; code and report are present on Draft PR #1, remote head `b1ffea26e9606d26b8271ab601456f3c783fa871`. Full local regression is PASS (9/9 files). No GitHub Actions run exists yet for this remote head; the earlier successful run applies to older code.
 - **Sites:** Not deployed; existing Site remains Version 32 and Owner-only. The configured Sites source host failed DNS resolution. The subsequent elevated request to use the Sites helper and publish to the existing production Site was rejected by automatic approval review because it accesses release credentials and modifies production, requiring separate approval. No workaround was attempted.
+
+---
+
+## Latest implementation, live validation, and deployment — 2026-10-25
+
+This addendum supersedes earlier statements in this report that Yahoo Site-origin access, CORS, and Sites deployment were blocked. Those statements describe an earlier build.
+
+### P3 and F05 status
+
+- **PASS — Yahoo integration implemented:** the existing Site Worker serves the app and a same-origin `/api/yahoo-chart` endpoint restricted to `1155.KL`; it validates date parameters and forwards Yahoo errors and HTTP 429. The client requests `interval=1d&events=div,splits`, uses raw unadjusted `close`, converts timestamps using `Asia/Kuala_Lumpur`, and preserves incremental overlap review. No paid provider, public CORS proxy, or standalone server was added.
+- **PASS — production runtime:** the existing production Site's Yahoo update action fetched real data through the same-origin route, showed a difference preview, and generated the candidate backtest. The live preview classified **2 new, 0 same, 11 conflicting** rows. All nine required comparison metrics were available: backtest end date, shares, market value, loan, net worth, LSR, cumulative interest, dividends, and margin-call count.
+- **PASS — cancel preservation:** because the 11 overlaps differed from the existing values, the update was canceled. No candidate was saved. The original backtest end date remained 2026-10-23; original price snapshot, 24 Excel dividends, manual edits, and finance rules were not changed.
+- **PASS — production Yahoo response:** the same-origin endpoint returned a live Chart payload after Yahoo rate-limited an earlier request. The route passes the provider's 429 response to the UI; retry may be needed when Yahoo throttles.
+- **PASS — F05:** existing single trend chart continues to show the stock price with an independent price axis, raw backtest input values, legend toggle, date tooltip/filter, and gaps for missing prices. No second chart was added.
+- **Financial-data guardrails:** price conflicts require selection; manual rows remain protected unless explicitly selected; dividends keep Ex-Date, Record Date, and Payment Date separate; Ex-Date alone never becomes a payment date. The original 24 dividend records and known RM0.39/RM0.385 and RM0.14/RM0.135 differences remain unchanged.
+
+### Test results
+
+- **PASS — full automated regression:** `node --test tests/*.test.mjs`: 10/10 test files, 0 failures.
+- **PASS — P0 regression:** 27 engine cases; 48,216 daily numeric checks; 276,096 independent oracle assertions; 17,256 wealth-conservation checks; plus transaction fees, lots, refinancing, dividend repayment, margin calls, top-ups, and stock classification coverage.
+- **PASS — market-data and rollback:** CSV validation, date/duplicate/anomaly checks, new/same/conflict classification, manual-price provenance, explicit snapshot application, storage and callback failure rollback, dividend duplicate review, payment-date confirmation, preservation of all 24 existing events, and JSON compatibility.
+- **PASS — Yahoo and Worker tests:** normal/malformed/empty/error/429 Yahoo responses, raw Close vs Adjusted Close, Malaysia dates, ex-date/split parsing, same-origin route, ticker/range validation, browser headers and 429 pass-through.
+- **PASS — F05 automated regression:** price binding, separate axis, legend toggle, tooltip, and missing-value gaps. Prior desktop/mobile × light/dark Chromium verification remains valid for the chart UI; latest production run verified the Yahoo update workflow on the existing Site.
+- **NOT RUN — live provider outage induction:** no artificial Yahoo outage was triggered. Error and rate-limit handling are unit-tested; a real Yahoo 429 was observed and surfaced in the earlier endpoint attempt.
+- **BLOCKED — unresolved source data conflicts:** the 11 live conflicts require a human choice before those prices may be committed. No financial input was changed while unresolved.
+
+### GitHub and Sites lifecycle
+
+- **Sites source/deployment:** implemented and deployed to the existing Site as **Version 36**, source commit `300a5ec009042b0b6cfca6ec6abd1ba002adafe9`, deployment `appgdep_6adcf5548b5081918ceb7e1fa6f99b4b` succeeded. Existing URL and Owner-only policy remain unchanged. This is a Sites deployment only; it does not indicate a GitHub merge.
+- **GitHub:** PR [#1](https://github.com/jaronhoh/margin-share-calculator/pull/1) remains Draft/open/unmerged while the newest Worker implementation and this report are synchronized. CI must be checked against the resulting updated head; earlier CI runs apply only to their recorded commits.
+- **State labels:** developed = yes; locally tested = yes; Sites source committed and deployed = yes; GitHub commit/PR update = pending; merged = no; GitHub CI for the final PR head = pending.

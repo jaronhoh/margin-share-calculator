@@ -14,9 +14,11 @@ assert.throws(()=>parseYahooChart({chart:{result:[],error:null}}),/没有返回�
 assert.throws(()=>parseYahooChart({chart:{result:[{meta:{symbol:'1155.KL'},timestamp:[1,2],indicators:{quote:[{close:[null,null]}]}}],error:null}}),/空收盘价/);
 assert.throws(()=>parseYahooChart({chart:{result:[{meta:{symbol:'1155.KL'},timestamp:[1,1],indicators:{quote:[{close:[9,9.1]}]}}],error:null}}),/重复日期/);
 
-const fetchImpl=async url=>({ok:true,json:async()=>sample,url});
+const requestUrls=[];
+const fetchImpl=async url=>{requestUrls.push(String(url));return{ok:true,json:async()=>sample,url};};
 const recent=await fetchYahooChart('1155.KL',{startDate:'2025-10-24',endDate:'2025-10-25',fetchImpl,now:new Date('2025-10-26T00:00:00Z')});
 assert.equal(recent.rows.length,2);
+assert.match(requestUrls[0],/^\/api\/yahoo-chart\?/);assert.equal(new URL(requestUrls[0],'https://site.example').searchParams.get('ticker'),'1155.KL');
 await assert.rejects(()=>fetchYahooChart('1155.KL',{startDate:'2025-10-24',endDate:'2025-10-25',fetchImpl:async()=>({ok:false,status:429}),now:new Date('2025-10-26')}),/限制请求/);
 await assert.rejects(()=>fetchYahooChart('1155.KL',{startDate:'2025-10-24',endDate:'2025-10-25',fetchImpl:async()=>({ok:true,json:async()=>({})}),now:new Date('2025-10-26')}),/没有返回行情/);
 console.log('PASS Yahoo Chart close-only parsing, Kuala Lumpur dates, dividend Ex-Date separation, split events, empty/error/rate-limit responses and request URL');
