@@ -1,3 +1,12 @@
+# P3 PRD 更新记录（2026-10-24）
+
+- **GitHub PRD v0.14 已提交**：`prd/PRD文档.md`；Commit `3bdddff96e4cab279679af3bfefc56e810c90b78`。
+- **确认范围**：Yahoo Finance Chart API 为 `1155.KL` 第一候选；Excel/CSV 为后备；股价与股息分别校验；差异预览、人工核准、候选快照、双版本回测比较、最终确认后保存及失败回滚。
+- **尚未完成**：P3 代码集成、真实 API/CORS/Sites 兼容性测试、自动化回归、GitHub 源码提交与 Sites 部署。此前聊天中的代码仅为草案。
+- **保护边界**：不改变已部署 Site Version 30 / UI v24 的最后已验证状态；不修改 Owner-only 权限、现有 URL、生产数据或财务引擎。P1/P2 并行工作状态需单独核实。
+
+---
+
 # 最新状态：Site Version 30 / UI v24 P0 财务引擎修复（2026-10-24）
 
 - **PASS 已部署**：现有 Margin Share Calculator Site Version 30 / UI v24；部署 `appgdep_6adc7a5903208191bf7d38681099114a`，状态 `succeeded`；保存版本 `appgprj_6ad816b7dd508191a8632550d36f375f~appgver_f1b7b18c8b908191bb907d90f868c9a6`。原 URL 不变：[打开现有站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)。
