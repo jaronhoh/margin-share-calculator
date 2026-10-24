@@ -71,8 +71,8 @@ The named P0 business rules remain covered by those engine and oracle tests: dai
 
 ## GitHub and Sites
 
-- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The branch is based on `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`, ahead 27 commits and behind 0; latest head `ff1d9c50f4ac58e77c4168c61b319a9bacadc8fd`.
-- GitHub Actions: **PASS**, latest `Site source tests` run 6 (`40114613077`): 8/8 test files passed. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and subsequent runs passed.
+- GitHub PR: [#1 — P3 + F05](https://github.com/jaronhoh/margin-share-calculator/pull/1), **Draft / open / not merged**. The application source snapshot, regression tests, report and workflow are on the feature branch. The latest recorded PR branch head is documentation-only commit `226b7673b2201f35726a56627d96f1ce4088cc9a`.
+- GitHub Actions: **PASS**, follow-up `Site source tests` run 10 (`40115049863`): 8/8 test files passed on source/test commit `4f8c816e849c31e0024a34ab2c846a958d36888a`. Later commits only update status/report documentation. Run 1 failed because the large JSON fixture was truncated during transfer; the complete file was restored and subsequent runs passed.
 - Local Site-source checkout commit: `2e5e8521e7e17394eb82f2295c468d94f1f35cd5`.
 - Sites: **not deployed**. Existing Version 30 / UI v24, URL, owner-only policy, settings and production data remain untouched.
 - The two audited dividend amount discrepancies (2021-06-28 RM0.39 vs RM0.385; 2021-01-15 RM0.14 vs RM0.135) and the existing 24 manual rows are unchanged.
