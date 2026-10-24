@@ -1,3 +1,13 @@
+# P3 + F05 工作状态（2026-10-25）
+
+- **源码已入本 PR 分支**：静态 Site 应用、价格/股息资源、数据校验模块、8 个 Node 测试文件、固定股息 fixture 和 GitHub Actions 测试工作流。该仓库此前没有应用源码；本 PR 增加可审查的源码快照，不代表 Sites 发布。
+- **F05：实现；自动化静态检查 PASS；浏览器验收 NOT RUN**。价格线读取回测实际日价，使用独立外侧 RM/股刻度，保留 LSR 轴及原有指标；图例、Tooltip、缺失价格空段已由静态测试覆盖。桌面/手机、亮/暗主题真实渲染和交互尚未验证。
+- **P3：CSV 人工审核通道实现；自动 API 接入 BLOCKED**。现场 Yahoo Chart 只读请求对 1155.KL 返回 2,907 个交易日（2015-01-02 至 2026-10-23）和 24 条股息事件；响应含独立 raw close / adjclose 及 Kuala Lumpur 时区。回传日期是交易日而非完整日历；Ex-Date 不可作为付款日。CORS 测试 BLOCKED，Yahoo 自动使用授权未确认，故没有接入 API、没有自动保存股息、也未生成缺失日期价格。
+- **CSV 工作流**：含日期/价格/重复/异常校验、same/new/conflict 预览、人工修正保护、不可变候选快照、缺日拒绝和 JSON 来源留痕。UI 含候选重跑/九项指标比较/确认/取消，但 UI 取消、保存失败回滚和重跑尚未通过浏览器执行。
+- **测试**：本地 Node 测试：8 个测试文件 PASS、0 FAIL；含 27 项引擎案例、48,216 日账数值检查、276,096 项 P0 oracle 断言、17,256 项财富守恒检查，以及 F05 静态和 P3 CSV 测试。全工作簿 Excel 对照 NOT RUN（缺少输入路径）；与 Excel 等价性仍沿用审计中的 BLOCKED。
+- **状态边界**：GitHub PR/CI 结果以本 PR 与 Actions 实际状态为准；Sites 未部署，原 Version 30 / UI v24、URL、Owner-only 权限及生产数据均未修改。2021-06-28 RM0.39/RM0.385 与 2021-01-15 RM0.14/RM0.135 差异保留，24 条人工股息记录未被替换。
+- **详细证据**：[P3/F05 实施与测试报告](analysis/P3_F05_IMPLEMENTATION_TEST_REPORT_2026-10-25.md)。
+
 # F05 股票价格趋势图需求（2026-10-24）
 
 - **PRD v0.15 已提交**：`prd/PRD文档.md`；Commit `9d408bcadff72aeab5404fbb5a4f42204a43ab4c`。
