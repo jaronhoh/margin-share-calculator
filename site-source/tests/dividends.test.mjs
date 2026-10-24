@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {DEFAULT_DIVIDENDS,DIVIDEND_SOURCE} from '../dist/maybank-dividends.mjs';
+import {defaultDividends,normalizeDividend,validateDividends} from '../dist/dividend-events.mjs';
+import {runBacktest} from '../dist/engine.mjs';
+const extracted=JSON.parse(fs.readFileSync(process.argv[2]??new URL('./fixtures/table1.json',import.meta.url),'utf8'));
+assert.deepEqual(DEFAULT_DIVIDENDS,extracted.events);
+assert.deepEqual(DIVIDEND_SOURCE,extracted.metadata);
+assert.equal(DEFAULT_DIVIDENDS.length,24);assert.equal(DEFAULT_DIVIDENDS.reduce((n,e)=>n+Math.round(e.perShare*100),0),699);
+assert.equal(new Set(DEFAULT_DIVIDENDS.map(e=>e.date)).size,24);
+assert.deepEqual(DEFAULT_DIVIDENDS.map(x=>x.sourceRow),Array.from({length:24},(_,i)=>i+3));
+assert.equal(DEFAULT_DIVIDENDS.at(-1).date,'2015-05-26');assert.equal(DEFAULT_DIVIDENDS[0].date,'2026-10-22');
+validateDividends(DEFAULT_DIVIDENDS);
+const modified=normalizeDividend({...DEFAULT_DIVIDENDS[0],perShare:.4});assert.equal(modified.source,'excel-edited');assert.equal(modified.originalPerShare,.31);
+assert.equal(normalizeDividend({...modified,perShare:.31}).source,'excel-table1');
+assert.equal(normalizeDividend({date:'2026-10-22',perShare:.31}).source,'manual');
+const copy=defaultDividends();copy[0].perShare=1;assert.equal(defaultDividends()[0].perShare,.31);
+assert.deepEqual(JSON.parse(JSON.stringify(defaultDividends())).map(normalizeDividend),defaultDividends());
+assert.throws(()=>validateDividends([{date:'2026-02-30',perShare:.3}]));
+const eventMap=new Map(DEFAULT_DIVIDENDS.map(e=>[e.date,e.perShare]));
+const market=[];for(let d=new Date('2015-01-01T00:00:00Z');d<=new Date('2026-10-22T00:00:00Z');d.setUTCDate(d.getUTCDate()+1)){const date=d.toISOString().slice(0,10);market.push({date,price:10,dividendPerShare:eventMap.get(date)??0});}
+const r=runBacktest({ownShares:2000,financedShares:18000,startPrice:10,annualRate:0,targetLsr:.6,refinanceTrigger:0,marginCallLsr:.99,forceSellLsr:null,callStrategy:'cash',safeGap:.001,feeRate:0,lotSize:100},market);
+assert.equal(r.rows.filter(x=>x.dividend>0).length,24);
+assert.ok(Math.abs(r.summary.cumulativeDividend-139800)<1e-8);
+for(const e of DEFAULT_DIVIDENDS)assert.equal(r.rows.find(r=>r.date===e.date).dividend,20000*e.perShare);
+console.log('PASS Table1 24/24 exact source rows, RM6.99 sum, metadata, JSON roundtrip, reset cloning, edit provenance and all dividend dates applied');
