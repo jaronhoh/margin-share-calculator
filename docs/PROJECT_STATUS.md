@@ -1,3 +1,18 @@
+# 最新状态：Site Version 30 / UI v24 P0 财务引擎修复（2026-10-24）
+
+- **PASS 已部署**：现有 Margin Share Calculator Site Version 30 / UI v24；部署 `appgdep_6adc7a5903208191bf7d38681099114a`，状态 `succeeded`；保存版本 `appgprj_6ad816b7dd508191a8632550d36f375f~appgver_f1b7b18c8b908191bb907d90f868c9a6`。原 URL 不变：[打开现有站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)。
+- **Site 源码**：`34e19990cd6f6101ec43fffacf2f862d62759119`。仍为 custom Owner-only；单一获准 Owner，外部访客/群组/编辑者均为0，权限 revision 1。
+- **P0 完成**：修正数值安全边界、费用边界、负净卖款、股息清偿后的再融资顺序、Margin Call 当日再融资限制、交易现金/贷款流水，以及 JSON 兼容与校验。保留日初贷款计息、月末利息资本化、股息偿债、两类 Margin Call 策略、58% 再融资触发、100股整手和自有股/融资股分账等现行规则。
+- **验证通过**：引擎 27 项；股息数据 24 条；两种策略各 4,314 日整手/持股分类；48,216 项日级回归数值核对；费用/初始现金测试。独立 P0 审计对 4 个配置执行逐手枚举 oracle（两种策略、费用开/关），共 276,096 个数值断言和 17,256 项财富守恒检查通过。详见 [P0 审计报告](analysis/P0_FINANCIAL_ENGINE_AUDIT_V24_2026-10-24.md)。
+- **浏览器验证**：本地 Chromium 已验证 1280×720 亮/暗主题、重置、旧 JSON 导入、新配置导出/导入等；现有生产 Site 已核对 UI v24、4,314 行和无可见错误。未完成全视口/全主题矩阵、第二账号访问路径和原生 Excel 验收。
+- **Excel 缓存差异**：发现工作簿 P34 的月末公式含空 AND 参数。LibreOffice 对原公式复算为0；仅移除空参数的临时副本得 RM665.892739726028，次日贷款 RM157472.892739726。该复现支持根因判断；原生 Excel 未运行，故 Excel 原生表现仍待核实。
+- **发布边界**：本状态记录 Site 发布，不声称 GitHub CI 通过。Site 源代码发布和 GitHub PRD/报告提交为独立流程。本次 PRD/GitHub 更新仅更新文档，不触发 Site 部署。
+- **P1 后续**：重建历史交易费用率（特别是 2023-07 印花税变化）；核实 Maybank 当前网页与 PDS 的费率冲突；补充股息除权/资格日并逐笔核对24条事件；如需声称 Excel 等价，须在原生 Excel 环境复算。
+- [P0 财务引擎审计与测试报告](analysis/P0_FINANCIAL_ENGINE_AUDIT_V24_2026-10-24.md)
+- [UI v23 初始现金与 Bursa 费用报告](analysis/INITIAL_CASH_BURSA_FEES_V23_2026-10-24.md)
+
+---
+
 # 最新状态：Site Version 29 / UI v23 现金分配与 Bursa 交易成本（2026-10-24）
 
 - **PASS 已部署**：现有 Margin Share Calculator Site Version 29，部署 `appgdep_6adc3494a2808191b896678af4f41f05` 状态 `succeeded`；版本 ID `appgprj_6ad816b7dd508191a8632550d36f375f~appgver_f30203d44b008191868b47364337c8d7`。原 URL 不变：[打开现有站点](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)。UI 标记 v23。

@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD 草案 v0.12
+# Margin Share Calculator — PRD 草案 v0.13
 
 > 状态：已建立需求基线，核心业务规则已确认；实现与验证状态以 PROJECT_STATUS 和版本报告为准。2026-10-24，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
@@ -169,3 +169,19 @@ JSON新导出包含现金预算、由预算计算的两类股数及费用参数�
 费用参考以 [Maybank Share Trading Cash Account](https://www.maybank2u.com.my/maybank2u/malaysia/en/personal/services/digital_banking/share-trading-cash-account.page) 与 [Bursa Malaysia SST FAQ](https://www.bursamalaysia.com/sites/5d809dcf39fba22790cad230/assets/68638114e6414abcf48ef314/SST_-_FAQs_updated_1_July_2025.pdf) 为准；融资利率保持用户可编辑，不套用统一市场区间。
 
 实现、验收与线上发布以 [UI v23 测试与部署报告](../docs/analysis/INITIAL_CASH_BURSA_FEES_V23_2026-10-24.md) 及 PROJECT_STATUS 为准。
+
+
+## P0 财务引擎修复与验收 — UI v24（2026-10-24）
+
+P0 财务引擎修复已完成并部署至原有 Owner-only Site：Version 30 / UI v24。现有 Site URL、项目身份与 Owner-only 权限保持不变。详细实现证据、逐项验证范围与限制见 [P0 财务引擎审计报告](../docs/analysis/P0_FINANCIAL_ENGINE_AUDIT_V24_2026-10-24.md) 和 [PROJECT_STATUS](../docs/PROJECT_STATUS.md)。
+
+本版本修正数值输入与整手边界、低于零或零净卖款处理、股息清偿后再融资、Margin Call 当日禁止再次再融资、现金/贷款流水展示、历史 JSON 配置兼容和部分配置验证；月末利息资本化继续按日初贷款计息并在月末入账。买卖费用包含最低佣金、印花税取整与上限、结算费上限及可选佣金 SST。P0 测试以独立整手枚举 oracle、边界场景、双策略 4,314 日历史序列及守恒检查为核心。部署与验证并不等同于 GitHub CI 或原生 Excel 验收。
+
+Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=1),O34,0)` 含空的 AND 参数：LibreOffice 对原公式复算得到 P34=0；仅在临时副本中移除空参数后得到 P34=RM665.892739726028，次日贷款为 RM157472.892739726。该实验支持公式问题是差异根因，但原生 Excel 未执行，因此不把 Excel 行为宣称为已证实。
+
+待后续核实事项（P1）：历史交易费率及 2023-07 印花税调整；公开 Maybank 网页与其 PDS 的印花税费率冲突；股息除权/登记资格日与支付日的分别建模；24 条股息逐笔市场公告核验。现有模型按已记录的股息事件日在当日股数上应用股息；当持仓在除权日至支付日期间变化时，可能与真实资格股数不同。Native Excel、完整股息除权日清单、用户券商成交单据及全屏幕响应矩阵未完成验收，详见审计报告。
+
+### PRD 变更记录
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-10-24 | v0.13 | 记录 P0 财务引擎 UI v24 的实现、测试与原 Owner-only Site 发布；补充 Excel 公式诊断和 P1 市场业务规则待核实项。 |
