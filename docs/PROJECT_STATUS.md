@@ -14,6 +14,7 @@
 - **PASS**：脚本语法检查、`git diff --check`；27项引擎测试；48,216项合成日账比较；276,096项 P0 oracle 断言及17,256项财富守恒；24条股息、费用和整手回归测试。
 - **PASS**：新增 F05 图表回归检查，确认曲线绑定回测价格、独立价格轴、图例开关、Tooltip 标签和缺失值留白；并修正完全无价格数据时价格轴会出现非有限刻度的问题。
 - **PASS**：完整 Node 自动化回归 8/8 测试文件通过（包括 P0 oracle 与 F05 静态检查）。
+- **PASS GitHub CI**：Follow-up `Site source tests` run 10 / run ID `40115049863`，测试提交 `4f8c816e849c31e0024a34ab2c846a958d36888a` 成功。
 - **BLOCKED**：真实 Chromium 图表交互/桌面与移动/亮暗主题验收。Playwright Chromium 受本机进程权限阻止；本地 HTTP 服务启动受限；应用内浏览器的 `file:` 访问被安全策略拒绝。没有以非浏览器检查代替视觉验收。
 - **NOT RUN**：`tests/excel-regression.mjs` 需要工作簿路径参数，本次无该参数。
 
