@@ -2,7 +2,7 @@
 
 更新时间：2026-10-25（Asia/Kuala_Lumpur）  
 适用分支：`feat/trading-calendar-dividend-chart-controls`  
-本文件是当前实现/验收状态的单一摘要。需求定义见 [Requirements](REQUIREMENTS.md) 与 [PRD v0.26](../prd/PRD文档.md)。旧章节与早期状态报告用于历史追溯；冲突时以本矩阵和更新日期较新的状态记录为准。
+本文件是当前实现/验收状态的单一摘要。需求定义见 [Requirements](REQUIREMENTS.md) 与 [PRD v0.30](../prd/PRD文档.md)。旧章节与早期状态报告用于历史追溯；冲突时以本矩阵和更新日期较新的状态记录为准。
 
 状态含义：**PASS** = 本地实现和指定回归通过；**PARTIAL** = 部分验证完成且有明确缺口；**BLOCKED** = 缺少必要资料/标准；**NOT RUN** = 未执行。
 
@@ -37,3 +37,12 @@
 - 自动采用只改变入账日期；保留 Yahoo/原始记录的每股股息金额，并保存 KLSE 来源金额、单位、链接及 `approvalMode=unique-date-auto`。Percentage 来源不转为 RM/股。
 - 多个不同付款日期继续阻止自动采用。若后续刷新发现曾自动采用的日期已出现冲突，则撤销对应自动确认、保存并按未确认状态重算；用户原先手动确认的记录不被悄悄覆盖。
 - Chromium 回归验证唯一精确金额、唯一金额不一致（原记录金额不变）、冲突阻止、刷新后撤销旧自动采用/冲突消失后恢复、付款日流水及零浏览器错误；Node 38/38 与既有 P0 历史回归通过。
+
+
+## MAYBANK 默认日期分列与预填（2026-10-25）
+
+- 默认 24 条 MAYBANK 事件按用户提供的 KLSE Screener 对照表显示 Ex-Date 与 Payment Date；金额及对应行号与原 Excel 一一匹配。原始工作簿抽取快照保持不变。
+- 两种日期、每股金额可编辑并自动保存；回测在 Payment Date 入账。已有手动审批不会被默认值覆盖；默认记录仅用于 1155.KL。
+- 验证：Node 38/38；P0 两策略、4,314 日历史财务回归通过；Chromium 单表 E2E PASS，包含预填、人工修改持久化和重跑保护；Worker build PASS。
+- 来源边界：KLSE Screener 第三方资料和用户提供的数据；不宣称 Bursa 官方核实。
+- Sites Version 64 已部署；URL、owner-only allowlist 和策略 revision 1 未变。部署 ID `appgdep_6addd7bfdd9c8191a1f46771293f4d68`。
