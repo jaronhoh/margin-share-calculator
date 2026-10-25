@@ -115,3 +115,11 @@
 - Bursa Malaysia's Participating Organisations' Circular R/R 2 of 2015, dated 19 January 2015, confirms Bursa Malaysia Securities was closed on 2015-02-02 and reopened on 2015-02-03. The date-specific record and source URL have been added to the calendar; carry-forward prices retain provenance.
 - A focused regression test verifies the classification and carry-forward provenance. Other historical dates remain unconfirmed unless supported by source evidence; 2015–2021 overall coverage remains BLOCKED.
 - Source: https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bb55aa65f36ca0c3028d89b/Closure_of_The_Exchange_for_Chinese_New_Year.pdf
+
+
+## 2015-02-02 closure in the daily ledger (2026-10-25)
+
+- The transaction ledger filters on the date-specific market calendar and excludes confirmed Bursa closures; it does not stop calendar-day interest accrual in the engine.
+- Added an explicit UI regression assertion that the confirmed 2015-02-02 closure cannot be located in daily ledger rows, is absent from CSV export, and decreases visible trading-day rows by one. Month-end/page expectations were adjusted for the removed row.
+- Full local Node regression: 13/13 files pass, including 276,096 independent P0 numeric checks and 17,256 wealth-conservation checks. Local Chromium: all 8 viewport/theme combinations (2152/1440/1075/390 × Light/Dark) pass; 3,076 ledger trading-day rows, no browser errors.
+- These source changes are committed in PR #3. The existing production Site is still Version 40 because the Site source Git remote currently fails DNS resolution; the new 2015 closure rule is not live until that source can be pushed and published.
