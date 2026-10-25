@@ -35,7 +35,11 @@ function yahooPayload(ticker) {
   const page = await browser.newPage(), errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => { window.confirm = () => true; });
-  await page.route('**/api/yahoo-chart?**', route => {
+  let yahooCalls = 0, failNextYahoo = false;
+  await page.route('**/api/yahoo-chart?**', async route => {
+    yahooCalls++;
+    await new Promise(resolve => setTimeout(resolve, 120));
+    if (failNextYahoo) { failNextYahoo = false; return route.abort(); }
     const ticker = new URL(route.request().url()).searchParams.get('ticker');
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(yahooPayload(ticker)) });
   });
@@ -86,8 +90,28 @@ function yahooPayload(ticker) {
   assert.equal(snapshot.marketOverrides.paymentDateApprovals.length, 1);
   assert.equal(snapshot.marketOverrides.paymentDateApprovals[0].paymentDate, '2025-04-09');
   assert.equal(snapshot.marketOverrides.dividendEvents.length, 24);
+  const callsBeforeRefresh = yahooCalls, savedBeforeRefresh = await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1'));
+  await page.locator('#startPrice').evaluate(element => { element.value = '99'; });
+  await page.locator('#run').click();
+  await page.waitForTimeout(25);
+  assert.equal(yahooCalls, callsBeforeRefresh + 2, 'every run fetches the selected ticker and fresh market calendar');
+  assert.equal(await page.locator('#rows tr').count(), 0, 'old daily ledger is cleared while fresh Yahoo data loads');
+  assert.equal(await page.locator('#dividendRows tr').count(), 0, 'old dividend table rows are cleared while fresh Yahoo data loads');
+  assert.equal(await page.locator('#summary .metric').count(), 0, 'old summary is cleared while rerunning');
+  await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('回测完成') || document.querySelector('#error').textContent.length > 0);
+  assert.equal(await page.locator('#error').textContent(), '', 'stale startPrice does not block a fresh same-ticker run');
+  assert.ok(await page.locator('#rows tr').count() > 0, 'new daily ledger appears after fresh calculation');
+  assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24, 'the same-ticker MAYBANK events are restored from retained user data');
+  assert.notEqual(await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1')), savedBeforeRefresh, 'successful refresh saves its new snapshot');
+  const savedAfterRefresh = await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1'));
+  failNextYahoo = true;
+  await page.locator('#run').click();
+  await page.waitForFunction(() => document.querySelector('#error').textContent.includes('Yahoo 回测失败'));
+  assert.equal(await page.locator('#rows tr').count(), 0, 'failed fetch leaves the previous ledger cleared');
+  assert.equal(await page.locator('#dividendRows tr').count(), 0, 'failed fetch leaves the previous dividend rows cleared');
+  assert.equal(await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1')), savedAfterRefresh, 'failed refresh preserves the prior saved snapshot without showing stale output');
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'explicit approval and snapshot provenance', 'zero browser errors'] }));
+  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'explicit approval and snapshot provenance', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
   await browser.close();
   await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 })().catch(error => { console.error(error); process.exit(1); });
