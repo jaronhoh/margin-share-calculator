@@ -9,7 +9,7 @@ test('official announcement can match ticker, ex-date and exact amount without a
  assert.equal(row.paymentDateSource,official.sourceUrl);
 });
 test('unverified or mismatched payment dates remain blank',()=>{
- for(const change of [{ticker:'1155.KL'},{perShare:0.3},{exDate:'2026-04-03'}]){
+ for(const change of [{ticker:'1155.KL'},{perShare:0.3},{exDate:'2026-04-03',recordDate:'2026-04-04'}]){
   const [row]=matchDividendPaymentDates([yahoo],[{...official,...change}],{ticker:'1066.KL'});
   assert.equal(row.paymentDate,'');assert.equal(row.paymentDateStatus,'unverified');
  }
