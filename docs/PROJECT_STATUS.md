@@ -282,3 +282,12 @@
 - **验证**：Node 38/38；dividend-single-table-ui.cjs Chromium E2E PASS，覆盖两类自动确认记录的三项编辑、持久化和重跑保留；Worker 构建与 git diff --check PASS。
 - **GitHub**：PR #3 保持 Draft；代码/测试提交 `78cc671d90ba1bdabe7abf4cdb6175fc29048d0f` 的 Actions run 173（ID `40182351218`）SUCCESS。
 - **Sites**：既有 owner-only Site Version 63 部署成功，Site 源码提交 `6d1bdd87812e94a22f742d9e910f20f1c1f92918`，deployment `appgdep_6addd0c264a081919afb45249bf4753b`。URL、allowlist、策略 revision 1 不变；没有修改线上股息数据。
+
+
+## MAYBANK 默认 Ex-Date 与 Payment Date 预填（2026-10-25）
+
+- 按用户提供的 KLSE Screener 24 笔日期表，为默认 MAYBANK 股息行预填 Ex-Date 与 Payment Date；原始 Excel Table1 的24笔日期、金额、来源行和文件哈希不变，第三方日期对照表另存，不改写工作簿抽取快照。
+- 表格两种日期继续可编辑；人工 Ex-Date 与 Payment Date 都事务式保存。仅在未编辑的原始 MAYBANK 行上补默认确认；已存在的人工/自动审批优先保留，其他股票不使用 MAYBANK 对照表。回测引擎继续在 Payment Date 入账。
+- 测试：Node 38/38，P0 两策略 4,314 日回归与财务断言通过；Chromium 股息端到端 PASS，覆盖 24 项日期匹配、日期和金额编辑、自动保存、重新运行保护；Worker 构建通过。
+- Sites：现有 owner-only Site Version 64 发布成功，源提交 `f11eb94d385096e06c9a3fb38c21844aee7f43c2`，deployment `appgdep_6addd7bfdd9c8191a1f46771293f4d68`。原 URL、owner allowlist 和策略 revision 1 不变；没有操作线上股息数据。
+- KLSE Screener 是第三方来源；该表反映用户提供并指定采用的日期，不代表 Bursa 官方核实。
