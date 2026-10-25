@@ -213,3 +213,11 @@
 - **修复**：股息查询请求改为携带 `MarginShareCalculator/1.0 (personal-use dividend lookup)` 应用标识及 HTML Accept 类型；不伪装成浏览器。若上游仍不含请求股票代码，保留失败关闭，并返回短身份摘要用于诊断。
 - **验证**：Site Worker 单测通过；完整 Node 自动测试 36/36 通过；现有线上 Site v50 的只读 API 验证，`1155.KL` 返回 43 条、`1066.KL` 返回 29 条股息候选，且候选均保留第三方未核实状态与来源 URL。未在生产浏览器触发 Yahoo 回测，以免改写用户本地行情快照。
 - **发布**：原 owner-only Site v50 已部署成功，源提交 `1a15d7a1ffbd8da3a66eec61485fd33bc21bf56c`；原 URL 和访问策略 revision 1 不变。PR #3 保持 Draft；代码与测试提交 `b6444c59dd4e45f3d263267c039e8ca211b8fefc` 的 GitHub Actions run 141（`40169155312`）SUCCESS，后续状态文档提交 `0ee48a4a58ebd26bfb5d2432f64c0986ebc78ca6` 的 run 142（`40169186137`）SUCCESS。
+
+
+## 股票代码与运行按钮同行布局修复（2026-10-25）
+
+- **原因与修复**：股票代码输入框继承了整行宽度，挤压运行按钮至下一行。为 `.ticker-run` 增加响应式 Grid：输入框占用剩余空间，运行按钮保持内容宽度并固定同行。
+- **浏览器回归**：本地 Chromium 在 1224×1139 桌面和 390×844 手机视口检查输入框与按钮的纵坐标相同、按钮紧随输入框；既有 Payment Date UI mock 流程也通过，页面错误为0。
+- **GitHub**：PR #3 分支已更新，CSS 提交 `3c375dee7785e6a17868af6a485d28818fc4d022`，桌面/手机布局断言提交 `830f21f5bde208dc4c2df9ea4022e2ba36815086`；该提交对应的 GitHub Actions 状态待确认。
+- **Sites**：现有 owner-only Site 已部署 Version 51，部署 `appgdep_6adda5573bc08191861bc95511a406f8` succeeded；Site 源码提交 `2eb521ca95d8a2bf86e618f75b86ce1c5aa9d010`。原 URL 不变，访问策略仍为唯一 Owner、零外部访客。
