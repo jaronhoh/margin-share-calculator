@@ -187,10 +187,11 @@ function yahooPayload(ticker, { crash = false } = {}) {
   assert.equal(autoEditedDividend.perShare, 0.291, 'auto-confirmed Yahoo per-share amount edit is persisted');
   assert.equal(autoEditedDividend.paymentDate, '2025-04-10', 'auto-confirmed Yahoo Payment Date edit is persisted');
   assert.equal(await editableYahooCandidate.locator('[data-approved-candidate-field]').count(), 3, 'all auto-confirmed Yahoo event fields remain editable after saving');
+  await editableYahooCandidate.locator('[data-approved-candidate-field="perShare"]').evaluate(input => { input.value = '0.055'; input.dispatchEvent(new Event('input', { bubbles: true })); });
   await page.reload();
   const restoredApproval = await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')).marketOverrides.paymentDateApprovals.find(item => item.exDate === '2025-03-21'));
   assert.equal(restoredApproval.editedExDate, '2025-03-22', 'manual Ex-Date is restored in the snapshot after a full page reload');
-  assert.equal(restoredApproval.perShare, 0.291, 'manual dividend amount is restored in the snapshot after a full page reload');
+  assert.equal(restoredApproval.perShare, 0.055, 'a just-edited amount without a change event is flushed to the snapshot before page unload');
   assert.equal(restoredApproval.paymentDate, '2025-04-10', 'manual Payment Date is restored in the snapshot after a full page reload');
   await page.locator('#openSettings').click();
   await page.locator('#run').click();
@@ -201,7 +202,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
   const restoredYahooCandidate = page.locator('tr[data-approved-ex-date="2025-03-21"]');
   await restoredYahooCandidate.locator('[data-approved-candidate-field="perShare"]').waitFor();
   assert.equal(await restoredYahooCandidate.locator('[data-approved-candidate-field="exDate"]').inputValue(), '2025-03-22', 'manual Ex-Date stays visible after reload and fresh rerun');
-  assert.equal(await restoredYahooCandidate.locator('[data-approved-candidate-field="perShare"]').inputValue(), '0.291', 'manual dividend amount stays visible after reload and fresh rerun');
+  assert.equal(await restoredYahooCandidate.locator('[data-approved-candidate-field="perShare"]').inputValue(), '0.055', 'manual dividend amount stays visible after reload and fresh rerun');
   assert.equal(await restoredYahooCandidate.locator('[data-approved-candidate-field="paymentDate"]').inputValue(), '2025-04-10', 'manual Payment Date stays visible after reload and fresh rerun');
   const firstAmount = page.locator('#dividendRows tr[data-dividend-event]').first().locator('[data-amount]');
   await firstAmount.fill('-1');
@@ -239,7 +240,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
   await page.waitForFunction(() => document.querySelector('tr[data-approved-ex-date="2025-03-21"] [data-approved-candidate-field="paymentDate"]'));
   const refreshedManualApproval = await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')).marketOverrides.paymentDateApprovals.find(item => item.exDate === '2025-03-21'));
   assert.equal(refreshedManualApproval.editedExDate, '2025-03-22', 'a later source refresh does not overwrite the manually edited Ex-Date');
-  assert.equal(refreshedManualApproval.perShare, 0.291, 'a later source refresh does not overwrite the manually edited amount');
+  assert.equal(refreshedManualApproval.perShare, 0.055, 'a later source refresh does not overwrite the most recent manually edited amount');
   assert.equal(refreshedManualApproval.paymentDate, '2025-04-10', 'a later unique-date auto match does not overwrite the manually edited Payment Date');
   assert.ok(await page.locator('#rows tr').count() > 0, 'new daily ledger appears after fresh calculation');
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24, 'the same-ticker MAYBANK events are restored from retained user data');
