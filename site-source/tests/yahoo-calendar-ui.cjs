@@ -35,6 +35,7 @@ const A=require('node:assert/strict');
   A.equal(await page.locator('#rows tr[data-date="2025-02-07"]').count(),1);
   const supplementalRow=page.locator('#rows tr[data-date="2025-02-05"]');A.equal(await supplementalRow.getAttribute('data-market-status'),'normal-trading-day');A.match(await supplementalRow.locator('td').nth(2).textContent(),/6\.35/);
   {const date='2025-02-06',row=page.locator(`#rows tr[data-date="${date}"]`);A.equal(await row.getAttribute('data-market-status'),'yahoo-market-holiday');A.equal(await row.locator('td').nth(2).textContent(),'—');A.equal(await row.locator('td').nth(6).textContent(),'—');A(Number((await row.locator('td').nth(8).textContent()).replace(/[^0-9.]/g,''))>0);}
+  const [ledgerDownload]=await Promise.all([page.waitForEvent('download'),page.locator('#exportCsv').click()]);A.equal(ledgerDownload.suggestedFilename(),'margin-share-daily-ledger-1066.KL-2025-02-04-to-2025-02-07.csv');
   const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
   const path=await download.path(),fs=require('node:fs'),snapshot=JSON.parse(fs.readFileSync(path,'utf8'));
   A.equal(snapshot.marketDataSource.marketCalendar.sourceTicker,'^KLSE');
