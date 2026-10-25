@@ -2,7 +2,7 @@
 
 更新时间：2026-10-25（Asia/Kuala_Lumpur）  
 适用分支：`feat/trading-calendar-dividend-chart-controls`  
-本文件是当前实现/验收状态的单一摘要。需求定义见 [Requirements](REQUIREMENTS.md) 与 [PRD v0.20](../prd/PRD文档.md)。旧章节与早期状态报告用于历史追溯；冲突时以本矩阵和更新日期较新的状态记录为准。
+本文件是当前实现/验收状态的单一摘要。需求定义见 [Requirements](REQUIREMENTS.md) 与 [PRD v0.22](../prd/PRD文档.md)。旧章节与早期状态报告用于历史追溯；冲突时以本矩阵和更新日期较新的状态记录为准。
 
 状态含义：**PASS** = 本地实现和指定回归通过；**PARTIAL** = 部分验证完成且有明确缺口；**BLOCKED** = 缺少必要资料/标准；**NOT RUN** = 未执行。
 
@@ -15,6 +15,7 @@
 | 逐日流水（AC-LEDGER-01） | 展示整个模拟日历；休市日行情/估值/风险/交易栏空白，贷款与日息保留；日期筛选和排序可用 | 本地 Chromium Yahoo E2E 与主 UI 回归通过；休市日行和正日息均有断言 | PASS | 生产 Site 登录后的完整交互验收未执行 |
 | 逐日流水 CSV（AC-CSV-01） | 文件名包含实际回测股票代码和起止日；数据内容维持全日历日和休市日利息 | Chromium 下载检查默认 `1155.KL` 与非默认 `1066.KL` 文件名；CSV 行内容与利息断言通过 | PASS | 文件名清理规则将非字母数字、点、连字符字符替换为连字符 |
 | 股息与付款日（R-027 / AC-PAY） | MAYBANK `1155.KL` 为默认并支持其他四/五位 Bursa 代码；Yahoo 运行后按代码读取 KLSE Screener 历史；原始事件与候选共用唯一股息表；逐项显式确认后纳入回测；不提供股息 CSV 导入/审核；来源和确认随 JSON 保存 | Node 覆盖解析、匹配、跨代码隔离、金额差异、冲突、缓存、Worker 与快照；Chromium 专测覆盖唯一表、无 CSV、原24条保持、增加/删除事件、候选行内确认及快照来源保存；全套 Node 36/36 通过，P0 oracle 276,096 数值断言、17,256 财富守恒断言及4,314日两策略回归通过 | PASS（本地实现/回归）；PARTIAL（资料权威性） | KLSE Screener 是第三方，不代表 Bursa 官方核验；页面历史范围会变化，未证明每个股票/年份完整；生产 Site/CI 状态以本轮最终记录为准 |
+| 股息事件自动保存（R-029 / AC-DIV-SAVE） | 股息编辑自动保存；点击「回测」时同步校验/保存并返回，不显示单独保存按钮；失败留在当前页；Payment Date 仍逐项确认 | Chromium 专项回归覆盖按钮移除、编辑后导航、再次进入后值保持、JSON 快照及无效数据/存储失败处理 | PASS（本地） | GitHub Actions 与现有 Site 发布待完成 |
 | 图表与响应式 UI | 趋势线复选框、Tooltip、价格曲线、日期过滤、Light/Dark、桌面/移动端可用 | 本地 Chromium 2152/1440/1075/390 px × Light/Dark 共8组通过；页面错误0 | PASS（本地） | 线上登录态跨浏览器回归 NOT RUN |
 | GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 仍 Draft；代码/测试 Actions run 92（ID `40158780725`）和 PRD v0.17 Actions run 95（ID `40159224630`）成功；现有 Site Version 46 部署 succeeded | PASS（已记录发布） | 文档整理阶段的 GitHub Actions run 99（ID `40159877853`）于提交 `7fdebb292300122778ee3ccf635111a3c6728351` 上成功；源码测试仍为 run 92（ID `40158780725`） |
 
