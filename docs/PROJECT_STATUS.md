@@ -291,3 +291,11 @@
 - 测试：Node 38/38，P0 两策略 4,314 日回归与财务断言通过；Chromium 股息端到端 PASS，覆盖 24 项日期匹配、日期和金额编辑、自动保存、重新运行保护；Worker 构建通过。
 - Sites：现有 owner-only Site Version 64 发布成功，源提交 `f11eb94d385096e06c9a3fb38c21844aee7f43c2`，deployment `appgdep_6addd7bfdd9c8191a1f46771293f4d68`。原 URL、owner allowlist 和策略 revision 1 不变；没有操作线上股息数据。
 - KLSE Screener 是第三方来源；该表反映用户提供并指定采用的日期，不代表 Bursa 官方核实。
+
+
+## PR 源码与文档同步（2026-10-25）
+
+- Draft PR #3 的 `site-source` 已同步至现有 Site Version 64：24笔 MAYBANK 默认 Ex-Date/Payment Date 独立映射、可编辑单表、旧快照只补缺、省略其他股票默认值；原 Excel 24笔保持不变。
+- 同步 Node 单元测试和 Chromium 股息表回归。工作副本验证：Node 38/38、P0 两策略 4,314 日回归、Chromium E2E 与 Worker build 通过。线上 Site v64 部署记录见上文。
+- `docs/REQUIREMENTS.md` 新增 R-030；PRD、验收矩阵及付款日分析记录已同步本规则及来源边界。
+- 最新 PR commit 与 GitHub Actions 状态以本节后续补录为准；Site 与 PR 分支独立发布。
