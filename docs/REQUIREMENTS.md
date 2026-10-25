@@ -98,3 +98,12 @@
 
 
 - **回归补充**：Chromium 亦覆盖资料刷新后由唯一日期变为多日期冲突时撤销旧自动采用，以及冲突消失后再次自动采用；GitHub Actions run 167 成功。
+
+
+## R-030：MAYBANK 默认 Ex-Date 与 Payment Date（2026-10-25）
+
+- MAYBANK（1155.KL）的24笔默认股息按用户提供的 KLSE Screener 对照表分别显示 Ex-Date、Payment Date 和每股金额；两个日期和金额均可编辑，编辑自动保存。
+- 回测股息按 Payment Date 入账。日期对照只应用于默认 MAYBANK 原始行；其他股票不得套用。
+- 原 Excel Table1 的日期、金额、来源行和原始快照均保持不变。日期表作为独立数据保存。旧快照迁移只补缺少的默认值，已有审批及手工修改优先，不得覆盖。
+- 来源是用户提供的 KLSE Screener 第三方资料，不表示 Bursa Malaysia 官方核实；未知或不匹配数据不应猜测。
+- 验收：24行逐项匹配，编辑后自动保存且重载/运行后保留；Node、P0、历史回测、Chromium 单表回归和 Worker build 通过。当前发布与 CI 证据见 [项目状态](PROJECT_STATUS.md) 与[验收矩阵](ACCEPTANCE_MATRIX.md)。
