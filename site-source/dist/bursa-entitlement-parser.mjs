@@ -4,13 +4,13 @@ const months={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:1
 function dateFromNotice(raw){
  const s=String(raw||'').replace(/\s+/g,' ').trim();
  const iso=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
- if(iso)return s;
+ if(iso)return Number.isFinite(Date.parse(s+'T00:00:00Z'))&&new Date(s+'T00:00:00Z').toISOString().slice(0,10)===s?s:'';
  const match=/^(\d{1,2})[\s/-]+([a-z]{3,9})[\s,/-]+(\d{4})$/i.exec(s);
  if(!match)return '';
  const m=months[match[2].slice(0,3).toLowerCase()];
  if(!m)return '';
  const date=`${match[3]}-${String(m).padStart(2,'0')}-${match[1].padStart(2,'0')}`;
- return new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date?date:'';
+ return Number.isFinite(Date.parse(date+'T00:00:00Z'))&&new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date?date:'';
 }
 function extractField(text,label){
  const escaped=label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
