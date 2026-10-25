@@ -47,6 +47,13 @@ const marketCalendar=createYahooMarketCalendar([
 ],{startDate:'2025-02-04',endDate:'2025-02-07'});
 assert.deepEqual(marketCalendar.closedDates,['2025-02-05','2025-02-06']);
 assert.equal(classifyMarketDate('2025-02-05',{marketCalendar}).status,'yahoo-market-holiday');
+const supplementedCalendar=createYahooMarketCalendar([
+  {date:'2025-02-04',close:1600},{date:'2025-02-07',close:1610},
+],{startDate:'2025-02-04',endDate:'2025-02-07',additionalObservedRows:[{date:'2025-02-05',close:6.2}],additionalSourceTicker:'1066.KL'});
+assert.deepEqual(supplementedCalendar.closedDates,['2025-02-06']);
+assert.deepEqual(supplementedCalendar.supplementalObservedDates,[{date:'2025-02-05',ticker:'1066.KL'}]);
+assert.equal(classifyMarketDate('2025-02-05',{marketCalendar:supplementedCalendar}).source,'Yahoo Finance 1066.KL');
+assert.deepEqual(expandYahooCalendarRows([{date:'2025-02-04',close:6.3},{date:'2025-02-05',close:6.35},{date:'2025-02-07',close:6.4}],{endDate:'2025-02-07',classifyMarketDate,marketCalendar:supplementedCalendar}).find(row=>row.date==='2025-02-06'),{date:'2025-02-06',close:6.35,carryForward:true,carryForwardFrom:'2025-02-05',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'});
 const dynamicClosure=expandYahooCalendarRows([
   {date:'2025-02-04',close:6.3},
   {date:'2025-02-07',close:6.4},
