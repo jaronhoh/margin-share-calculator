@@ -175,3 +175,10 @@
 - 页面可公开阅读，股息历史表含 Announced / EX Date / Payment Date / Amount；示例 2026-02-27 宣布、2026-03-12 除息、2026-03-26 付款、每股 RM0.3300；2025-08-27 宣布、2025-09-11 除息、2025-09-26 付款、每股 RM0.3000。第三方资料不得标记为 Bursa 官方核实。
 - 新增 `site-source/dist/klsescreener-dividends.mjs` 和 `site-source/tests/klsescreener-dividends.test.mjs`：解析该页面股息表文字、股票代码和 URL 约束、分离 Ex-Date/Payment Date、来源和待审核标记；fixture 测试已提交，但未运行。
 - **PARTIAL**：只实现文本解析，不包含未经许可的网页抓取、反爬绕过或自动付款日应用。KLSE Screener 站点条款/机器访问授权及 Sites Worker 实际请求尚未核实；UI/Yahoo 自动运行流程未接入；不修改原24条股息、不部署。
+
+### Payment Date 第五轮：Yahoo × KLSE Screener 候选匹配（2026-10-25）
+
+- 新增 `site-source/dist/klsescreener-reconciliation.mjs`：通过股票代码、Ex-Date、每股金额（默认容差 0.000001）比对 Yahoo 股息与 KLSE Screener 历史记录。输出候选日期、来源、冲突状态，且不自动设置实际 Payment Date。
+- 新增 `site-source/tests/klsescreener-reconciliation.test.mjs`：覆盖匹配、金额不符、付款日期冲突、跨股票隔离、人工确认及已有日期防覆盖。
+- 人工确认函数 `approveKlsescreenerPaymentDate` 只有显式 `confirm:true` 且唯一候选日期时才能把候选变成入账日期；KLSE Screener 仍属于第三方数据。
+- **未完成**：实际站点访问许可核验、真实页面解析验证、Worker 获取、UI 确认流程集成、实际执行新增测试、回归测试和 Sites 部署。此轮仅为 GitHub 代码提交，不能宣称功能已交付。
