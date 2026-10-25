@@ -1,22 +1,26 @@
 const validDate=date=>typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(`${date}T00:00:00Z`))&&new Date(`${date}T00:00:00Z`).toISOString().slice(0,10)===date;
 
-export function createYahooMarketCalendar(rows,{startDate=rows?.[0]?.date,endDate=rows?.at(-1)?.date}={}){
+export function createYahooMarketCalendar(rows,{startDate=rows?.[0]?.date,endDate=rows?.at(-1)?.date,additionalObservedRows=[],additionalSourceTicker=null}={}){
   if(!Array.isArray(rows)||!rows.length||!validDate(startDate)||!validDate(endDate)||endDate<startDate)throw new Error('Yahoo 市场基准日历数据无效。');
   const dates=new Set();
   for(const row of rows){if(!row||!validDate(row.date)||!Number.isFinite(row.close)||row.close<=0)throw new Error('Yahoo 市场基准价格无效。');if(dates.has(row.date))throw new Error(`Yahoo 市场基准返回重复日期：${row.date}。`);dates.add(row.date);}
+  const supplementalObservedDates=[];
+  if(!Array.isArray(additionalObservedRows)||additionalObservedRows.length&&(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(String(additionalSourceTicker||''))))throw new Error('Yahoo 补充市场日期来源无效。');
+  for(const row of additionalObservedRows){if(!row||!validDate(row.date)||!Number.isFinite(row.close)||row.close<=0)throw new Error('Yahoo 补充市场日期价格无效。');if(row.date>=startDate&&row.date<=endDate){dates.add(row.date);supplementalObservedDates.push({date:row.date,ticker:additionalSourceTicker});}}
   const sorted=[...dates].sort();
   if(sorted[0]>startDate||sorted.at(-1)<endDate)throw new Error('Yahoo 市场基准未覆盖完整导入范围，不能更新市场日历。');
   if((Date.parse(`${endDate}T00:00:00Z`)-Date.parse(`${startDate}T00:00:00Z`))/86400000>4999)throw new Error('Yahoo 市场日历范围超过 5,000 个日历日。');
   const observedTradingDates=sorted.filter(d=>d>=startDate&&d<=endDate),closedDates=[];
   for(let ms=Date.parse(`${startDate}T00:00:00Z`);ms<=Date.parse(`${endDate}T00:00:00Z`);ms+=86400000){const d=new Date(ms).toISOString().slice(0,10),weekday=new Date(ms).getUTCDay();if(weekday!==0&&weekday!==6&&!dates.has(d))closedDates.push(d);}
-  return{source:'yahoo-chart-market-calendar',sourceTicker:'^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/',startDate,endDate,observedTradingDates,closedDates};
+  return{source:'yahoo-chart-market-calendar',sourceTicker:'^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/',startDate,endDate,observedTradingDates,closedDates,supplementalObservedDates};
 }
 
 export function mergeYahooMarketCalendars(previous,next){
   if(!previous)return next;
   if(previous.sourceTicker!=='^KLSE'||next.sourceTicker!=='^KLSE'||previous.endDate<next.startDate||next.endDate<previous.startDate)return next;
   const observedTradingDates=[...new Set([...previous.observedTradingDates,...next.observedTradingDates])].sort(),closedDates=[...new Set([...previous.closedDates,...next.closedDates])].filter(d=>!observedTradingDates.includes(d)).sort();
-  return{...next,startDate:previous.startDate<next.startDate?previous.startDate:next.startDate,endDate:previous.endDate>next.endDate?previous.endDate:next.endDate,observedTradingDates,closedDates};
+  const supplementalObservedDates=[...new Map([...(previous.supplementalObservedDates||[]),...(next.supplementalObservedDates||[])].map(item=>[`${item.date}:${item.ticker}`,item])).values()].sort((a,b)=>a.date.localeCompare(b.date)||a.ticker.localeCompare(b.ticker));
+  return{...next,startDate:previous.startDate<next.startDate?previous.startDate:next.startDate,endDate:previous.endDate>next.endDate?previous.endDate:next.endDate,observedTradingDates,closedDates,supplementalObservedDates};
 }
 
 export function expandYahooCalendarRows(rows,{startDate=rows?.[0]?.date,endDate,classifyMarketDate,marketCalendar}={}){
