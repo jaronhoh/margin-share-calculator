@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD v0.19
+# Margin Share Calculator — PRD v0.22
 
 > 状态：需求持续追加；实现与验证状态以 PROJECT_STATUS 和当前功能验收矩阵为准。2026-10-25，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
