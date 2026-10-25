@@ -39,3 +39,8 @@ assert.throws(()=>parseDividendCsv('Ex-Date,Dividend\n2026-01-01,0.12\n2026-01-0
 console.log('PASS CSV validation, Kuala Lumpur calendar dates, duplicate rejection, change classification, immutable candidate snapshot, manual-price provenance and missing-day rejection');
 console.log('PASS explicit snapshot commit, storage failure rollback, post-commit failure rollback, and previous snapshot restoration');
 console.log('PASS dividend dates stay distinct, payment-date confirmation is mandatory, suspected duplicates require explicit approval, provenance survives, and all 24 Excel events remain unchanged');
+
+const weekend=buildPriceSnapshot([{date:'2026-01-02',close:9.12}],parsePriceCsv('Date,Close\n2026-01-05,9.3'),['2026-01-05']);
+assert.deepEqual(weekend.rows.map(x=>[x.date,x.close]),[['2026-01-02',9.12],['2026-01-03',9.12],['2026-01-04',9.12],['2026-01-05',9.3]]);
+assert.equal(weekend.rows[1].carryForwardFrom,'2026-01-02');
+assert.throws(()=>buildPriceSnapshot([{date:'2026-01-02',close:9.12}],parsePriceCsv('Date,Close\n2026-01-06,9.3'),['2026-01-06']),/未核实的休市日 2026-01-05/);
