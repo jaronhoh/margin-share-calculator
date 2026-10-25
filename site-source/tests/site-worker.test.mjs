@@ -86,7 +86,7 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
     assert.equal(new URL(calls.at(-1).url).hostname, 'www.klsescreener.com');
     assert.equal(new URL(calls.at(-1).url).pathname, '/v2/stocks/view/1066');
     assert.equal(calls.at(-1).options.headers.get('referer'), 'https://www.klsescreener.com/');
-    assert.match(calls.at(-1).options.headers.get('user-agent'), /^MarginShareCalculator\\//, 'source requests identify the app instead of impersonating a browser');
+    assert.ok(calls.at(-1).options.headers.get('user-agent')?.startsWith('MarginShareCalculator/'), 'source requests identify the app instead of impersonating a browser');
     const invalidSource = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=AAPL'));
     assert.equal(invalidSource.status, 400);
     assert.equal(calls.length, 4, 'invalid Bursa code must not reach KLSE Screener');
