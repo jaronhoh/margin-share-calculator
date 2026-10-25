@@ -273,3 +273,12 @@
 - 回归：Node 测试 38/38 通过；Chromium 单表端到端 PASS，覆盖自动确认行的三项可编辑、付款日持久化、改动金额后日期覆盖保留、24笔原始 Excel 记录未改、零浏览器错误；Worker build 与 git diff --check 通过。
 - 现有 owner-only Site Version 62 已部署成功，来源 Site commit 3b4d3e43629307d27585694613d39817e2658295，deployment appgdep_6addcd5c211c819192084bdbd5aeb8fa。原 URL、owner allowlist 和访问策略 revision 1 未变；未操作生产股息数据。
 - GitHub Actions/PR 同步状态以后续 PR 更新记录为准。
+
+
+## 自动确认股息事件编辑范围扩展（2026-10-25）
+
+- 所有自动确认事件（包括关联 Excel 原始行和 Yahoo 独有事件）都可编辑 Ex-Date、每股金额与 Payment Date；编辑后自动保存并重算。
+- Yahoo 独有事件保留原始 Ex-Date 匹配键，将人工 Ex-Date 单独保存；再次运行与来源重新匹配后，手动日期、金额和付款日均不会被覆盖。原始 Excel 数据及24笔股息不变。
+- **验证**：Node 38/38；dividend-single-table-ui.cjs Chromium E2E PASS，覆盖两类自动确认记录的三项编辑、持久化和重跑保留；Worker 构建与 git diff --check PASS。
+- **GitHub**：PR #3 保持 Draft；代码/测试提交 `78cc671d90ba1bdabe7abf4cdb6175fc29048d0f` 的 Actions run 173（ID `40182351218`）SUCCESS。
+- **Sites**：既有 owner-only Site Version 63 部署成功，Site 源码提交 `6d1bdd87812e94a22f742d9e910f20f1c1f92918`，deployment `appgdep_6addd0c264a081919afb45249bf4753b`。URL、allowlist、策略 revision 1 不变；没有修改线上股息数据。

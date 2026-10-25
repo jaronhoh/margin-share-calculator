@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD v0.26
+# Margin Share Calculator — PRD v0.29
 
 > 状态：需求持续追加；实现与验证状态以 PROJECT_STATUS 和当前功能验收矩阵为准。2026-10-25，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
@@ -474,3 +474,14 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 - **发布**：现有 owner-only Site Version 62 已发布至原 URL；部署 ID appgdep_6addcd5c211c819192084bdbd5aeb8fa。GitHub Actions 与 Draft PR 状态以 docs/PROJECT_STATUS.md 后续同步记录为准。
 
 | 2026-10-25 | v0.28 | 自动确认股息事件仍允许编辑日期、金额与付款日；人工付款日覆盖保留且自动保存重算 |
+
+
+## 26. 自动确认股息事件保持可编辑（v0.29，2026-10-25）
+
+AC-PAY-11 适用于所有自动确认并纳入回测的股息事件，不限于能关联到 Excel 原始行的事件。用户可在唯一股息表中编辑 Ex-Date、每股金额与 Payment Date；修改自动保存并触发回测更新。对于没有关联 Excel 行的 Yahoo 事件，系统必须保留原始 Ex-Date 作为来源匹配键，并另存手动修改后的 Ex-Date，防止下一次行情/候选刷新把用户修改误认为新事件或覆盖人工值。所有手动编辑都必须在再次运行与重新匹配后保留；不得改写原始工作簿数据。
+
+- **AC-PAY-11 扩展验收**：Chromium 分别验证关联 Excel 的自动确认行与 Yahoo 独有自动确认事件均可编辑三个字段；保存后回测按当前事件值计算；重新运行和自动匹配后人工 Ex-Date、金额、付款日均保留；原24笔 Excel 股息不变。
+- **回归**：Node 测试 38/38；股息单表 Chromium 端到端 PASS；Worker 构建及 `git diff --check` 通过。GitHub Actions run 173（ID `40182351218`）SUCCESS。
+- **发布**：现有 owner-only Site Version 63 已部署至原 URL；Site 源码提交 `6d1bdd87812e94a22f742d9e910f20f1c1f92918`，deployment `appgdep_6addd0c264a081919afb45249bf4753b`。原 URL 和访问策略不变，生产股息数据未操作。
+
+| 2026-10-25 | v0.29 | 明确所有自动确认股息事件均可编辑，人工日期、金额与付款日经重新运行后保留 |

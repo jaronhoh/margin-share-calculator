@@ -20,8 +20,8 @@
 | 历史 Payment Date 与页眉版本（R-027 / AC-PAY-08 / AC-HEADER-01） | Percentage 来源保留原始单位；唯一同 Ex-Date 候选在原行显示并自动采用，金额不改；页眉显示版本号；参数入口固定在全局页眉主题按钮旁，在回测、股息事件、说明三页持续可见且均可打开抽屉 | Node 38/38、Chromium 验证 2015-02-18 → 2015-03-05 候选、31 Percentage 未换算、版本标签及全局参数按钮在三个标签页可见并可打开 | PASS（本地回归）；PARTIAL（第三方资料） | 付款日来自 KLSE Screener 第三方历史记录，仍需人工确认 |
 | 股息事件自动保存（R-029 / AC-DIV-SAVE） | 股息编辑自动保存；有行情时写入快照，无行情时按代码存草稿并在刷新后恢复；点击「回测」时同步校验/保存并返回，不显示单独保存按钮；失败留在当前页；Payment Date 唯一日期自动采用 | Chromium 专项回归覆盖按钮移除、无行情草稿跨刷新恢复、编辑后导航、JSON 快照及无效数据/存储失败处理 | PASS | GitHub Actions run 156 成功；现有 owner-only Site Version 55 发布成功 |
 | 图表与响应式 UI | 趋势线复选框、Tooltip、价格曲线、日期过滤、Light/Dark、桌面/移动端可用 | 本地 Chromium 2152/1440/1075/390 px × Light/Dark 共8组通过；页面错误0 | PASS（本地） | 线上登录态跨浏览器回归 NOT RUN |
-| 股息自动确认后仍可编辑（AC-PAY-11） | 自动确认后原股息行的 Ex-Date、每股金额、已采用 Payment Date 均可编辑；改动自动保存并重算；人工改付款日保留覆盖标记且不会被后续自动匹配覆盖 | Chromium 专项覆盖自动确认行日期/金额/付款日可编辑、人工付款日保存、编辑金额后日期覆盖仍保留；Node 38/38、浏览器端到端 PASS | PASS（本地） | 自动匹配仍依赖 KLSE Screener 第三方记录；生产登录态未操作用户数据 |
-| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 保持 Draft；代码/测试提交 `f6af533d41de494e2adf4ab098f295b72e062b2b` 的 GitHub Actions run 171（ID `40181439509`）SUCCESS；现有 owner-only Site Version 62 已部署，来源 Site commit `3b4d3e43629307d27585694613d39817e2658295`，部署 ID `appgdep_6addcd5c211c819192084bdbd5aeb8fa` | PASS | 原 Site URL、owner-only 权限与 allowlist 未变；生产数据未操作 |
+| 股息自动确认后仍可编辑（AC-PAY-11） | 所有自动确认事件（含关联 Excel 原始行及 Yahoo 独有候选）的 Ex-Date、每股金额、已采用 Payment Date 均可编辑；改动自动保存并重算；人工编辑保留且不被后续自动匹配覆盖 | Chromium 覆盖两类记录三字段可编辑、快照持久化、刷新/重新运行不覆盖手工 Ex-Date/金额/付款日；Node 38/38、Worker 构建、git diff --check 通过；Site Version 63 已部署；GitHub Actions run 173 成功 | PASS（本地与部署） | 自动匹配依赖 KLSE Screener 第三方记录；来源匹配 Ex-Date 保留为审计键，手动 Ex-Date 单独保存；未操作生产股息数据 |
+| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 保持 Draft；代码提交 `78cc671d90ba1bdabe7abf4cdb6175fc29048d0f` 的 GitHub Actions run 173（ID `40182351218`）SUCCESS；现有 owner-only Site Version 63 已部署，来源 Site commit `6d1bdd87812e94a22f742d9e910f20f1c1f92918`，部署 ID `appgdep_6addd0c264a081919afb45249bf4753b` | PASS | 原 Site URL、owner-only 权限与 allowlist 未变；未操作生产数据 |
 
 ## 当前有效规则与旧文档处理
 
