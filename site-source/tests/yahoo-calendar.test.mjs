@@ -55,6 +55,15 @@ assert.deepEqual(dynamicClosure.slice(1,3),[
   {date:'2025-02-05',close:6.3,carryForward:true,carryForwardFrom:'2025-02-04',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
   {date:'2025-02-06',close:6.3,carryForward:true,carryForwardFrom:'2025-02-04',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
 ]);
+
+const leadingClosureCalendar=createYahooMarketCalendar([
+  {date:'2014-12-31',close:1600},{date:'2015-01-02',close:1602}
+],{startDate:'2015-01-01',endDate:'2015-01-02'});
+const leadingClosure=expandYahooCalendarRows([
+  {date:'2014-12-31',close:9.17},{date:'2015-01-02',close:9.12}
+],{startDate:'2015-01-01',endDate:'2015-01-03',classifyMarketDate,marketCalendar:leadingClosureCalendar});
+assert.deepEqual(leadingClosure[0],{date:'2015-01-01',close:9.17,carryForward:true,carryForwardFrom:'2014-12-31',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'});
+assert.deepEqual(leadingClosure.at(-1),{date:'2015-01-03',close:9.12,carryForward:true,carryForwardFrom:'2015-01-02',reason:'weekend'});
 assert.throws(()=>expandYahooCalendarRows([
   {date:'2025-02-04',close:6.3},
   {date:'2025-02-07',close:6.4},
@@ -62,5 +71,7 @@ assert.throws(()=>expandYahooCalendarRows([
   {date:'2025-02-04',close:1600},{date:'2025-02-05',close:1601},{date:'2025-02-07',close:1610},
 ],{startDate:'2025-02-04',endDate:'2025-02-07'})}),/基准显示 2025-02-05 是交易日/);
 assert.throws(()=>createYahooMarketCalendar([{date:'2025-02-04',close:0}],{startDate:'2025-02-04',endDate:'2025-02-04'}),/价格无效/);
+const oversized=Array.from({length:5001},(_,i)=>({date:new Date(Date.parse('2010-01-01T00:00:00Z')+i*86400000).toISOString().slice(0,10),close:9.1}));
+assert.throws(()=>expandYahooCalendarRows(oversized,{startDate:oversized[0].date,endDate:oversized.at(-1).date,classifyMarketDate}),/最多 5,000 个日历日/);
 
 console.log('PASS Yahoo full-history calendar expansion: weekends, confirmed Bursa closures, carry-forward provenance, unconfirmed weekday rejection, duplicate and invalid prices');
