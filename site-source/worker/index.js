@@ -49,7 +49,7 @@ function klsescreenerPageIdentity(html) {
   if (title) identityMarkup.push(title[1]);
   const metaTitles = [...html.matchAll(/<meta\b[^>]*(?:property|name)=["'](?:og:title|twitter:title)["'][^>]*content=["']([^"']*)["'][^>]*>/gi)];
   identityMarkup.push(...metaTitles.map(match => match[1]));
-  const headings = [...html.matchAll(/<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]\s*>/gi)].slice(0, 8);
+  const headings = [...html.matchAll(/<h[1-6]\b[^>]*>([\s\S]*?)<\/h[1-6]\s*>/gi)].slice(0, 8);
   identityMarkup.push(...headings.map(match => match[1]));
   return klsescreenerText(identityMarkup.join(' '));
 }
