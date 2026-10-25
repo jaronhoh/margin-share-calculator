@@ -40,10 +40,10 @@
 - [Bursa 2024 Hari Raya notice](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-hari-raya-aidilfitri-2024)提供条件式的两种安排，最终日期缺少可确认公告，本轮保持未确认。
 - 年度状态：2015–2021 **BLOCKED**；2022–2025 **PARTIAL**；2026 **PARTIAL**。名单不是完整年度交易所休市日历，未列日期仍按未确认处理。
 
-## GitHub / Site gate
+## GitHub / Site 状态
 
-- 目标分支：feat/trading-calendar-dividend-chart-controls；原 Draft PR #3。
-- 本地测试与回归已完成；PR 新 commit 与 Actions 结果需在推送后记录。
-- Site 必须基于现有源分支精确 commit 构建；URL、owner-only 访问与现有数据保持原样。Site 发布单独核验。
-
-
+- 目标 GitHub 分支：feat/trading-calendar-dividend-chart-controls；Draft PR #3 更新至 c5f2e94b18c468eb7d9aa8a782613922c72843ee。
+- GitHub Actions：run 59 / ID 40149002878，结论 SUCCESS。
+- 已将兼容线上 v38 的修改推送到同一 Site 源仓库 main：提交 38300dd7d5a9d1ab1653615d77adb1a0ffa919f3。发布为 Version 39，部署 succeeded；原 URL https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site 不变。所有者仍是唯一允许用户，访问策略 revision 1。
+- UI 浏览器回归 **NOT RUN**：打开生产 Site 显示登录门；通过站点的 ChatGPT 登录入口后，页面停在 Cloudflare 安全验证。未尝试解验证码或绕过。响应式、Light/Dark、Tooltip 和图表复选框的线上实测仍未完成。
+- Sites 运行时没有修改本地存储/历史行情/股息；原24笔股息保持不变。

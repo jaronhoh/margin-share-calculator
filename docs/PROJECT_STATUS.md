@@ -88,14 +88,11 @@
 - **存储范围**：保存在同一浏览器配置文件的本地存储；清除浏览器网站数据、使用无痕窗口或更换浏览器/设备时不会同步。可继续使用 JSON 导出备份。
 # Bursa Malaysia 休市日修复（2026-10-25）
 
-- **实现范围**：新增来源逐日的 market-calendar.mjs。当前确认日期：2022-12-26、2023-01-02、2024-09-16、2025-01-29、2025-01-30。只把官方公告明确的日期标记为 confirmed-market-holiday；星期六/日单独分类；其他没有行情证据的工作日为 unconfirmed-weekday。未用公共假期表推断交易所休市日。
-- **覆盖状态**：2015–2021 BLOCKED（尚无已核实的逐日 Bursa 证券市场公告清单）；2022–2025 PARTIAL（每年只有已列公告日期，不表示该年完整）；2026 PARTIAL（截至本记录日期没有完整年度清单）。2024 开斋节公告列两种依官方最终日期而定的方案；未将其任一方案擅自写入日历。
-- **流水 / 引擎**：流水仅隐藏周末及名单中的已确认休市日；未知工作日保留并需行情证据。引擎仍按每个日历日计息、月末照常资本化；交易许可按已确认日历禁用周末和确认闭市日。
-- **Yahoo 与快照**：周末及确认闭市日可沿用前一有效收盘价，行记录带 carryForward=true、carryForwardFrom、reason；已确认闭市还带来源 ID/URL。未知工作日缺价拒绝候选。重复/无效价格拒绝；冲突项不勾选，不会静默替换手动价格；候选快照不可变，原子保存失败会回滚。补齐后仍执行 5,000 条日历日上限。
-- **P0 / 历史比较**：4,314 日（2015-01-01 至 2026-10-23），24 笔股息、现金补仓和卖股两策略。与旧“周一至周五可交易”规则逐日比较后，确认日历规则未改变任何历史逐日财务值；两策略持股、市值、贷款、净资产、LSR、每日/累计利息、股息、补仓/卖股交易均一致。新增 market-calendar-p0.test.mjs 固定此基线；引擎利息公式未更改。
-- **测试**：本地 Node 自动化 12/12 文件通过；包括 4,314 日两策略逐日比较、276,096 项 P0 数值断言、17,256 项财富守恒断言、24 笔原始股息保护、周末/确认休市/连续假期/未知工作日/重复/无效价格/5,000 上限/人工价格冲突/回滚。UI 浏览器回归 NOT RUN（当前环境不允许绑定本地 HTTP 端口，未声称浏览器通过）。GitHub Actions 将在推送目标 PR commit 后重新核验。
-- **资料来源**：[Bursa 2022 Christmas / 2023 New Year closure](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-christmas-and-new-year-holidays)、[Bursa 2024 Malaysia Day closure](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-prophet-muhammads-birthday-and-malaysia-day-trading-resumes-on-17-september-2024)、[Bursa 2025 Chinese New Year closure](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday)。[2024 Hari Raya notice](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-hari-raya-aidilfitri-2024)给出条件式日期安排，本次不猜测最终日期。
-- **GitHub**：本地 PR 源码与测试变更已准备；需更新 PR #3 并确认其 Actions。当前 PR head 2d266e9001c8eed37e3d8fef6ca1fc28019c66c6，历史成功 run 58 仅覆盖旧代码。
-- **Sites**：仅在新源码 commit 推送至现有 Site 配置的 source branch、构建并复核后更新原 Site；不新建 Site、不改 URL/访问配置/用户数据。
-
-
+- **实现范围**：逐日来源日历确认 2022-12-26、2023-01-02、2024-09-16、2025-01-29、2025-01-30。仅采用 Bursa 官方公告明确日期；周末、已确认休市日、正常有价工作日和未确认工作日分别分类，不将公共假期推定为交易所休市。
+- **覆盖状态**：2015–2021 BLOCKED；2022–2025 PARTIAL；2026 PARTIAL。年份均未宣称完整。2024 Hari Raya 条件式公告未选定最终日期。
+- **流水与引擎**：明细与 CSV 导出隐藏周末及已确认休市日，日期定位只到交易日。引擎保留每日记录和日历日利息资本化规则；周末/确认闭市日不允许交易。行情曲线、Tooltip、价格曲线及趋势线复选框保留。
+- **Yahoo / CSV 安全导入**：周末和已确认休市日才以前一有效收盘价填补，并保存 carryForward、carryForwardFrom、reason 及公告来源。未确认工作日缺价、重复和无效价格拒绝；人工价格冲突须显式选择。扩充后保留5,000日限制；候选快照写入失败回滚。
+- **回归**：Node 自动测试 12/12 文件通过；4,314日、两策略逐日数值比较相同；P0 276,096项数值断言和17,256项财富守恒断言通过；原24笔股息未修改。GitHub Actions run 59（ID 40149002878）PASS。
+- **线上发布**：现有 Site v39 已发布成功，Site 源分支 main 提交 38300dd7d5a9d1ab1653615d77adb1a0ffa919f3。仍为原 URL 和 owner-only 权限策略 revision 1；未触碰浏览器本地数据。
+- **UI 浏览器回归：NOT RUN**。生产页面先显示登录门；继续登录后遇到 Cloudflare 安全验证页面。未尝试绕过，因此移动端、Light/Dark、Tooltip 和复选框的线上浏览器验收仍待完成。
+- **PR**：原 Draft PR #3 已更新至提交 c5f2e94b18c468eb7d9aa8a782613922c72843ee；Actions run 59 PASS。
