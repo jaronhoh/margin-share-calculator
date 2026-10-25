@@ -201,7 +201,7 @@
 
 ### Payment Date 发布补录（2026-10-25）
 
-- **GitHub**：Draft PR #3 当前 head `7bd3588fb8a8ade3670d6d1f34ad38a1745c09fe`；GitHub Actions `Site source tests` run 125（ID `40167908980`）SUCCESS。修复提交恢复了完整源码文件后通过自动测试。
+- **GitHub**：Draft PR #3 保持 Draft；功能代码提交 `7bd3588fb8a8ade3670d6d1f34ad38a1745c09fe`；GitHub Actions `Site source tests` run 125（ID `40167908980`）SUCCESS。修复提交恢复了完整源码文件后通过自动测试。
 - **Sites**：现有 owner-only Site 已部署 Version 47，部署 `appgdep_6add9c8e3a448191aac29a6fa65568ef` 状态 succeeded；Site 源码提交 `4dcdf5ce3112029dc01d98438aec478de750f074`。原 URL、访问策略 revision 1、唯一 Owner 和零外部访客保持不变。
 - **回归**：Node 36/36 文件通过；P0 oracle 276,096 数值断言、17,256 财富守恒断言、4,314 日两策略回归、原24条股息未变。Chromium 模拟数据端到端核对、九项预览、逐笔确认、Payment Date 入账和 JSON 往返通过。
 - **资料/UI 边界**：KLSE Screener 为第三方来源，不是 Bursa 官方核实；用户必须逐笔查看来源后确认。覆盖范围依赖该站当前返回数据，未证明所有股票/年份完整。生产环境登录后的浏览器操作回归 NOT RUN；没有改变线上用户快照。
