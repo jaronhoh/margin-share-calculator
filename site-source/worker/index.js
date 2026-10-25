@@ -43,6 +43,17 @@ function klsescreenerDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(Date.parse(`${date}T00:00:00Z`)) && new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10) === date ? date : '';
 }
 
+function klsescreenerPageIdentity(html) {
+  const identityMarkup = [];
+  const title = /<title\\b[^>]*>([\\s\\S]*?)<\\/title\\s*>/i.exec(html);
+  if (title) identityMarkup.push(title[1]);
+  const metaTitles = [...html.matchAll(/<meta\\b[^>]*(?:property|name)=["'](?:og:title|twitter:title)["'][^>]*content=["']([^"']*)["'][^>]*>/gi)];
+  identityMarkup.push(...metaTitles.map(match => match[1]));
+  const headings = [...html.matchAll(/<h[1-3]\\b[^>]*>([\\s\\S]*?)<\\/h[1-3]\\s*>/gi)].slice(0, 8);
+  identityMarkup.push(...headings.map(match => match[1]));
+  return klsescreenerText(identityMarkup.join(' '));
+}
+
 async function klsescreenerDividends(request, url) {
   const ticker = String(url.searchParams.get('ticker') || '').trim().toUpperCase();
   if (!/^\d{4,5}\.KL$/.test(ticker)) return badRequest('KLSE Screener 股息查询目前仅支持四位或五位数字 Bursa 股票代码（例如 1155.KL、1066.KL、03050.KL）。');
@@ -52,7 +63,9 @@ async function klsescreenerDividends(request, url) {
   if (!response?.ok) return badRequest(`KLSE Screener 股息历史请求失败（HTTP ${response?.status || '网络错误'}）。`, 502);
   const html = await response.text();
   if (html.length > 5_000_000) return badRequest('KLSE Screener 股息历史页面超出大小限制。', 502);
-  if (!new RegExp(`(?:\\(${code}\\)|>\\s*${code}\\s*<)`).test(html)) return badRequest('KLSE Screener 返回的股票代码与请求不匹配。', 502);
+  const pageIdentity = klsescreenerPageIdentity(html);
+  const codePattern = new RegExp(`(?:^|[^0-9])${code}(?:[^0-9]|$)`);
+  if (!codePattern.test(pageIdentity)) return badRequest(`KLSE Screener 返回页面的标题/股票抬头未确认代码 ${code}；页面身份校验失败，未显示股息候选。`, 502);
   const tables = [...html.matchAll(/<table\b[^>]*>[\s\S]*?<\/table\s*>/gi)].map(match => match[0]);
   const table = tables.find(value => {
     const firstRow = /<tr\b[^>]*>[\s\S]*?<\/tr\s*>/i.exec(value)?.[0] || '';
