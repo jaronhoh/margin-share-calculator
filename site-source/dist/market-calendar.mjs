@@ -1,5 +1,6 @@
 // Bursa Securities closure evidence is stored per date. No public-holiday inference is used.
 export const MARKET_HOLIDAYS = Object.freeze([
+  {date:'2015-02-02',status:'confirmed-market-holiday',source:'bursa-cny-closure-circular-2015',url:'https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bb55aa65f36ca0c3028d89b/Closure_of_The_Exchange_for_Chinese_New_Year.pdf'},
   {date:'2022-12-26',status:'confirmed-market-holiday',source:'bursa-christmas-new-year-2022',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-christmas-and-new-year-holidays'},
   {date:'2023-01-02',status:'confirmed-market-holiday',source:'bursa-christmas-new-year-2022',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-christmas-and-new-year-holidays'},
   {date:'2024-09-16',status:'confirmed-market-holiday',source:'bursa-prophet-birthday-malaysia-day-2024',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-prophet-muhammads-birthday-and-malaysia-day-trading-resumes-on-17-september-2024'},
