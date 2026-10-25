@@ -16,7 +16,7 @@
 | 逐日流水 CSV（AC-CSV-01） | 文件名包含实际回测股票代码和起止日；数据内容维持全日历日和休市日利息 | Chromium 下载检查默认 `1155.KL` 与非默认 `1066.KL` 文件名；CSV 行内容与利息断言通过 | PASS | 文件名清理规则将非字母数字、点、连字符字符替换为连字符 |
 | 股息与付款日（R-027 / AC-PAY） | MAYBANK `1155.KL` 为默认并支持其他四/五位 Bursa 代码；Yahoo 运行后按代码读取 KLSE Screener 历史；按代码、Ex-Date、金额匹配；候选逐笔预览/人工确认后方纳入回测；来源和确认随 JSON 保存 | Node 36/36 文件；Chromium mock E2E：`1066.KL` 自动查询、九项预览、显式确认、付款日入账、来源导入/导出；P0 276,096 数值与17,256财富守恒断言、4,314日两策略回归通过；原24条不变；Actions run 125 PASS；Owner-only Site Version 47 部署 succeeded | PASS（实现、CI、本地回归及部署）；PARTIAL（资料权威性/生产 UI） | KLSE Screener 为第三方，非 Bursa 官方核实；不保证每只股票/年份完整，用户须逐笔确认；生产登录后浏览器交互 NOT RUN |
 | 图表与响应式 UI | 趋势线复选框、Tooltip、价格曲线、日期过滤、Light/Dark、桌面/移动端可用 | 本地 Chromium 2152/1440/1075/390 px × Light/Dark 共8组通过；页面错误0 | PASS（本地） | 线上登录态跨浏览器回归 NOT RUN |
-| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 仍 Draft，当前 head `d9dd2a28a84effc1194d0c0a11738dd9e8d859c1`（文档补录）；功能代码提交 `7bd3588fb8a8ade3670d6d1f34ad38a1745c09fe` 的 Actions run 125（ID `40167908980`）SUCCESS；现有 owner-only Site Version 47 部署 succeeded | PASS | Site Version 47 的生产登录态交互未执行；第三方 KLSE Screener 历史完整性未证明 |
+| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 仍 Draft；功能代码提交 `7bd3588fb8a8ade3670d6d1f34ad38a1745c09fe` 的 Actions run 125（ID `40167908980`）SUCCESS；现有 owner-only Site Version 47 部署 succeeded | PASS | Site Version 47 的生产登录态交互未执行；第三方 KLSE Screener 历史完整性未证明 |
 
 ## 当前有效规则与旧文档处理
 
