@@ -21,6 +21,16 @@ assert.deepEqual(confirmedHoliday.slice(1,3),[
   {date:'2025-01-29',close:6.3,carryForward:true,carryForwardFrom:'2025-01-28',reason:'confirmed-market-holiday',source:'bursa-chinese-new-year-2025',sourceUrl:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday'},
   {date:'2025-01-30',close:6.3,carryForward:true,carryForwardFrom:'2025-01-28',reason:'confirmed-market-holiday',source:'bursa-chinese-new-year-2025',sourceUrl:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday'},
 ]);
+assert.equal(classifyMarketDate('2015-02-02').status,'confirmed-market-holiday');
+const federalTerritoryDay=expandYahooCalendarRows([
+  {date:'2015-01-30',close:8.72},
+  {date:'2015-02-03',close:8.70},
+],{endDate:'2015-02-03',classifyMarketDate});
+assert.deepEqual(federalTerritoryDay[3],{
+  date:'2015-02-02',close:8.72,carryForward:true,carryForwardFrom:'2015-01-30',
+  reason:'confirmed-market-holiday',source:'bursa-cny-closure-circular-2015',
+  sourceUrl:'https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bb55aa65f36ca0c3028d89b/Closure_of_The_Exchange_for_Chinese_New_Year.pdf'
+});
 assert.throws(()=>expandYahooCalendarRows([
   {date:'2025-01-03',close:6.1},
   {date:'2025-01-07',close:6.2},
