@@ -394,6 +394,6 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - 修复：记录候选字段待提交值，并在页面 `beforeunload/pagehide` 以及 Yahoo 回测开始前先提交。正常 `change` 保存成功后清掉对应待提交值；不改财务公式、事件金额来源优先级或数据 Schema。
 - 对照证据：新 E2E 在未修复逻辑下断言失败（快照实际 0.291，预期 0.055）；修复后完整 Chromium E2E PASS，刷新后快照及重跑后界面均保留 RM0.055、人工 Ex-Date 和 Payment Date。浏览器 pageerror 为 0。
 - 最终本地回归：Node **38/38 PASS**（含 P0 两策略、4,314 日历日历史与独立 oracle）；Chromium **PASS**；Worker build **PASS**。隔离 Site Version 64 的原生键盘场景仍保持通过。线上生产实例尚未部署此修复，因此不能声称生产版已完成修复验证。
-- 变更文件：`site-source/dist/index.html`、`site-source/tests/dividend-single-table-ui.cjs`、本状态文档。相关提交：实现 `c973445e63231849924534b898dc6185c021a696`；回归 `4e85f8eefe8c187104f9147abf30c3d1c4070272`。GitHub Actions 状态待该回归提交的 CI 完成后补记。
+- 变更文件：`site-source/dist/index.html`、`site-source/tests/dividend-single-table-ui.cjs`、本状态文档。相关提交：实现 `c973445e63231849924534b898dc6185c021a696`；回归 `4e85f8eefe8c187104f9147abf30c3d1c4070272`。GitHub Actions `Site source tests` Run 197（ID `40189322824`）对回归提交 **SUCCESS**。
 - 本轮不部署、不改 Site 数据/权限/URL、不合并 main；Draft PR #3 保持打开。
 
