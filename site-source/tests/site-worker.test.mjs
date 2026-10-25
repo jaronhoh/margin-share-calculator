@@ -69,7 +69,7 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
     const limited = await worker.fetch(new Request('https://site.example/api/yahoo-chart?ticker=1155.KL&period1=1&period2=2'));
     assert.equal(limited.status, 429, 'Yahoo rate limit is passed through for the UI to display');
 
-    const marketHtml = '<title>RHBBANK: RHB BANK BERHAD (1066)</title><table><thead><tr><th>Announced</th><th>Financial Year</th><th>Subject</th><th>EX Date</th><th>Payment Date</th><th>Amount</th><th>Indicator</th><th></th></tr></thead><tbody><tr><td>27 Feb 2025</td><td>31 Dec 2024</td><td>Second Interim Dividend</td><td>21 Mar 2025</td><td>09 Apr 2025</td><td>0.2800</td><td>Currency</td><td>View</td></tr><tr><td>24 Aug 2010</td><td>31 Dec 2010</td><td>Interim Dividend</td><td>15 Sep 2010</td><td>30 Sep 2010</td><td>5.0000</td><td>Percentage</td><td>View</td></tr></tbody></table>';
+    const marketHtml = '<title>RHBBANK: RHB BANK BERHAD &#40;1066&#41; | KLSE Screener</title><h2 class="stock-code"><a><span>1066</span></a></h2><table><thead><tr><th>Announced</th><th>Financial Year</th><th>Subject</th><th>EX Date</th><th>Payment Date</th><th>Amount</th><th>Indicator</th><th></th></tr></thead><tbody><tr><td>27 Feb 2025</td><td>31 Dec 2024</td><td>Second Interim Dividend</td><td>21 Mar 2025</td><td>09 Apr 2025</td><td>0.2800</td><td>Currency</td><td>View</td></tr><tr><td>24 Aug 2010</td><td>31 Dec 2010</td><td>Interim Dividend</td><td>15 Sep 2010</td><td>30 Sep 2010</td><td>5.0000</td><td>Percentage</td><td>View</td></tr></tbody></table>';
     globalThis.fetch = async (url, options) => {
       calls.push({ url: String(url), options });
       return new Response(marketHtml, { status: 200, headers: { 'content-type': 'text/html' } });
@@ -89,7 +89,7 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
     const invalidSource = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=AAPL'));
     assert.equal(invalidSource.status, 400);
     assert.equal(calls.length, 4, 'invalid Bursa code must not reach KLSE Screener');
-    globalThis.fetch = async () => new Response(marketHtml.replaceAll('(1066)', '(1155)'), { status: 200 });
+    globalThis.fetch = async () => new Response(marketHtml.replaceAll('1066', '1155'), { status: 200 });
     const wrongStock = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=1066.KL'));
     assert.equal(wrongStock.status, 502, 'source page must contain the requested stock code');
     globalThis.fetch = async url => {
