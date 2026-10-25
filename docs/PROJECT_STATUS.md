@@ -205,3 +205,11 @@
 - **Sites**：现有 owner-only Site 已部署 Version 47，部署 `appgdep_6add9c8e3a448191aac29a6fa65568ef` 状态 succeeded；Site 源码提交 `4dcdf5ce3112029dc01d98438aec478de750f074`。原 URL、访问策略 revision 1、唯一 Owner 和零外部访客保持不变。
 - **回归**：Node 36/36 文件通过；P0 oracle 276,096 数值断言、17,256 财富守恒断言、4,314 日两策略回归、原24条股息未变。Chromium 模拟数据端到端核对、九项预览、逐笔确认、Payment Date 入账和 JSON 往返通过。
 - **资料/UI 边界**：KLSE Screener 为第三方来源，不是 Bursa 官方核实；用户必须逐笔查看来源后确认。覆盖范围依赖该站当前返回数据，未证明所有股票/年份完整。生产环境登录后的浏览器操作回归 NOT RUN；没有改变线上用户快照。
+
+
+## KLSE Screener 股息事件为空修复（2026-10-25）
+
+- **原因**：Site Worker 请求公开股票页时未发送明确的 `User-Agent`，上游返回缺少股票身份的页面；身份校验因此按安全规则拒绝显示候选，界面显示为空。
+- **修复**：股息查询请求改为携带 `MarginShareCalculator/1.0 (personal-use dividend lookup)` 应用标识及 HTML Accept 类型；不伪装成浏览器。若上游仍不含请求股票代码，保留失败关闭，并返回短身份摘要用于诊断。
+- **验证**：Site Worker 单测通过；完整 Node 自动测试 36/36 通过；现有线上 Site v50 的只读 API 验证，`1155.KL` 返回 43 条、`1066.KL` 返回 29 条股息候选，且候选均保留第三方未核实状态与来源 URL。未在生产浏览器触发 Yahoo 回测，以免改写用户本地行情快照。
+- **发布**：原 owner-only Site v50 已部署成功，源提交 `1a15d7a1ffbd8da3a66eec61485fd33bc21bf56c`；原 URL 和访问策略 revision 1 不变。PR #3 保持 Draft；本次代码与测试提交及 GitHub Actions 状态待补录。
