@@ -1,0 +1,84 @@
+import assert from 'node:assert/strict';
+import {createYahooMarketCalendar,expandYahooCalendarRows} from '../dist/yahoo-calendar.mjs';
+import {classifyMarketDate} from '../dist/market-calendar.mjs';
+
+const weekend=expandYahooCalendarRows([
+  {date:'2025-01-24',close:6.1},
+  {date:'2025-01-27',close:6.2},
+],{endDate:'2025-01-27',classifyMarketDate});
+assert.deepEqual(weekend.slice(0,4),[
+  {date:'2025-01-24',close:6.1},
+  {date:'2025-01-25',close:6.1,carryForward:true,carryForwardFrom:'2025-01-24',reason:'weekend'},
+  {date:'2025-01-26',close:6.1,carryForward:true,carryForwardFrom:'2025-01-24',reason:'weekend'},
+  {date:'2025-01-27',close:6.2},
+]);
+
+const confirmedHoliday=expandYahooCalendarRows([
+  {date:'2025-01-28',close:6.3},
+  {date:'2025-01-31',close:6.4},
+],{endDate:'2025-01-31',classifyMarketDate});
+assert.deepEqual(confirmedHoliday.slice(1,3),[
+  {date:'2025-01-29',close:6.3,carryForward:true,carryForwardFrom:'2025-01-28',reason:'confirmed-market-holiday',source:'bursa-chinese-new-year-2025',sourceUrl:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday'},
+  {date:'2025-01-30',close:6.3,carryForward:true,carryForwardFrom:'2025-01-28',reason:'confirmed-market-holiday',source:'bursa-chinese-new-year-2025',sourceUrl:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday'},
+]);
+assert.equal(classifyMarketDate('2015-02-02').status,'confirmed-market-holiday');
+const federalTerritoryDay=expandYahooCalendarRows([
+  {date:'2015-01-30',close:8.72},
+  {date:'2015-02-03',close:8.70},
+],{endDate:'2015-02-03',classifyMarketDate});
+assert.deepEqual(federalTerritoryDay[3],{
+  date:'2015-02-02',close:8.72,carryForward:true,carryForwardFrom:'2015-01-30',
+  reason:'confirmed-market-holiday',source:'bursa-cny-closure-circular-2015',
+  sourceUrl:'https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bb55aa65f36ca0c3028d89b/Closure_of_The_Exchange_for_Chinese_New_Year.pdf'
+});
+assert.throws(()=>expandYahooCalendarRows([
+  {date:'2025-01-03',close:6.1},
+  {date:'2025-01-07',close:6.2},
+],{endDate:'2025-01-07',classifyMarketDate}),/2025-01-06/);
+assert.throws(()=>expandYahooCalendarRows([
+  {date:'2025-01-03',close:6.1},
+  {date:'2025-01-03',close:6.2},
+],{endDate:'2025-01-03',classifyMarketDate}),/重复价格日期/);
+assert.throws(()=>expandYahooCalendarRows([{date:'2025-01-03',close:0}],{endDate:'2025-01-03',classifyMarketDate}),/无效/);
+
+const marketCalendar=createYahooMarketCalendar([
+  {date:'2025-02-04',close:1600},
+  {date:'2025-02-07',close:1610},
+],{startDate:'2025-02-04',endDate:'2025-02-07'});
+assert.deepEqual(marketCalendar.closedDates,['2025-02-05','2025-02-06']);
+assert.equal(classifyMarketDate('2025-02-05',{marketCalendar}).status,'yahoo-market-holiday');
+const supplementedCalendar=createYahooMarketCalendar([
+  {date:'2025-02-04',close:1600},{date:'2025-02-07',close:1610},
+],{startDate:'2025-02-04',endDate:'2025-02-07',additionalObservedRows:[{date:'2025-02-05',close:6.2}],additionalSourceTicker:'1066.KL'});
+assert.deepEqual(supplementedCalendar.closedDates,['2025-02-06']);
+assert.deepEqual(supplementedCalendar.supplementalObservedDates,[{date:'2025-02-05',ticker:'1066.KL'}]);
+assert.equal(classifyMarketDate('2025-02-05',{marketCalendar:supplementedCalendar}).source,'Yahoo Finance 1066.KL');
+assert.deepEqual(expandYahooCalendarRows([{date:'2025-02-04',close:6.3},{date:'2025-02-05',close:6.35},{date:'2025-02-07',close:6.4}],{endDate:'2025-02-07',classifyMarketDate,marketCalendar:supplementedCalendar}).find(row=>row.date==='2025-02-06'),{date:'2025-02-06',close:6.35,carryForward:true,carryForwardFrom:'2025-02-05',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'});
+const dynamicClosure=expandYahooCalendarRows([
+  {date:'2025-02-04',close:6.3},
+  {date:'2025-02-07',close:6.4},
+],{endDate:'2025-02-07',classifyMarketDate,marketCalendar});
+assert.deepEqual(dynamicClosure.slice(1,3),[
+  {date:'2025-02-05',close:6.3,carryForward:true,carryForwardFrom:'2025-02-04',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
+  {date:'2025-02-06',close:6.3,carryForward:true,carryForwardFrom:'2025-02-04',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
+]);
+
+const leadingClosureCalendar=createYahooMarketCalendar([
+  {date:'2014-12-31',close:1600},{date:'2015-01-02',close:1602}
+],{startDate:'2015-01-01',endDate:'2015-01-02'});
+const leadingClosure=expandYahooCalendarRows([
+  {date:'2014-12-31',close:9.17},{date:'2015-01-02',close:9.12}
+],{startDate:'2015-01-01',endDate:'2015-01-03',classifyMarketDate,marketCalendar:leadingClosureCalendar});
+assert.deepEqual(leadingClosure[0],{date:'2015-01-01',close:9.17,carryForward:true,carryForwardFrom:'2014-12-31',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'});
+assert.deepEqual(leadingClosure.at(-1),{date:'2015-01-03',close:9.12,carryForward:true,carryForwardFrom:'2015-01-02',reason:'weekend'});
+assert.throws(()=>expandYahooCalendarRows([
+  {date:'2025-02-04',close:6.3},
+  {date:'2025-02-07',close:6.4},
+],{endDate:'2025-02-07',classifyMarketDate,marketCalendar:createYahooMarketCalendar([
+  {date:'2025-02-04',close:1600},{date:'2025-02-05',close:1601},{date:'2025-02-07',close:1610},
+],{startDate:'2025-02-04',endDate:'2025-02-07'})}),/基准显示 2025-02-05 是交易日/);
+assert.throws(()=>createYahooMarketCalendar([{date:'2025-02-04',close:0}],{startDate:'2025-02-04',endDate:'2025-02-04'}),/价格无效/);
+const oversized=Array.from({length:5001},(_,i)=>({date:new Date(Date.parse('2010-01-01T00:00:00Z')+i*86400000).toISOString().slice(0,10),close:9.1}));
+assert.throws(()=>expandYahooCalendarRows(oversized,{startDate:oversized[0].date,endDate:oversized.at(-1).date,classifyMarketDate}),/最多 5,000 个日历日/);
+
+console.log('PASS Yahoo full-history calendar expansion: weekends, confirmed Bursa closures, carry-forward provenance, unconfirmed weekday rejection, duplicate and invalid prices');
