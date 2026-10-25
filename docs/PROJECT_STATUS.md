@@ -106,4 +106,4 @@
 - **PASS（本地 Chromium）**：2152/1440/1075/390 px × Light/Dark 共8组；交易日 CSV、周末/已确认休市日隐藏、月份最后交易日过滤、日期定位、图表 Tooltip、股息回归通过。`1066.KL` 对应未载入 `1155.KL` 快照时，页面显示明确解释。页面错误0。
 - **Sites**：现有 owner-only Site Version 40 部署成功，源仓库 `main` 提交 `728b695de3a29f104a3404679605f181d4645268`；部署 `appgdep_6add5bab99548191ae4e4ca153371a14` succeeded。URL、访问策略 revision 1、浏览器本地数据保持不变。
 - **Yahoo 数据边界**：自动化覆盖 `1066.KL` 的解析、请求构造及 Worker 转发（fixture/模拟响应）；未声称本轮实际抓取并回测了该代码的完整线上历史。未确认的历史工作日缺价按规则会阻止导入，需补充可靠闭市资料或人工核实价格。
-- **GitHub**：本跟进代码和报告已同步至 Draft PR #3；本次分支 CI 结果待 GitHub Actions 完成后补录。Sites 与 GitHub 分支仍分别管理。
+- **GitHub**：本跟进代码和报告已同步至 Draft PR #3。Actions run 61（ID 40151136852）在功能提交 5046a1d964da0ced4be565bec3fa677ad30296d3 上 SUCCESS。Sites 与 GitHub 分支仍分别管理。

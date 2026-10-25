@@ -30,4 +30,4 @@ Only five historical Bursa closure dates are confirmed in this calendar. Coverag
 - Deployment: `appgdep_6add5bab99548191ae4e4ca153371a14`.
 - Existing URL retained: https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/
 - Access policy revision 1 retained; no browser-local market or dividend data was changed.
-- GitHub Actions for the updated PR #3 branch: pending at report authoring time.
+- GitHub Actions run 61 (ID `40151136852`): **SUCCESS** for PR head `5046a1d964da0ced4be565bec3fa677ad30296d3`.
