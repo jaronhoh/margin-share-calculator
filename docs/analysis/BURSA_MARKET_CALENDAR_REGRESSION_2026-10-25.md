@@ -29,4 +29,13 @@
 
 ## 交付状态
 
-PR 分支、Actions、Site 源提交、版本和部署 URL 在发布完成后补录。
+- Draft PR #3：`feat/trading-calendar-dividend-chart-controls`，提交 `ec75c9658d0de0c4098438c38ae3db286b57d404`；Actions run 69 / `40155526509` 成功。
+- Site Version 42 部署成功：源提交 `85bb15541238166a35bc583a8c4bfbf2b2593650`，deployment `appgdep_6add6cf7db608191afa618b17d5418ba`；原 URL 与 owner-only policy revision 1 未变。
+- Yahoo FBM KLCI `^KLSE` 基准在导入首步与所选股票并行获取，返回的日期会更新动态日历；不依赖固定节日表推断全历史休市日。
+
+## 最终发布补录（2026-10-25）
+
+- Draft PR #3 分支提交 `ec75c9658d0de0c4098438c38ae3db286b57d404`；GitHub Actions run 69 / `40155526509` 成功。
+- 现有 owner-only Site Version 42 已成功部署，Site 源提交 `85bb15541238166a35bc583a8c4bfbf2b2593650`，deployment `appgdep_6add6cf7db608191afa618b17d5418ba`。
+- 原生产 URL `https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/` 和 owner-only access policy revision 1 保持不变。
+- 本地 Chromium 用例验证了动态日历导入/保存/重载；未在生产浏览器会话执行交互回归。原始 24 笔股息、Payment Date 和财务公式未更改。
