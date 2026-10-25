@@ -212,4 +212,4 @@
 - **原因**：Site Worker 请求公开股票页时未发送明确的 `User-Agent`，上游返回缺少股票身份的页面；身份校验因此按安全规则拒绝显示候选，界面显示为空。
 - **修复**：股息查询请求改为携带 `MarginShareCalculator/1.0 (personal-use dividend lookup)` 应用标识及 HTML Accept 类型；不伪装成浏览器。若上游仍不含请求股票代码，保留失败关闭，并返回短身份摘要用于诊断。
 - **验证**：Site Worker 单测通过；完整 Node 自动测试 36/36 通过；现有线上 Site v50 的只读 API 验证，`1155.KL` 返回 43 条、`1066.KL` 返回 29 条股息候选，且候选均保留第三方未核实状态与来源 URL。未在生产浏览器触发 Yahoo 回测，以免改写用户本地行情快照。
-- **发布**：原 owner-only Site v50 已部署成功，源提交 `1a15d7a1ffbd8da3a66eec61485fd33bc21bf56c`；原 URL 和访问策略 revision 1 不变。PR #3 保持 Draft；本次代码与测试提交及 GitHub Actions 状态待补录。
+- **发布**：原 owner-only Site v50 已部署成功，源提交 `1a15d7a1ffbd8da3a66eec61485fd33bc21bf56c`；原 URL 和访问策略 revision 1 不变。PR #3 保持 Draft；代码与测试提交 `b6444c59dd4e45f3d263267c039e8ca211b8fefc` 的 GitHub Actions run 141（`40169155312`）SUCCESS，后续状态文档提交 `0ee48a4a58ebd26bfb5d2432f64c0986ebc78ca6` 的 run 142（`40169186137`）SUCCESS。
