@@ -62,6 +62,7 @@ export function buildPriceSnapshot(current,incoming,selectedDates,manualPriceDat
       rows.splice(i,0,{date,close:previous.close,carryForwardFrom:previous.date});i++;cursor+=86400000;
     }
   }
+  if(rows.length>5000)throw new Error('补齐周末后的完整行情快照超过 5,000 条日历日记录。');
   return{rows,manualPriceDates:[...manual].sort()};
 }
 
