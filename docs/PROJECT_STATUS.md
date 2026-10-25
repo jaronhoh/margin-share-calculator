@@ -116,3 +116,18 @@
 - Node 自动化 13/13 通过；P0 276,096 数值断言和17,256财富守恒断言通过；4,314日两策略结果、原24笔股息不变。Chromium 动态导入/保存/重载用例通过；8种桌面和移动尺寸/主题组合通过。
 - Yahoo `^KLSE` fixture 测试通过，未执行生产环境全历史 Yahoo 抓取。Bursa 官方年度资料覆盖仍为 2015–2021 `BLOCKED`、2022–2026 `PARTIAL`；Yahoo 推定缺市日不会冒称官方公告确认。
 - 代码不更改 Payment Date、既有24条股息或财务公式。PR CI 和 Site 部署详情待发布后补录。
+
+### 最终发布补录（2026-10-25）
+
+- PR 提交 `ec75c9658d0de0c4098438c38ae3db286b57d404` 的 GitHub Actions run 69（`40155526509`）通过。
+- 现有 owner-only Site 已部署 Version 42，部署 `appgdep_6add6cf7db608191afa618b17d5418ba` succeeded；源提交 `85bb15541238166a35bc583a8c4bfbf2b2593650`。原 URL 和访问策略 revision 1 不变。
+- 动态日历实现和局部资料边界见 `docs/analysis/BURSA_MARKET_CALENDAR_REGRESSION_2026-10-25.md`。
+
+
+## 动态日历实施与发布确认（2026-10-25）
+
+- 用户要求导入流程第一步按 Yahoo 返回数据更新日历。现有实现已在首步并行请求所选 Bursa `.KL` 股票及 Yahoo FBM KLCI 基准 `^KLSE`，以基准返回的日期更新动态市场日历；股票返回日期与基准不一致时拒绝，而不把个股停牌误判为市场休市。
+- 动态 Yahoo 推定闭市记录和 Bursa 官方逐日公告确认记录分别保存；固定官方列表只作有来源的补充，不承担全历史日历。官方覆盖仍为2015–2021 `BLOCKED`、2022–2026 `PARTIAL`。
+- Sites Version 42 已部署成功；源提交 `85bb15541238166a35bc583a8c4bfbf2b2593650`，部署 `appgdep_6add6cf7db608191afa618b17d5418ba`。原 URL 与 owner-only access policy revision 1 保持不变。
+- Draft PR #3 分支 `feat/trading-calendar-dividend-chart-controls` 已更新到 `ec75c9658d0de0c4098438c38ae3db286b57d404`；GitHub Actions run 69 / `40155526509` 成功。回归报告：`docs/analysis/BURSA_MARKET_CALENDAR_REGRESSION_2026-10-25.md`。
+- 自动化使用 Yahoo fixtures 验证首步同步取数及日历合并；没有执行生产 Yahoo 全历史下载回测。Yahoo 基准缺失工作日只作为推定闭市，不等同 Bursa 官方确认。
