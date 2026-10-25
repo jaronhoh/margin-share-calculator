@@ -13,10 +13,10 @@ function datesBetween(start, end) {
   }
   return out;
 }
-function yahooPayload(ticker) {
+function yahooPayload(ticker, { crash = false } = {}) {
   const dates = datesBetween('2025-03-20', '2025-04-10');
   const timestamps = dates.map(date => Math.floor(Date.parse(`${date}T04:00:00Z`) / 1000));
-  const closes = ticker === '^KLSE' ? dates.map((_, i) => 1600 + i) : dates.map((_, i) => 7.3 + i * 0.01);
+  const closes = ticker === '^KLSE' ? dates.map((_, i) => 1600 + i) : dates.map((_, i) => crash && i === 2 ? 0.01 : 7.3 + i * 0.01);
   const dividends = ticker === '1155.KL' ? { [Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000)]: { date: Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000), amount: 0.28 } } : {};
   return { chart: { result: [{ meta: { symbol: ticker, currency: 'MYR', exchangeTimezoneName: 'Asia/Kuala_Lumpur' }, timestamp: timestamps, indicators: { quote: [{ close: closes }] }, events: { dividends } }], error: null } };
 }
@@ -35,13 +35,15 @@ function yahooPayload(ticker) {
   const page = await browser.newPage(), errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => { window.confirm = () => true; });
-  let yahooCalls = 0, failNextYahoo = false;
+  let yahooCalls = 0, failNextYahoo = false, forceCrashNextRun = false;
   await page.route('**/api/yahoo-chart?**', async route => {
     yahooCalls++;
     await new Promise(resolve => setTimeout(resolve, 120));
     if (failNextYahoo) { failNextYahoo = false; return route.abort(); }
     const ticker = new URL(route.request().url()).searchParams.get('ticker');
-    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(yahooPayload(ticker)) });
+    const crash = forceCrashNextRun && ticker === '1155.KL';
+    if (crash) forceCrashNextRun = false;
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(yahooPayload(ticker, { crash })) });
   });
   await page.route('**/api/klsescreener-dividends?**', route => {
     const ticker = new URL(route.request().url()).searchParams.get('ticker');
@@ -84,6 +86,17 @@ function yahooPayload(ticker) {
   await page.locator('#run').click();
   await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('回测完成') || document.querySelector('#error').textContent.length > 0);
   assert.equal(await page.locator('#error').textContent(), '');
+  forceCrashNextRun = true;
+  await page.locator('#run').click();
+  await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('已停止') || document.querySelector('#error').textContent.length > 0);
+  assert.match(await page.locator('#resultStatus').textContent(), /已停止/, `force-sell run status: ${await page.locator('#error').textContent()}`);
+  assert.match(await page.locator('#resultError').textContent(), /LSR 达到 80\\.00% 强制卖出线/);
+  assert.doesNotMatch(await page.locator('#resultError').textContent(), /保存失败/);
+  assert.ok(await page.locator('#rows tr').count() > 0, 'an unresolved force-sell threshold keeps the partial backtest visible');
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')).selectedStockCode), '1155.KL', 'a valid Yahoo snapshot is saved even when the backtest stops at the force-sell threshold');
+  await page.locator('#run').click();
+  await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('回测完成'));
+  assert.equal(await page.locator('#resultError').textContent(), '', 'a later valid run clears the force-sell stop message');
   await page.waitForFunction(() => document.querySelectorAll('#dividendRows tr[data-payment-candidate]').length === 1);
   await page.locator('#closeSettings').click();
   await page.locator('#navDividends').click();
@@ -139,7 +152,7 @@ function yahooPayload(ticker) {
   assert.equal(await page.locator('#dividendRows tr').count(), 0, 'failed fetch leaves the previous dividend rows cleared');
   assert.equal(await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1')), savedAfterRefresh, 'failed refresh preserves the prior saved snapshot without showing stale output');
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'explicit approval and snapshot provenance', 'automatic save and return without a separate button', 'pre-market dividend draft restores after reload', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
+  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'explicit approval and snapshot provenance', 'automatic save and return without a separate button', 'pre-market dividend draft restores after reload', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'force-sell stop preserves the fresh snapshot and partial backtest without a false save failure', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
   await browser.close();
   await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 })().catch(error => { console.error(error); process.exit(1); });
