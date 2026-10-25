@@ -265,3 +265,11 @@
 
 - 「回测参数」固定在主题切换按钮旁的全局页眉中；在「回测」「股息事件」「说明」三页始终可见并可打开抽屉，切页时抽屉按既有行为关闭。
 - Node 38/38、Chromium 端到端断言、Worker 构建及 `git diff --check` 通过。现有 owner-only Site Version 61 已部署成功，来源 `6b9251681f62048ccab8dc9f39216a520f3bba02`，deployment `appgdep_6addca2576d0819196b18c829c6a2d60`；URL 和访问策略 revision 1 未变。
+
+
+## 自动确认股息事件仍可编辑（2026-10-25）
+
+- 自动确认关联到原股息行后，Ex-Date、每股金额与已采用 Payment Date 都保持可编辑。付款日修改通过现有事务式快照保存并触发重算，写入 approvalMode=user-edited-payment-date，后续同一唯一候选自动更新不会覆盖人工付款日；编辑来源日期/金额时也继续按当前表格值回测。
+- 回归：Node 测试 38/38 通过；Chromium 单表端到端 PASS，覆盖自动确认行的三项可编辑、付款日持久化、改动金额后日期覆盖保留、24笔原始 Excel 记录未改、零浏览器错误；Worker build 与 git diff --check 通过。
+- 现有 owner-only Site Version 62 已部署成功，来源 Site commit 3b4d3e43629307d27585694613d39817e2658295，deployment appgdep_6addcd5c211c819192084bdbd5aeb8fa。原 URL、owner allowlist 和访问策略 revision 1 未变；未操作生产股息数据。
+- GitHub Actions/PR 同步状态以后续 PR 更新记录为准。

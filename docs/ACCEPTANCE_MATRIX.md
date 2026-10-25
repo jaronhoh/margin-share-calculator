@@ -20,6 +20,7 @@
 | 历史 Payment Date 与页眉版本（R-027 / AC-PAY-08 / AC-HEADER-01） | Percentage 来源保留原始单位；唯一同 Ex-Date 候选在原行显示并自动采用，金额不改；页眉显示版本号；参数入口固定在全局页眉主题按钮旁，在回测、股息事件、说明三页持续可见且均可打开抽屉 | Node 38/38、Chromium 验证 2015-02-18 → 2015-03-05 候选、31 Percentage 未换算、版本标签及全局参数按钮在三个标签页可见并可打开 | PASS（本地回归）；PARTIAL（第三方资料） | 付款日来自 KLSE Screener 第三方历史记录，仍需人工确认 |
 | 股息事件自动保存（R-029 / AC-DIV-SAVE） | 股息编辑自动保存；有行情时写入快照，无行情时按代码存草稿并在刷新后恢复；点击「回测」时同步校验/保存并返回，不显示单独保存按钮；失败留在当前页；Payment Date 唯一日期自动采用 | Chromium 专项回归覆盖按钮移除、无行情草稿跨刷新恢复、编辑后导航、JSON 快照及无效数据/存储失败处理 | PASS | GitHub Actions run 156 成功；现有 owner-only Site Version 55 发布成功 |
 | 图表与响应式 UI | 趋势线复选框、Tooltip、价格曲线、日期过滤、Light/Dark、桌面/移动端可用 | 本地 Chromium 2152/1440/1075/390 px × Light/Dark 共8组通过；页面错误0 | PASS（本地） | 线上登录态跨浏览器回归 NOT RUN |
+| 股息自动确认后仍可编辑（AC-PAY-11） | 自动确认后原股息行的 Ex-Date、每股金额、已采用 Payment Date 均可编辑；改动自动保存并重算；人工改付款日保留覆盖标记且不会被后续自动匹配覆盖 | Chromium 专项覆盖自动确认行日期/金额/付款日可编辑、人工付款日保存、编辑金额后日期覆盖仍保留；Node 38/38、浏览器端到端 PASS | PASS（本地） | 自动匹配仍依赖 KLSE Screener 第三方记录；生产登录态未操作用户数据 |
 | GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 保持 Draft；代码提交 `e5e9789a47b84c463e61fb30bfd99c02038830b6` 的 Actions run 167（ID `40179193857`）SUCCESS；现有 owner-only Site Version 60 已部署成功，来源 Site commit `e047eed1b2eaf53eff01566d1987da566fadfdcd`，部署 ID `appgdep_6addc575cc0881919550002f80fc2c19` | PASS | Site URL 与 owner-only 权限保持不变；生产账号内交互回归 NOT RUN；已确认 Sites 部署记录成功 |
 
 ## 当前有效规则与旧文档处理
