@@ -45,6 +45,17 @@ function yahooPayload(ticker) {
   await page.goto(baseUrl);
   await page.locator('#resultStatus').waitFor();
   await page.locator('#openSettings').click();
+  const assertTickerRunRow = async (viewport) => {
+    await page.setViewportSize(viewport);
+    const input = await page.locator('#stockCode').boundingBox();
+    const run = await page.locator('#run').boundingBox();
+    assert(input && run, 'ticker input and run button are visible');
+    assert(Math.abs(input.y - run.y) <= 1, `ticker input and run button share a row at ${viewport.width}px`);
+    assert(input.x + input.width <= run.x, 'run button follows the ticker input');
+  };
+  await assertTickerRunRow({ width: 1224, height: 1139 });
+  await assertTickerRunRow({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 1224, height: 1139 });
   await page.locator('#stockCode').fill('1066.KL');
   await page.locator('#startDate').fill('2025-03-20');
   await page.locator('#endDate').fill('2025-04-10');
