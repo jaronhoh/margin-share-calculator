@@ -65,7 +65,10 @@ async function klsescreenerDividends(request, url) {
   if (html.length > 5_000_000) return badRequest('KLSE Screener 股息历史页面超出大小限制。', 502);
   const pageIdentity = klsescreenerPageIdentity(html);
   const codePattern = new RegExp(`(?:^|[^0-9])${code}(?:[^0-9]|$)`);
-  if (!codePattern.test(pageIdentity)) return badRequest(`KLSE Screener 返回页面的标题/股票抬头未确认代码 ${code}；页面身份校验失败，未显示股息候选。`, 502);
+  if (!codePattern.test(pageIdentity)) {
+    const identityPreview = pageIdentity.slice(0, 180) || '响应中没有可识别的标题或股票抬头';
+    return badRequest(`KLSE Screener 返回页面未确认代码 ${code}；身份摘要：${identityPreview}。页面身份校验失败，未显示股息候选。`, 502);
+  }
   const tables = [...html.matchAll(/<table\b[^>]*>[\s\S]*?<\/table\s*>/gi)].map(match => match[0]);
   const table = tables.find(value => {
     const firstRow = /<tr\b[^>]*>[\s\S]*?<\/tr\s*>/i.exec(value)?.[0] || '';
