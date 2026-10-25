@@ -68,10 +68,41 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
     globalThis.fetch = async () => new Response('rate limited', { status: 429 });
     const limited = await worker.fetch(new Request('https://site.example/api/yahoo-chart?ticker=1155.KL&period1=1&period2=2'));
     assert.equal(limited.status, 429, 'Yahoo rate limit is passed through for the UI to display');
+
+    const marketHtml = '<title>RHBBANK: RHB BANK BERHAD (1066)</title><table><thead><tr><th>Announced</th><th>Financial Year</th><th>Subject</th><th>EX Date</th><th>Payment Date</th><th>Amount</th><th>Indicator</th><th></th></tr></thead><tbody><tr><td>27 Feb 2025</td><td>31 Dec 2024</td><td>Second Interim Dividend</td><td>21 Mar 2025</td><td>09 Apr 2025</td><td>0.2800</td><td>Currency</td><td>View</td></tr><tr><td>24 Aug 2010</td><td>31 Dec 2010</td><td>Interim Dividend</td><td>15 Sep 2010</td><td>30 Sep 2010</td><td>5.0000</td><td>Percentage</td><td>View</td></tr></tbody></table>';
+    globalThis.fetch = async (url, options) => {
+      calls.push({ url: String(url), options });
+      return new Response(marketHtml, { status: 200, headers: { 'content-type': 'text/html' } });
+    };
+    const history = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=1066.KL'));
+    assert.equal(history.status, 200);
+    const historyData = await history.json();
+    assert.equal(historyData.ticker, '1066.KL');
+    assert.equal(historyData.events[0].exDate, '2025-03-21');
+    assert.equal(historyData.events[0].paymentDate, '2025-04-09');
+    assert.equal(historyData.events[0].perShare, 0.28);
+    assert.equal(historyData.events.length, 1, 'percentage-denominated dividend rows must not be treated as per-share currency');
+    assert.equal(historyData.events[0].source, 'klsescreener-dividend-history');
+    assert.equal(new URL(calls.at(-1).url).hostname, 'www.klsescreener.com');
+    assert.equal(new URL(calls.at(-1).url).pathname, '/v2/stocks/view/1066');
+    assert.equal(calls.at(-1).options.headers.get('referer'), 'https://www.klsescreener.com/');
+    const invalidSource = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=AAPL'));
+    assert.equal(invalidSource.status, 400);
+    assert.equal(calls.length, 4, 'invalid Bursa code must not reach KLSE Screener');
+    globalThis.fetch = async () => new Response(marketHtml.replaceAll('(1066)', '(1155)'), { status: 200 });
+    const wrongStock = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=1066.KL'));
+    assert.equal(wrongStock.status, 502, 'source page must contain the requested stock code');
+    globalThis.fetch = async url => {
+      calls.push({ url: String(url) });
+      return new Response(marketHtml.replaceAll('1066', '03050'), { status: 200, headers: { 'content-type': 'text/html' } });
+    };
+    const fiveDigit = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=03050.KL'));
+    assert.equal(fiveDigit.status, 200, 'five-digit Bursa codes must use the complete code in the source path');
+    assert.equal(new URL(calls.at(-1).url).pathname, '/v2/stocks/view/03050');
   } finally {
     globalThis.fetch = originalFetch;
     await rm(temp, { recursive: true, force: true });
   }
 });
 
-console.log('PASS Site Worker static assets, same-origin Yahoo Chart route, validation, and upstream rate-limit handling');
+console.log('PASS Site Worker static assets, Yahoo Chart route, KLSE Screener dividend history, ticker validation, and upstream rate-limit handling');
