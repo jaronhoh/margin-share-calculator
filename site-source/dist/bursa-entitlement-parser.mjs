@@ -13,7 +13,7 @@ function dateFromNotice(raw){
  return Number.isFinite(Date.parse(date+'T00:00:00Z'))&&new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date?date:'';
 }
 function extractField(text,label){
- const escaped=label.replace(/[.*+?^\${}()|[\]\\]/g,'\\$&');
+ const escaped=label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
  const m=new RegExp('(?:^|\\n)\\s*'+escaped+'\\s*[:\\t ]+([^\\n]+)','im').exec(text);
  return m?.[1]?.trim()||'';
 }
