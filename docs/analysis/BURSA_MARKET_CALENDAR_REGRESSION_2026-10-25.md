@@ -49,10 +49,4 @@ PR 分支、Actions、Site 源提交、版本和部署 URL 在发布完成后补
 - Sites 原 URL 与 owner-only policy revision 1 保持不变；最终 Site Version、源码提交、部署 ID 及 GitHub Actions 结果见项目状态和执行报告。
 
 
-## 2026-10-25 跟进修正：个股日期补充与参数布局
-
-- 对 `1066.KL` 的失败不是 HTTP 请求错误：Sites Worker 日志显示 `1066.KL` 与 `^KLSE` 请求均返回 200。失败来自前端过度严格的日期相等检查；Yahoo 个股工作日行情缺少指数同日记录时不应直接终止。
-- 个股独有的工作日行情现作为有明确股票代码来源的补充市场日历证据。若股票只在该日历日没有价格，仍会因未确认缺价而拒绝回测；周末或官方确认闭市日出现个股报价会报出日期并停止。
-- 「回测开始日」已移至股票代码栏下一行。
-- Node 测试 13/13 通过，P0 oracle 276,096/17,256 通过；Chromium Yahoo 用例通过，2152/1440/1075/390 × Light/Dark 8/8 通过。
-- Site Version 45 succeeded，提交 `c0d50ef902fe7d781d95c0e67baa5193d8a9a074`，deployment `appgdep_6add76ae96f88191b20079e969cd1d7e`；原 URL 和 owner-only policy revision 1 保持不变。
+- GitHub Actions `Site source tests` run 86（`40158244803`）SUCCESS，覆盖本次代码与测试变更。
