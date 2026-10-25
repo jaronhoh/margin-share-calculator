@@ -70,6 +70,7 @@
     const defaults={startDate:'2015-01-01',endDate:defaultEndDate(),cashBudget:105139.75,ownShares:11400,financedShares:17100,startPrice:9.17,annualRate:5,targetLsr:60,refinanceTrigger:58,marginCallLsr:70,forceSellLsr:80,callStrategy:'cash',safeGap:0.1,feeRate:0.1,brokerageMinimum:8,stampDutyRate:0.1,clearingFeeRate:0.03,sstRate:0,lotSize:100};
     const money=n=>new Intl.NumberFormat('en-MY',{style:'currency',currency:'MYR',maximumFractionDigits:2}).format(Number(n)||0), num=n=>new Intl.NumberFormat('en-MY',{maximumFractionDigits:2}).format(Number(n)||0), pct=n=>n==null?'N/A':`${(n*100).toFixed(2)}%`;
     let allocationMode='cash-budget',feeModel='schedule',chargeInitialFees=true,saveTimer=null;
+    let lastYahooDividends=[];
     const emptyMarketSource=()=>({type:'unloaded',ticker:'1155.KL',startDate:'',endDate:'',rowCount:0});
     const MARKET_SNAPSHOT_KEY='margin-share-market-snapshot/v1';
     let priceRows=[],marketDataSource=emptyMarketSource(),manualPriceDates=new Set(),dividendImport=null,ledgerPage=0,highlightedDate=null; let lastConfig=null,lastMarket=null,lastResult=null,dividendEvents=defaultDividends();
@@ -144,7 +145,7 @@
         const events=ticker==='1155.KL'?(marketDataSource.ticker===ticker?readDividendEvents():defaultDividends()):[];
         const base=configFromInputs(),config=candidateConfig(base,startPrice);config.stockCode=ticker;
         const rows=marketSeriesFor(incoming,start,effectiveEnd,events,marketCalendar),result=runBacktest(config,rows);
-        priceRows=incoming;marketDataSource={yahooDividends:data.dividends,type:'yahoo-chart-confirmed',ticker,fileName:`Yahoo Finance · ${ticker}`,importedAt:new Date().toISOString(),manualDates:[],startDate:incoming[0].date,endDate:incoming.at(-1).date,rowCount:incoming.length,marketCalendar};manualPriceDates=new Set();dividendEvents=events;
+        lastYahooDividends=data.dividends;priceRows=incoming;marketDataSource={type:'yahoo-chart-confirmed',ticker,fileName:`Yahoo Finance · ${ticker}`,importedAt:new Date().toISOString(),manualDates:[],startDate:incoming[0].date,endDate:incoming.at(-1).date,rowCount:incoming.length,marketCalendar};manualPriceDates=new Set();dividendEvents=events;
         $('stockCode').value=ticker;$('startDate').value=start;$('endDate').value=effectiveEnd;$('startPrice').value=startPrice;$('ownShares').value=config.ownShares;$('financedShares').value=config.financedShares;allocationMode='cash-budget';paintDividendEvents();setYahooMarketCalendar(marketCalendar);
         const nextData=createConfigSnapshot();
         const sourceQuote=data.rows.filter(row=>row.date<start).sort((a,b)=>b.date.localeCompare(a.date))[0];if(sourceQuote&&incoming.some(row=>row.carryForward===true&&row.carryForwardFrom===sourceQuote.date)){if(incoming.length>=5000)throw new Error('加入回测开始日前的补价来源后，行情快照会超过 5,000 条限制；请缩短回测日期范围。');const quote={date:sourceQuote.date,close:sourceQuote.close};incoming.unshift(quote);priceRows.unshift(quote);nextData.marketData.rows.unshift({...quote});nextData.marketDataSource.startDate=quote.date;nextData.marketDataSource.rowCount++;}
@@ -164,7 +165,7 @@
         if(marketDataSource.ticker!==ticker||!priceRows.length)throw Error('请先运行当前股票的 Yahoo 行情，再核对 Payment Date。');
         const url='https://www.klsescreener.com/v2/stocks/view/'+encodeURIComponent(code)+'/dividend-history';
         const parsed=parseKlsescreenerDividendTable($('klseDividendText').value,{ticker,sourceUrl:url});
-        const yahoo=marketDataSource.yahooDividends||[];
+        const yahoo=lastYahooDividends;
         if(!yahoo.length)throw Error('本次行情快照尚未保存 Yahoo 股息事件；请重新运行以获取。');
         const candidates=reconcileKlsescreenerDividends(yahoo,parsed,{ticker});
         const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
