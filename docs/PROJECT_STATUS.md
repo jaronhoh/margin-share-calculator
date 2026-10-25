@@ -219,5 +219,5 @@
 
 - **原因与修复**：股票代码输入框继承了整行宽度，挤压运行按钮至下一行。为 `.ticker-run` 增加响应式 Grid：输入框占用剩余空间，运行按钮保持内容宽度并固定同行。
 - **浏览器回归**：本地 Chromium 在 1224×1139 桌面和 390×844 手机视口检查输入框与按钮的纵坐标相同、按钮紧随输入框；既有 Payment Date UI mock 流程也通过，页面错误为0。
-- **GitHub**：PR #3 分支已更新，CSS 提交 `3c375dee7785e6a17868af6a485d28818fc4d022`，桌面/手机布局断言提交 `830f21f5bde208dc4c2df9ea4022e2ba36815086`；该提交对应的 GitHub Actions 状态待确认。
+- **GitHub**：PR #3 分支已更新，CSS 提交 `3c375dee7785e6a17868af6a485d28818fc4d022`，桌面/手机布局断言提交 `830f21f5bde208dc4c2df9ea4022e2ba36815086`；布局测试提交的 GitHub Actions `Site source tests` run 145（ID `40170128515`）SUCCESS。
 - **Sites**：现有 owner-only Site 已部署 Version 51，部署 `appgdep_6adda5573bc08191861bc95511a406f8` succeeded；Site 源码提交 `2eb521ca95d8a2bf86e618f75b86ce1c5aa9d010`。原 URL 不变，访问策略仍为唯一 Owner、零外部访客。
