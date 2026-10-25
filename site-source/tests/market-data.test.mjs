@@ -44,3 +44,12 @@ const weekend=buildPriceSnapshot([{date:'2026-01-02',close:9.12}],parsePriceCsv(
 assert.deepEqual(weekend.rows.map(x=>[x.date,x.close]),[['2026-01-02',9.12],['2026-01-03',9.12],['2026-01-04',9.12],['2026-01-05',9.3]]);
 assert.equal(weekend.rows[1].carryForwardFrom,'2026-01-02');
 assert.throws(()=>buildPriceSnapshot([{date:'2026-01-02',close:9.12}],parsePriceCsv('Date,Close\n2026-01-06,9.3'),['2026-01-06']),/未核实的休市日 2026-01-05/);
+
+// 4,999 weekday records fit the raw limit, but calendar-day carry-forward must still enforce 5,000.
+const weekdayRows=[];
+for(let day=Date.parse('2020-01-01T00:00:00Z');weekdayRows.length<4999;day+=86400000){
+  const weekday=new Date(day).getUTCDay();
+  if(weekday!==0&&weekday!==6)weekdayRows.push({date:new Date(day).toISOString().slice(0,10),close:10});
+}
+assert.throws(()=>buildPriceSnapshot(weekdayRows,[],[]),/补齐周末后的完整行情快照超过 5,000/);
+console.log('PASS expanded calendar-day snapshot limit is enforced after weekend carry-forward');
