@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD v0.29
+# Margin Share Calculator — PRD v0.30
 
 > 状态：需求持续追加；实现与验证状态以 PROJECT_STATUS 和当前功能验收矩阵为准。2026-10-25，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
@@ -485,3 +485,16 @@ AC-PAY-11 适用于所有自动确认并纳入回测的股息事件，不限于�
 - **发布**：现有 owner-only Site Version 63 已部署至原 URL；Site 源码提交 `6d1bdd87812e94a22f742d9e910f20f1c1f92918`，deployment `appgdep_6addd0c264a081919afb45249bf4753b`。原 URL 和访问策略不变，生产股息数据未操作。
 
 | 2026-10-25 | v0.29 | 明确所有自动确认股息事件均可编辑，人工日期、金额与付款日经重新运行后保留 |
+
+
+## 27. MAYBANK 默认 Ex-Date 与 Payment Date 预填（v0.30，2026-10-25）
+
+MAYBANK（1155.KL）默认的24笔股息事件必须按用户提供的 Ex-Date、Payment Date、Dividend 清单显示并应用。默认事件行分别展示 Ex-Date 和 Payment Date；用户可继续编辑两者及每股金额，编辑自动保存并重新计算。历史回测的股息入账日使用 Payment Date。不得为了呈现对照表而改写工作簿 Table1 原始数据、日期、金额、行号或来源哈希；该对照作为单独的第三方/用户提供数据保存。对其他股票不得套用 MAYBANK 默认事件。既有手动编辑和审批优先，迁移旧快照只补齐不存在且原始未编辑行的缺省确认。
+
+- **AC-PAY-12**：首屏/重置后的默认 MAYBANK 表含24条记录；逐行 Ex-Date、Payment Date 与金额符合用户提供表格；Ex-Date 与 Payment Date 输入可编辑，修改后自动保存并在刷新/重新运行后保留。
+- **AC-PAY-13**：引擎仍仅按 Payment Date 入账；输入的第三方 Ex-Date 不改变日息、交易逻辑或其他股票股息事件。
+- **AC-PAY-14**：旧 Excel 抽取 fixture 与24条原始金额、来源行、哈希保持原样；补缺省只匹配未编辑的原始 MAYBANK 行，不覆盖手动审批或手动编辑，不向其他代码迁移。
+- **来源边界**：此日期对照来自用户提供的 KLSE Screener 表格，属于第三方资料；不标记为 Bursa Malaysia 官方确认。
+- **回归与发布**：Node 38/38、P0 历史回归和 Chromium 单表 E2E PASS；现有 owner-only Site Version 64 已部署至原 URL。
+
+| 2026-10-25 | v0.30 | MAYBANK 默认事件预填独立 Ex-Date/Payment Date，保留原工作簿数据、编辑性和 Payment Date 入账规则 |
