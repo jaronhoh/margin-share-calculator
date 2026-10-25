@@ -10,8 +10,8 @@ const A=require('node:assert/strict');
   await page.route('**/api/yahoo-chart?**',async route=>{
     if(failYahoo)return route.fulfill({status:503,contentType:'application/json',body:'{}'});
     const url=new URL(route.request().url()),ticker=url.searchParams.get('ticker');
-    const dates=ticker==='^KLSE'?['2025-02-04','2025-02-07']:['2025-02-04','2025-02-07'];
-    const closes=ticker==='^KLSE'?[1600,1610]:[6.3,6.4];
+    const dates=ticker==='^KLSE'?['2025-02-04','2025-02-07']:['2025-02-04','2025-02-05','2025-02-07'];
+    const closes=ticker==='^KLSE'?[1600,1610]:[6.3,6.35,6.4];
     const timestamp=dates.map(d=>Math.floor(Date.parse(`${d}T04:00:00Z`)/1000));
     return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({chart:{result:[{meta:{symbol:ticker,currency:'MYR',exchangeTimezoneName:'Asia/Kuala_Lumpur'},timestamp,indicators:{quote:[{close:closes}]}}],error:null}})});
   });
@@ -33,13 +33,15 @@ const A=require('node:assert/strict');
   A.equal(await page.locator('#rows tr[data-date="2025-02-06"]').count(),1);
   A.equal(await page.locator('#rows tr[data-date="2025-02-04"]').count(),1);
   A.equal(await page.locator('#rows tr[data-date="2025-02-07"]').count(),1);
-  for(const date of ['2025-02-05','2025-02-06']){const row=page.locator(`#rows tr[data-date="${date}"]`);A.equal(await row.getAttribute('data-market-status'),'yahoo-market-holiday');A.equal(await row.locator('td').nth(2).textContent(),'—');A.equal(await row.locator('td').nth(6).textContent(),'—');A(Number((await row.locator('td').nth(8).textContent()).replace(/[^0-9.]/g,''))>0);}
+  const supplementalRow=page.locator('#rows tr[data-date="2025-02-05"]');A.equal(await supplementalRow.getAttribute('data-market-status'),'normal-trading-day');A.match(await supplementalRow.locator('td').nth(2).textContent(),/6\.35/);
+  {const date='2025-02-06',row=page.locator(`#rows tr[data-date="${date}"]`);A.equal(await row.getAttribute('data-market-status'),'yahoo-market-holiday');A.equal(await row.locator('td').nth(2).textContent(),'—');A.equal(await row.locator('td').nth(6).textContent(),'—');A(Number((await row.locator('td').nth(8).textContent()).replace(/[^0-9.]/g,''))>0);}
   const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#export').click()]);
   const path=await download.path(),fs=require('node:fs'),snapshot=JSON.parse(fs.readFileSync(path,'utf8'));
   A.equal(snapshot.marketDataSource.marketCalendar.sourceTicker,'^KLSE');
-  A.deepEqual(snapshot.marketDataSource.marketCalendar.closedDates,['2025-02-05','2025-02-06']);
-  A.equal(snapshot.marketData.rows.find(x=>x.date==='2025-02-05').reason,'yahoo-market-holiday');
-  A.equal(snapshot.marketData.rows.find(x=>x.date==='2025-02-06').carryForwardFrom,'2025-02-04');
+  A.deepEqual(snapshot.marketDataSource.marketCalendar.closedDates,['2025-02-06']);
+  A.deepEqual(snapshot.marketDataSource.marketCalendar.supplementalObservedDates,[{date:'2025-02-05',ticker:'1066.KL'}]);
+  A.equal(snapshot.marketData.rows.find(x=>x.date==='2025-02-05').close,6.35);
+  A.equal(snapshot.marketData.rows.find(x=>x.date==='2025-02-06').carryForwardFrom,'2025-02-05');
   A(Number((await page.locator('#summary .metric').nth(9).locator('strong').textContent()).replace(/[^0-9.]/g,''))>0);
   failYahoo=true;await page.locator('#run').click();await page.waitForFunction(()=>document.querySelector('#error').textContent.includes('Yahoo 回测失败'));failYahoo=false;A.match(await page.locator('#rowsCount').textContent(),/4 个日历日/);A.equal(await page.locator('#rows tr[data-date="2025-02-05"]').count(),1);
   await page.evaluate(()=>{const original=Storage.prototype.setItem;window.__originalSetItem=original;Storage.prototype.setItem=function(key,value){if(window.__failMarketSnapshot&&key==='margin-share-market-snapshot/v1')throw new Error('quota exceeded');return original.call(this,key,value);};window.__failMarketSnapshot=true;});await page.locator('#run').click();await page.waitForFunction(()=>document.querySelector('#error').textContent.includes('保存失败'));await page.evaluate(()=>{window.__failMarketSnapshot=false;Storage.prototype.setItem=window.__originalSetItem;});A.match(await page.locator('#rowsCount').textContent(),/4 个日历日/);A.equal(await page.locator('#rows tr[data-date="2025-02-05"]').count(),1);
