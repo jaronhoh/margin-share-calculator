@@ -498,3 +498,13 @@ MAYBANK（1155.KL）默认的24笔股息事件必须按用户提供的 Ex-Date�
 - **回归与发布**：Node 38/38、P0 历史回归和 Chromium 单表 E2E PASS；现有 owner-only Site Version 64 已部署至原 URL。
 
 | 2026-10-25 | v0.30 | MAYBANK 默认事件预填独立 Ex-Date/Payment Date，保留原工作簿数据、编辑性和 Payment Date 入账规则 |
+
+
+## 28. GitHub 源码与文档同步（v0.31，2026-10-25）
+
+PR #3 的 `site-source` 与已部署 Site Version 64 对齐。MAYBANK 默认24笔股息的 Ex-Date/Payment Date 来自用户提供的 KLSE Screener 对照表，以独立映射预填；原始 Excel Table1 数据不变。两个日期及金额保持可编辑并自动保存，回测按 Payment Date 入账。迁移仅补缺省且未编辑的原始 MAYBANK 行，不覆盖人工更改，不应用于其他股票。KLSE Screener 是第三方来源，不代表 Bursa 官方确认。Requirements R-030、项目状态、验收矩阵和付款日分析记录应保持一致。
+
+- **同步验收**：Node 38/38、P0 两策略 4,314 日历史回归、Chromium 股息单表 E2E 与 Worker build 通过；GitHub Actions 状态以最新项目状态补录为准。
+- **发布**：现有 owner-only Site Version 64 已发布至原 URL；不创建新 Site、不改变权限或线上数据。
+
+| 2026-10-25 | v0.31 | 同步 PR 源码、R-030 需求及 MAYBANK 日期来源/迁移保护说明 |
