@@ -162,3 +162,9 @@
 - 新增 `site-source/dist/payment-date-provider.mjs`：为经过核实的 Bursa 官方 HTTPS JSON 数据端点提供可替换读取接口；没有实际已验证端点时返回 `source-not-configured`，绝不伪造 Payment Date；数据源响应必须包含可校验的公告记录。
 - 新增 `site-source/tests/payment-date-provider.test.mjs`：模拟响应测试未配置数据源、非官方域名阻止请求、匹配及异常响应。测试使用 fixture；代码已提交但尚未执行 CI 验证。
 - **BLOCKED**：尚未确认可合法自动访问、实际返回所需 JSON 结构的 Bursa 官方 Payment Date 端点。当前模块不是已经上线的自动抓取器；未连接 Site UI 或生产 Worker，未部署。需先验证官方公告实际访问形式、许可、分页、公司行动关联及稳定性。
+
+### Payment Date 第三轮：公告结构研究及解析器（2026-10-25）
+
+- 外部资料确认 Bursa 公告消息结构字段 171=Ex-Date、174=Payment Date；上市公司公开的 Bursa 公告页面含 Ex-Date、Entitlement Date、Payment Date、每股股息和 Reference Number（例如 MAYBANK 2026-09-23 除息、2026-10-22 付款）。参考：https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bc04a415f36ca5cab8bf756/Announcements_Message_Structure_v1.6.pdf 与 https://maybank.listedcompany.com/news.html/id/2626995 。
+- 新增 `site-source/dist/bursa-entitlement-parser.mjs` 和 `site-source/tests/bursa-entitlement-parser.test.mjs`，从结构化公告文字抽取日期/金额/公告编号；严格拒绝缺失和无效日期。解析结果仅标记 `unverified-extracted-fields`，不能视为来源/公司身份已验证或可直接入账。
+- **PARTIAL / NOT INTEGRATED**：解析器尚未连接公开页面抓取、Yahoo 导入、股息资格引擎或 UI；真实可调用且符合授权的 Bursa API 尚未确认。新增测试文件尚未在实际 CI/Node 环境执行，未部署。
