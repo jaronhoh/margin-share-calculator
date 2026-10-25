@@ -107,3 +107,11 @@
 - **Sites**：现有 owner-only Site Version 40 部署成功，源仓库 `main` 提交 `728b695de3a29f104a3404679605f181d4645268`；部署 `appgdep_6add5bab99548191ae4e4ca153371a14` succeeded。URL、访问策略 revision 1、浏览器本地数据保持不变。
 - **Yahoo 数据边界**：自动化覆盖 `1066.KL` 的解析、请求构造及 Worker 转发（fixture/模拟响应）；未声称本轮实际抓取并回测了该代码的完整线上历史。未确认的历史工作日缺价按规则会阻止导入，需补充可靠闭市资料或人工核实价格。
 - **GitHub**：本跟进代码和报告已同步至 Draft PR #3。Actions run 61（ID 40151136852）在功能提交 5046a1d964da0ced4be565bec3fa677ad30296d3 上 SUCCESS。Sites 与 GitHub 分支仍分别管理。
+
+
+## Bursa closure evidence follow-up: 2015-02-02 (2026-10-25)
+
+- Yahoo history for 1066.KL omitted 2015-02-02; the import correctly stopped because the date was not in the confirmed closure calendar. This was a calendar coverage gap, not evidence that Yahoo omitted a trading session.
+- Bursa Malaysia's Participating Organisations' Circular R/R 2 of 2015, dated 19 January 2015, confirms Bursa Malaysia Securities was closed on 2015-02-02 and reopened on 2015-02-03. The date-specific record and source URL have been added to the calendar; carry-forward prices retain provenance.
+- A focused regression test verifies the classification and carry-forward provenance. Other historical dates remain unconfirmed unless supported by source evidence; 2015–2021 overall coverage remains BLOCKED.
+- Source: https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bb55aa65f36ca0c3028d89b/Closure_of_The_Exchange_for_Chinese_New_Year.pdf
