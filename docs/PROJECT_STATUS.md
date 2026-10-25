@@ -376,3 +376,13 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 6. 后续事项：修复并用隔离配置重测 Version 64/后续授权版本的手工金额保护；核实 KLSE Screener金额单位与历史事件日期；补测多付款日冲突、刷新金额持久化、逐项筛选结果、Tooltip、移动端及亮/暗模式矩阵。数据源故障已用 HTTP 404 覆盖；真实超时/限流场景未注入。
 7. Sites：**NOT DEPLOYED — 等待用户批准。**
 
+
+## BUG-UAT-001 后续复核（2026-10-25）
+
+- 本次按附件指定的隔离浏览器流程重新核验现有 Site Version 64、股票 1295.KL。Yahoo 与 KLSE Screener 回测成功；将自动确认事件的金额从 RM0.054 改为 RM0.055，并以原生键盘事件提交，页面显示“已保存自动确认股息的人工编辑并重新计算回测”。刷新后再次运行，候选事件仍为 Ex-Date 2017-08-08、Payment Date 2017-08-18、金额 RM0.055。**Production BUG-UAT-001 本轮未能复现，因此不将其记为已修复的产品缺陷，也不改财务/股息生产逻辑。**
+- 先前 Chromium 脚本的 `.fill()` 复现没有触发股息输入的专用 `change` 保存处理器；这是之前失败结论的测试操作缺口。该证据说明自动化输入未正确提交，不能证明生产逻辑根因；用户先前观察的失败原因仍为未确认。原 UAT 中 BUG-UAT-001 = High / FAIL 的结论由本节复核取代为 **NOT REPRODUCED / root cause inconclusive**，不删除历史记录。
+- 已扩充 `site-source/tests/dividend-single-table-ui.cjs`：编辑 Ex-Date、金额、Payment Date 后执行完整页面刷新，再重新运行 Yahoo/KLSE，并断言三项 UI 值仍与快照一致。测试数据为隔离合成行情，不触碰用户数据。
+- 本地验证：Node 测试 **38/38 PASS**；P0 两策略、4,314 日历日历史回归及独立数值审计包含在通过的套件中；Chromium UI E2E **PASS**，覆盖刷新→重新运行→三字段值检查且浏览器 pageerror 为 0；Worker build 由 E2E 前置步骤执行并通过。首轮 E2E 暴露测试导航/抽屉状态问题，已修正后完整重跑通过。
+- GitHub 功能分支测试提交：`2c0a46b3e7c56cd170621a8fe7654ab0a2078da5`。PR #3 保持 Draft；该提交后的 GitHub Actions 状态待 CI 完成后补记。
+- **未部署 Site**；未合并 main；没有修改生产 Site 数据、权限、URL 或配置。若用户仍可用实际键盘编辑重现金额回退，请提供当时的编辑方式和重新运行后的值/页面状态，以继续针对真实路径定位。
+
