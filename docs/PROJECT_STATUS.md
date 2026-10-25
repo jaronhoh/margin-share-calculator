@@ -313,7 +313,7 @@
 - Site: [Margin Share Calculator](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)，实测标签显示 **PRIVATE · OWNER ONLY · VERSION 64**；项目记录中 Version 64 部署源为 `f11eb94d385096e06c9a3fb38c21844aee7f43c2`，deployment `appgdep_6addd7bfdd9c8191a1f46771293f4d68`。Site URL、Owner-only 权限、allowlist 与配置未更改，也未重新部署。
 - 用户原有 Safari 标签只读；测试在独立 IAB 浏览器配置中运行，以隔离其 localStorage。未修改原有股息数据。
 - 通过 Yahoo Finance 分别运行 1155.KL、1066.KL、1295.KL；每只均显示 4,316 日（2015-01-01 至 2026-10-25）并使用各自 ticker 的 KLSE Screener 候选来源。
-- Site Version 64 的日期为用户验收目标版本；GitHub PR 源码和部署源分别核对，PR #3 仍为 Draft/open。Actions 最近已知成功记录是功能分支 commit `6a0e8f539917ad8eb413f9a1302aa71356cf5dc9` 的 run 189（ID `40185121667`）；本次文档提交后的运行状态见后续 Actions 查询，不将旧 run 当作新提交结果。
+- Site Version 64 的日期为用户验收目标版本；GitHub PR 源码和部署源分别核对，PR #3 仍为 Draft/open。Actions 最近已知成功记录是功能分支 commit `6a0e8f539917ad8eb413f9a1302aa71356cf5dc9` 的 run 189（ID `40185121667`）；文档 UAT 提交 `605a4fc72862e9bc4f02862393ed4f3aae0fcbe5` 经查询未关联 PR 触发的 Actions run，combined status 也为空；本次文档变更的 GitHub Actions 标记 **NOT RUN**，不得以旧 run 189 代替。
 
 ### 总体结果
 
