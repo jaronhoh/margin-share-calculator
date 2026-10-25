@@ -386,3 +386,14 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - GitHub 功能分支测试提交：`f454a57d7a9ff885b3afc95788b8a57690924a87`（含 reload→rerun 回归测试）；PR #3 保持 Draft。GitHub Actions `Site source tests` run 194（ID `40188069615`）对该测试提交 **SUCCESS**。
 - **未部署 Site**；未合并 main；没有修改生产 Site 数据、权限、URL 或配置。若用户仍可用实际键盘编辑重现金额回退，请提供当时的编辑方式和重新运行后的值/页面状态，以继续针对真实路径定位。
 
+
+## BUG-UAT-001 复现、修复与回归（2026-10-25，后续结论）
+
+- 修正上节判断：Version 64 使用原生键盘改值并正常触发 `change` 时可保存；但这没有覆盖“输入后立即刷新/重跑、浏览器尚未发出 change”的边界。新 Chromium 隔离回归显式只发 `input`，然后立即刷新：未修复逻辑恢复旧快照 RM0.291，而刚输入的 RM0.055 丢失。该受控对照实际失败，确认了与 BUG-UAT-001 相符的数据持久化缺陷。
+- 根因：候选股息的专用审批金额仅在 `change` 处理器中更新；`input` 只排入通用快照延时保存。页面卸载时通用定时器被清除，`persistCurrentSnapshot()` 会把旧的 `paymentDateApprovals` 写回快照，因此未等到 `change` 的最新候选金额会丢失。首次未复现是因为原生键盘操作先触发了专用保存处理器。
+- 修复：记录候选字段待提交值，并在页面 `beforeunload/pagehide` 以及 Yahoo 回测开始前先提交。正常 `change` 保存成功后清掉对应待提交值；不改财务公式、事件金额来源优先级或数据 Schema。
+- 对照证据：新 E2E 在未修复逻辑下断言失败（快照实际 0.291，预期 0.055）；修复后完整 Chromium E2E PASS，刷新后快照及重跑后界面均保留 RM0.055、人工 Ex-Date 和 Payment Date。浏览器 pageerror 为 0。
+- 最终本地回归：Node **38/38 PASS**（含 P0 两策略、4,314 日历日历史与独立 oracle）；Chromium **PASS**；Worker build **PASS**。隔离 Site Version 64 的原生键盘场景仍保持通过。线上生产实例尚未部署此修复，因此不能声称生产版已完成修复验证。
+- 变更文件：`site-source/dist/index.html`、`site-source/tests/dividend-single-table-ui.cjs`、本状态文档。相关提交：实现 `c973445e63231849924534b898dc6185c021a696`；回归 `4e85f8eefe8c187104f9147abf30c3d1c4070272`。GitHub Actions 状态待该回归提交的 CI 完成后补记。
+- 本轮不部署、不改 Site 数据/权限/URL、不合并 main；Draft PR #3 保持打开。
+
