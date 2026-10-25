@@ -65,8 +65,18 @@ function yahooPayload(ticker) {
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 25);
   await page.locator('#dividendRows tr[data-dividend-event]').last().locator('[data-remove]').click();
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24);
+  const draftFirstAmount = page.locator('#dividendRows tr[data-dividend-event]').first().locator('[data-amount]');
+  const originalFirstAmount = await draftFirstAmount.inputValue();
+  await draftFirstAmount.fill('0.321');
   await page.locator('#navBacktest').click();
   assert.equal(await page.locator('#backtestPage').isVisible(), true, 'Backtest navigation saves and returns without a separate save action');
+  assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-dividend-draft/v1:1155.KL')).events[0].perShare), 0.321, 'dividend edits are saved before Yahoo prices exist');
+  await page.reload();
+  await page.locator('#resultStatus').waitFor();
+  await page.locator('#navDividends').click();
+  assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').first().locator('[data-amount]').inputValue(), '0.321', 'pre-market dividend draft restores after reload');
+  await page.locator('#dividendRows tr[data-dividend-event]').first().locator('[data-amount]').fill(originalFirstAmount);
+  await page.locator('#navBacktest').click();
   await page.locator('#openSettings').click();
   await page.locator('#stockCode').fill('1155.KL');
   await page.locator('#startDate').fill('2025-03-20');
@@ -129,7 +139,7 @@ function yahooPayload(ticker) {
   assert.equal(await page.locator('#dividendRows tr').count(), 0, 'failed fetch leaves the previous dividend rows cleared');
   assert.equal(await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1')), savedAfterRefresh, 'failed refresh preserves the prior saved snapshot without showing stale output');
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'explicit approval and snapshot provenance', 'automatic save and return without a separate button', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
+  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'explicit approval and snapshot provenance', 'automatic save and return without a separate button', 'pre-market dividend draft restores after reload', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
   await browser.close();
   await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 })().catch(error => { console.error(error); process.exit(1); });

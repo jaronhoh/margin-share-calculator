@@ -218,6 +218,6 @@
 
 ### 股息事件自动保存与导航（2026-10-25）
 
-- **需求**：移除「保存并返回回测」独立按钮；股息编辑自动写入现有快照，点击「回测」离开时同步保存完整表格并返回；第三方 Payment Date 仍逐项明确确认。
+- **需求**：移除「保存并返回回测」独立按钮；股息编辑自动写入现有行情快照；尚无行情时写入按股票代码隔离的本地草稿并在重开时恢复。点击「回测」离开时同步保存完整表格并返回；第三方 Payment Date 仍逐项明确确认。
 - **实现**：股息页显示自动保存提示；离开到回测或说明前读取、校验所有表格事件并刷新快照。数据无效或保存失败时留在股息页并显示错误。未改财务计算、原始24笔股息或快照 schema。
-- **回归**：Chromium 专项测试验证无独立按钮、通过回测导航同步保存、再次进入后编辑值保持并导出 JSON 核对；另覆盖非法股息与 localStorage 写入失败时留在股息页。结果 PASS（浏览器错误0）。Node 全套 36/36 PASS；`git diff --check` PASS。提交 `6bab4b3a92980b08038d6f9fd52cc14050468e48` 已更新现有 Draft PR #3；GitHub Actions run 154（`40172415906`）SUCCESS。现有 owner-only Site Version 54 由源码提交 `aea73dff3d9f67f013eb28ea460171f2da1a1a07` 发布，deployment `appgdep_6addae3ea34881919ee05bb236e8dfc3` SUCCEEDED；原 URL、访问权限、设置和已保存数据保持不变。
+- **回归**：Chromium 专项测试验证无独立按钮、通过回测导航同步保存、再次进入后编辑值保持并导出 JSON 核对；另覆盖无行情时草稿保存及刷新恢复、非法股息与 localStorage 写入失败时留在股息页。结果 PASS（浏览器错误0）。Node 全套 36/36 PASS；`git diff --check` PASS。提交 `6bab4b3a92980b08038d6f9fd52cc14050468e48` 已更新现有 Draft PR #3；GitHub Actions run 154（`40172415906`）SUCCESS。现有 owner-only Site Version 54 由源码提交 `aea73dff3d9f67f013eb28ea460171f2da1a1a07` 发布，deployment `appgdep_6addae3ea34881919ee05bb236e8dfc3` SUCCEEDED；原 URL、访问权限、设置和已保存数据保持不变。
