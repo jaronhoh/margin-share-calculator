@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD v0.16
+# Margin Share Calculator — PRD v0.17
 
 > 状态：已建立需求基线，核心业务规则已确认；实现与验证状态以 PROJECT_STATUS 和版本报告为准。2026-10-24，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
@@ -299,3 +299,14 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 ## 版本记录追加
 
 | 2026-10-25 | v0.16 | 同步 Work 最新休市日显示、Yahoo 动态日历、多股票、自动保存、CSV 命名；增加功能矩阵与未完成事项 |
+
+
+## 14. 逐日流水 CSV 股票代码命名实现记录（2026-10-25；v0.17）
+
+- **需求**：逐日流水 CSV 文件名必须包含产生该回测数据的股票代码与导出日期范围。格式为 `margin-share-daily-ledger-{ticker}-{start}-to-{end}.csv`，例如 `margin-share-daily-ledger-1066.KL-2025-02-04-to-2025-02-07.csv`。
+- **实现状态**：已完成。名称读取当前行情快照的 ticker，缺少快照代码时才使用股票代码输入框，并将不适合作文件名的字符替换为连字符。导出内容与回测日期范围保持一致。
+- **验收证据**：Chromium UI 测试分别断言默认 `1155.KL` 和切换后的 `1066.KL` 文件名；Node 测试13/13、P0财务 oracle 276,096项、财富守恒17,256项、4,314日两策略回归以及 Chromium 8种尺寸/主题组合通过。Yahoo 回测 UI 端到端导出通过。
+- **发布记录**：现有 owner-only Site Version 46 部署成功，Site 源提交 `140c069dd5c83c805a058a90cbdc915ddf52c248`。GitHub Draft PR #3 已同步该功能实现；Actions run 92（`40158780725`）成功。
+- 本次只补充逐日流水 CSV 文件名需求与实现证据；未修改财务公式、24笔股息、Payment Date 或 Site 权限设置。
+
+| 2026-10-25 | v0.17 | 明确逐日流水 CSV 文件名加入实际回测股票代码，补充默认/非默认代码导出验收及发布证据 |
