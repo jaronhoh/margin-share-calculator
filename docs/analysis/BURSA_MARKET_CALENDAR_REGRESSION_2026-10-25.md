@@ -49,10 +49,10 @@ PR 分支、Actions、Site 源提交、版本和部署 URL 在发布完成后补
 - Sites 原 URL 与 owner-only policy revision 1 保持不变；最终 Site Version、源码提交、部署 ID 及 GitHub Actions 结果见项目状态和执行报告。
 
 
-## 最终修订：显示休市日并一键运行（2026-10-25）
+## 2026-10-25 跟进修正：个股日期补充与参数布局
 
-- 逐日流水及 CSV 保留周末和休市日行，行情/风险相关股票数据为空；贷款、股数和日息照常显示。资金引擎继续按日历日累计融资利息。
-- 股票代码旁「运行」获取所选 `.KL` 与 `^KLSE`，刷新动态日历后直接回测/保存。移除独立 Yahoo 更新、行情审核和市场数据 CSV 导入；保留「导入 JSON」，股息 CSV 仍单独管理。
-- Node 14/14；历史 4,314 日、双策略、24 笔股息及 P0 oracle 无变化。Chromium 8/8；包含休市行、日期筛选、图表、Tooltip、价格线、趋势线复选框以及 Yahoo/存储失败回滚。
-- Site Version 44 成功，部署 `appgdep_6add73fde014819194ae95739eb9ad3c`，源提交 `9d4469f5b0b01d74a74b1260bbe5e79a0ffb4ad1`。原 URL 与 owner-only policy revision 1 不变。
-- 官方逐日覆盖仍为 2015–2021 `BLOCKED`、2022–2026 `PARTIAL`；Yahoo 推定日期不冒充官方确认。生产浏览器交互及 Yahoo 全历史真实抓取未运行。
+- 对 `1066.KL` 的失败不是 HTTP 请求错误：Sites Worker 日志显示 `1066.KL` 与 `^KLSE` 请求均返回 200。失败来自前端过度严格的日期相等检查；Yahoo 个股工作日行情缺少指数同日记录时不应直接终止。
+- 个股独有的工作日行情现作为有明确股票代码来源的补充市场日历证据。若股票只在该日历日没有价格，仍会因未确认缺价而拒绝回测；周末或官方确认闭市日出现个股报价会报出日期并停止。
+- 「回测开始日」已移至股票代码栏下一行。
+- Node 测试 13/13 通过，P0 oracle 276,096/17,256 通过；Chromium Yahoo 用例通过，2152/1440/1075/390 × Light/Dark 8/8 通过。
+- Site Version 45 succeeded，提交 `c0d50ef902fe7d781d95c0e67baa5193d8a9a074`，deployment `appgdep_6add76ae96f88191b20079e969cd1d7e`；原 URL 和 owner-only policy revision 1 保持不变。
