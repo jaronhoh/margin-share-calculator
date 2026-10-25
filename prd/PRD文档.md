@@ -349,6 +349,6 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 
 ### 16.3 当前状态
 
-实现与本地 Node/Chromium 测试已完成；生产 Site 发布、当前 Draft PR Actions 及线上登录后验收须以 `docs/PROJECT_STATUS.md` 的最新追加记录更新。真实付款日期仍为第三方候选，个人须逐笔核对原始来源后确认；该功能不更改融资公式或既有24条股息。
+实现、本地 Node/Chromium 测试、GitHub Actions run 125 及现有 owner-only Site Version 47 发布已完成；最新证据见 `docs/PROJECT_STATUS.md`。生产登录后的浏览器交互验收 NOT RUN。真实付款日期仍是 KLSE Screener 第三方候选，个人须逐笔核对原始来源后确认；该功能不更改融资公式或既有24条股息。
 
 | 2026-10-25 | v0.19 | Yahoo 回测后读取 KLSE Screener 股息历史；按股票/Ex-Date/金额匹配，预览并人工确认付款日后才纳入回测，来源随快照保存 |
