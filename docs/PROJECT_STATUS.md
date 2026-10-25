@@ -150,3 +150,9 @@
 - PRD 升至 v0.18。早期「开发未开始」「合成行情」「刷新恢复默认」等描述已注明是历史快照；旧规则保留追溯，不再作为现行验收基准。
 - 新增 `docs/ACCEPTANCE_MATRIX.md`，集中列出每项最新需求、实现/测试证据、PASS/PARTIAL/BLOCKED/NOT RUN 状态及残余限制。该矩阵明确区分本地 fixture/UI 回归、真实 Yahoo 全历史验证、Bursa 官方资料覆盖与 Excel 公式等价审计。
 - 此次仅修改需求和状态文档；不更改应用源码、财务公式、Payment Date、原24笔股息或 Sites 设置。PRD v0.17 Actions run 95（`40159224630`）成功；本轮文档整理阶段 Actions run 99（`40159877853`）与后续 run 100（`40159919838`）均成功。run 100 对应文档状态整理提交 `8aa28550940218d4e980fce4bdb0d02bd618c307`。
+
+## Payment Date 自动核验开发（2026-10-25，进行中）
+
+- 新增 `site-source/dist/payment-date.mjs`：严格核验股票代码、Ex-Date、金额、Bursa 官方 HTTPS 来源与付款日期；按股票+除息日+金额匹配，不同付款日期冲突时不自动选择；匹配结果标记 `official-source-matched-pending-approval`，不自动入账。
+- 新增 `site-source/tests/payment-date.test.mjs`：覆盖匹配、跨股票隔离、金额/日期不符、冲突、无效日期及非官方 URL。测试数据为合成 fixture，不能当作真实 Bursa 公告。
+- **状态：PARTIAL / NOT INTEGRATED**。尚未接入真实 Bursa 公告抓取或授权 API；尚未连接 UI/Yahoo 导入流程；未执行新测试或确认 GitHub CI 成功；不宣称 Payment Date 已可自动获取。未修改原24笔股息、Payment Date 财务规则或 Sites。
