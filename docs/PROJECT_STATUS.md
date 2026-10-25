@@ -124,9 +124,4 @@
 - 动态日历实现和局部资料边界见 `docs/analysis/BURSA_MARKET_CALENDAR_REGRESSION_2026-10-25.md`。
 
 
-## 2026-10-25 Yahoo 日历差异与参数布局修正
-
-- 个股 Yahoo 行情和 `^KLSE` 请求均成功返回 HTTP 200；此前严格要求两组日期完全相同，造成个股有价而指数记录缺失时误阻断。现在这些个股独有的工作日行情会以所选 ticker 为来源补充动态市场日历；市场基准开放但所选个股缺价时仍拒绝补价。周末或 Bursa 官方确认休市日的个股报价仍硬性拒绝，并显示日期。
-- 「回测开始日」移至股票代码行下方。
-- Node 13/13 文件通过；P0 276,096 数值及17,256财富守恒断言通过；Chromium Yahoo 场景与8组桌面/手机 × Light/Dark 回归通过。
-- Sites Version 45 成功部署，源提交 `c0d50ef902fe7d781d95c0e67baa5193d8a9a074`，deployment `appgdep_6add76ae96f88191b20079e969cd1d7e`。原 URL 和 owner-only access policy revision 1 不变。
+- GitHub Actions `Site source tests` run 86（`40158244803`）SUCCESS，覆盖本次代码与测试变更。
