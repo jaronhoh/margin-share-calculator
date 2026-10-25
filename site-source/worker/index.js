@@ -21,7 +21,11 @@ function jsonResponse(data, status = 200, maxAge = 0) {
 }
 
 async function fetchKlsescreenerPage(url, ttlSeconds, request) {
-  const headers = new Headers({ accept: 'text/html', referer: 'https://www.klsescreener.com/' });
+  const headers = new Headers({
+    accept: 'text/html,application/xhtml+xml',
+    referer: 'https://www.klsescreener.com/',
+    'user-agent': 'MarginShareCalculator/1.0 (personal-use dividend lookup)',
+  });
   const language = request.headers.get('accept-language');
   if (language) headers.set('accept-language', language);
   try {
