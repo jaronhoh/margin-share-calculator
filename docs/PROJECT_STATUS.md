@@ -213,4 +213,4 @@
 - **修复**：每次点击「运行」立刻清空页面逐日流水、图表/指标、股息表行及旧的内存行情日历，再请求所选股票与 `^KLSE`。成功后按新行情的开始日收盘价重建参数并显示新回测；MAYBANK 24条只用于 `1155.KL`，同代码人工编辑事件在刷新过程中暂存后恢复。
 - **失败安全**：网络、校验或保存失败时，页面保持无流水/股息行并显示明确错误；旧已保存快照不被新候选覆盖，可重新载入恢复。无旧数据显示成新回测。
 - **回归**：Chromium 覆盖每次运行两路 Yahoo 请求、等待期间旧数据清空、陈旧开始价格被新报价替换、失败后结果仍清空且旧快照逐字不变；PASS，浏览器错误0。Node 36/36、P0 oracle 276,096 数值断言与17,256财富守恒断言、4,314日双策略历史回归 PASS；`git diff --check` PASS。
-- **GitHub / Site**：修复正同步到现有开发分支与 Draft PR #3；现有 owner-only Site Version 53 已从源提交 `c9d26e948b1ce8a8b32c5d206c49002076ddd122` 发布，deployment `appgdep_6addaaf893bc819199178ebc63a1880d` succeeded；原 URL、权限及已保存数据保持原样。
+- **GitHub / Site**：修复提交 `ac16d2bead4d9b493c3378d761194eb1772e0e7f` 已推送到现有分支并更新 Draft PR #3；Actions run 151（`40171742048`）SUCCESS。现有 owner-only Site Version 53 已从源提交 `c9d26e948b1ce8a8b32c5d206c49002076ddd122` 发布，deployment `appgdep_6addaaf893bc819199178ebc63a1880d` succeeded；原 URL、权限及已保存数据保持原样。
