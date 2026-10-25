@@ -156,3 +156,9 @@
 - 新增 `site-source/dist/payment-date.mjs`：严格核验股票代码、Ex-Date、金额、Bursa 官方 HTTPS 来源与付款日期；按股票+除息日+金额匹配，不同付款日期冲突时不自动选择；匹配结果标记 `official-source-matched-pending-approval`，不自动入账。
 - 新增 `site-source/tests/payment-date.test.mjs`：覆盖匹配、跨股票隔离、金额/日期不符、冲突、无效日期及非官方 URL。测试数据为合成 fixture，不能当作真实 Bursa 公告。
 - **状态：PARTIAL / NOT INTEGRATED**。尚未接入真实 Bursa 公告抓取或授权 API；尚未连接 UI/Yahoo 导入流程；未执行新测试或确认 GitHub CI 成功；不宣称 Payment Date 已可自动获取。未修改原24笔股息、Payment Date 财务规则或 Sites。
+
+### Payment Date 第二轮：数据源适配器（2026-10-25）
+
+- 新增 `site-source/dist/payment-date-provider.mjs`：为经过核实的 Bursa 官方 HTTPS JSON 数据端点提供可替换读取接口；没有实际已验证端点时返回 `source-not-configured`，绝不伪造 Payment Date；数据源响应必须包含可校验的公告记录。
+- 新增 `site-source/tests/payment-date-provider.test.mjs`：模拟响应测试未配置数据源、非官方域名阻止请求、匹配及异常响应。测试使用 fixture；代码已提交但尚未执行 CI 验证。
+- **BLOCKED**：尚未确认可合法自动访问、实际返回所需 JSON 结构的 Bursa 官方 Payment Date 端点。当前模块不是已经上线的自动抓取器；未连接 Site UI 或生产 Worker，未部署。需先验证官方公告实际访问形式、许可、分页、公司行动关联及稳定性。
