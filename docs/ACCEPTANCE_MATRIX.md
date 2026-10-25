@@ -46,3 +46,10 @@
 - 验证：Node 38/38；P0 两策略、4,314 日历史财务回归通过；Chromium 单表 E2E PASS，包含预填、人工修改持久化和重跑保护；Worker build PASS。
 - 来源边界：KLSE Screener 第三方资料和用户提供的数据；不宣称 Bursa 官方核实。
 - Sites Version 64 已部署；URL、owner-only allowlist 和策略 revision 1 未变。部署 ID `appgdep_6addd7bfdd9c8191a1f46771293f4d68`。
+
+
+## MAYBANK 默认股息日期（AC-PAY-12–14）更新（2026-10-25）
+
+- PR 分支源码现已同步 Site Version 64，含24笔独立 Ex-Date/Payment Date 映射、编辑保存、旧快照迁移保护及不向其他代码套用默认日期。
+- 原始 Excel Table1 24笔记录不变；KLSE Screener 日期表为用户提供的第三方资料，不表示 Bursa 官方核实。
+- Node 38/38、P0 两策略4,314日回归、Chromium E2E、Worker build 在工作副本通过；当前 Actions 结果见项目状态文件的发布补录。
