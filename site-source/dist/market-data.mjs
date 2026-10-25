@@ -51,7 +51,17 @@ export function buildPriceSnapshot(current,incoming,selectedDates,manualPriceDat
   for(const date of selected){const row=incomingByDate.get(date),old=merged.get(date);if(old&&Math.abs(old.close-row.close)>=1e-10)manual.add(date);merged.set(date,{...old,date,close:row.close});}
   const rows=[...merged.values()].sort((a,b)=>a.date.localeCompare(b.date));
   if(rows.length>5000)throw new Error('完整行情快照最多 5,000 条日历日记录。');
-  for(let i=1;i<rows.length;i++)if(Date.parse(rows[i].date+'T00:00:00Z')-Date.parse(rows[i-1].date+'T00:00:00Z')!==86400000)throw new Error(`完整行情快照缺少 ${new Date(Date.parse(rows[i-1].date+'T00:00:00Z')+86400000).toISOString().slice(0,10)}；不会自动填补。`);
+  // Backtest accrues interest on calendar days. Carry prices over weekends only;
+  // weekday exchange closures require an independently verified holiday calendar.
+  for(let i=1;i<rows.length;i++){
+    const previous=rows[i-1],next=rows[i];let cursor=Date.parse(previous.date+'T00:00:00Z')+86400000;
+    const end=Date.parse(next.date+'T00:00:00Z');
+    while(cursor<end){
+      const date=new Date(cursor).toISOString().slice(0,10),day=new Date(cursor).getUTCDay();
+      if(day!==0&&day!==6)throw new Error(`完整行情快照缺少交易日或未核实的休市日 ${date}；不能擅自填补。`);
+      rows.splice(i,0,{date,close:previous.close,carryForwardFrom:previous.date});i++;cursor+=86400000;
+    }
+  }
   return{rows,manualPriceDates:[...manual].sort()};
 }
 
