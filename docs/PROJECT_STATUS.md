@@ -383,6 +383,6 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - 先前 Chromium 脚本的 `.fill()` 复现没有触发股息输入的专用 `change` 保存处理器；这是之前失败结论的测试操作缺口。该证据说明自动化输入未正确提交，不能证明生产逻辑根因；用户先前观察的失败原因仍为未确认。原 UAT 中 BUG-UAT-001 = High / FAIL 的结论由本节复核取代为 **NOT REPRODUCED / root cause inconclusive**，不删除历史记录。
 - 已扩充 `site-source/tests/dividend-single-table-ui.cjs`：编辑 Ex-Date、金额、Payment Date 后执行完整页面刷新，再重新运行 Yahoo/KLSE，并断言三项 UI 值仍与快照一致。测试数据为隔离合成行情，不触碰用户数据。
 - 本地验证：Node 测试 **38/38 PASS**；P0 两策略、4,314 日历日历史回归及独立数值审计包含在通过的套件中；Chromium UI E2E **PASS**，覆盖刷新→重新运行→三字段值检查且浏览器 pageerror 为 0；Worker build 由 E2E 前置步骤执行并通过。首轮 E2E 暴露测试导航/抽屉状态问题，已修正后完整重跑通过。
-- GitHub 功能分支测试提交：`2c0a46b3e7c56cd170621a8fe7654ab0a2078da5`。PR #3 保持 Draft；该提交后的 GitHub Actions 状态待 CI 完成后补记。
+- GitHub 功能分支测试提交：`f454a57d7a9ff885b3afc95788b8a57690924a87`（含 reload→rerun 回归测试）；PR #3 保持 Draft。GitHub Actions `Site source tests` run 194（ID `40188069615`）对该测试提交 **SUCCESS**。
 - **未部署 Site**；未合并 main；没有修改生产 Site 数据、权限、URL 或配置。若用户仍可用实际键盘编辑重现金额回退，请提供当时的编辑方式和重新运行后的值/页面状态，以继续针对真实路径定位。
 
