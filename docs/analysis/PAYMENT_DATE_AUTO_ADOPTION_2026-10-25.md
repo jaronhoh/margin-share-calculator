@@ -13,3 +13,10 @@
 - GitHub Actions `Site source tests` run 167 / ID `40179193857`：SUCCESS。
 - 已部署现有 owner-only Site Version 60；Site source commit `e047eed1b2eaf53eff01566d1987da566fadfdcd`，deployment `appgdep_6addc575cc0881919550002f80fc2c19` succeeded。原 URL、owner-only access policy revision 1、Owner allowlist 和外部访客数 0 不变。
 - 当前线上生产登录态没有执行 Run；用户浏览器需刷新到 Version 60，并再次按「运行」获取最新 Yahoo/KLSE 数据，随后唯一日期候选会自动确认并重算。生产资料本身仍需留意第三方准确性和完整性。
+
+
+## 2026-10-25 补充：用户提供的 MAYBANK 默认日期
+
+- 默认24笔 Ex-Date/Payment Date 对照按用户提供的 KLSE Screener 表独立保存，用于 MAYBANK（1155.KL）默认行；属于用户指定的第三方日期数据，不宣称官方核实。
+- Ex-Date、Payment Date 与金额仍可编辑并自动保存。只对未编辑的原始 MAYBANK 行补齐缺省审批；既有人工审批/日期不覆盖，不影响其他代码。原始 Excel 股息快照不变。
+- 代码与回归测试同步至 Draft PR #3 的 `site-source`，并对齐现有 Site Version 64。
