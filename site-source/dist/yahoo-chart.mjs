@@ -37,7 +37,7 @@ export function parseYahooChart(payload,{ticker='1155.KL'}={}){
 
 export function buildYahooChartUrl(ticker,{period1,period2}={}){
   const symbol=String(ticker||'').trim().toUpperCase();
-  if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(symbol))throw new Error('请输入 Yahoo Finance 的 Bursa Malaysia 代码，例如 1155.KL 或 1023.KL。');
+  if(symbol!=='^KLSE'&&!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(symbol))throw new Error('请输入 Yahoo Finance 的 Bursa Malaysia 代码，例如 1155.KL 或 1023.KL。');
   if(!Number.isInteger(period1)||!Number.isInteger(period2)||period1<0||period2<=period1)throw new Error('Yahoo 查询日期范围无效。');
   const url=new URL(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`);
   url.search=new URLSearchParams({period1:String(period1),period2:String(period2),interval:'1d',events:'div,splits'}).toString();

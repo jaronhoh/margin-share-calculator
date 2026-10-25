@@ -17,3 +17,9 @@ for(const callStrategy of ['cash','sell']){
  console.log(`PASS ${callStrategy}: 4,314 calendar days unchanged across all P0 daily values under confirmed closures`);
 }
 
+const yahooCalendar={source:'yahoo-chart-market-calendar',sourceTicker:'^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/',startDate:'2025-02-04',endDate:'2025-02-07',observedTradingDates:['2025-02-04','2025-02-07'],closedDates:['2025-02-05','2025-02-06']};
+assert.equal(classifyMarketDate('2025-02-05',{hasObservedPrice:true,marketCalendar:yahooCalendar}).tradeAllowed,false);
+const fourCalendarDays=['2025-02-04','2025-02-05','2025-02-06','2025-02-07'],baselineDays=fourCalendarDays.map(date=>({date,price:9.17,dividendPerShare:0,tradeAllowed:true})),yahooDays=fourCalendarDays.map(date=>({date,price:9.17,dividendPerShare:0,tradeAllowed:classifyMarketDate(date,{hasObservedPrice:true,marketCalendar:yahooCalendar}).tradeAllowed}));
+for(const callStrategy of ['cash','sell']){const config={...base,callStrategy},before=runBacktest(config,baselineDays),after=runBacktest(config,yahooDays);assert.equal(after.summary.cumulativeInterest,before.summary.cumulativeInterest);assert.ok(after.rows.every(row=>row.dailyInterest>0),'interest must accrue on inferred market holidays');for(let i=0;i<4;i++)for(const key of ['shares','marketValue','loan','netWorth','lsr','dailyInterest','dividend','topUp','soldShares'])assert.ok(Math.abs((before.rows[i][key]??0)-(after.rows[i][key]??0))<1e-8,`${callStrategy} ${after.rows[i].date} ${key}`);}
+console.log('PASS Yahoo-inferred closures remain in the four-day interest calendar and preserve both strategy ledgers');
+

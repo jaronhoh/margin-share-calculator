@@ -20,7 +20,7 @@ async function yahooChart(request, url) {
   const ticker = url.searchParams.get('ticker');
   const period1 = url.searchParams.get('period1');
   const period2 = url.searchParams.get('period2');
-  if (!/^\d{4}\.KL$/.test(ticker || '') || !/^\d+$/.test(period1 || '') || !/^\d+$/.test(period2 || '')) {
+  if ((ticker !== '^KLSE' && !/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(ticker || '')) || !/^\d+$/.test(period1 || '') || !/^\d+$/.test(period2 || '')) {
     return badRequest('Yahoo 行情参数无效。');
   }
   const from = Number(period1);

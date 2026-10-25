@@ -1,49 +1,32 @@
-# Bursa Malaysia 休市日回归报告
+# Bursa Malaysia 市场日历与回归报告
 
 日期：2026-10-25（Asia/Kuala_Lumpur）
 
-## 代码行为
+## 日历行为
 
-- Bursa 日历按逐日官方来源维护；目前只确认 5 个工作日：2022-12-26、2023-01-02、2024-09-16、2025-01-29、2025-01-30。
-- 周末、确认闭市日、未确认工作日和有行情的正常交易日分别分类。未从马来西亚公共假期推断 Bursa 闭市。
-- 流水过滤隐藏周末及已确认闭市日；日期定位使用过滤后的流水，财务引擎继续保留所有日历日。
-- Yahoo / CSV 候选可为周末及确认闭市日补前收盘价，并保存 carryForward、来源日期、原因及闭市公告来源。未知工作日缺价、重复日期、无效价格拒绝。冲突与人工修正须显式选择。完整快照扩充后不超过 5,000 条。
-- 原子提交/失败回滚机制保留。
+- Yahoo 导入并行读取所选 Bursa `.KL` 股票与 FBM KLCI Yahoo 基准 `^KLSE`。市场日历从基准实际返回的交易日期更新，不靠固定公共假期列表推断交易所闭市。
+- 基准显示该日有行情、个股却缺价时，导入拒绝自动补价并指出股票代码/日期。基准相邻观察到的交易日期之间缺少工作日行时，日历记录 `yahoo-market-holiday` 推定闭市；沿用上一有效收盘价并记录 `carryForward=true`、`carryForwardFrom`、原因、Yahoo 基准及历史链接。
+- Yahoo 推定闭市与 Bursa 官方公告确认日分开呈现。固定官方日期表当前仍仅部分覆盖：2015–2021 `BLOCKED`，2022–2026 `PARTIAL`。基准数据未覆盖、股票与基准交易日期矛盾、或缺价位于基准覆盖边界时均停止。
+- 动态日历随候选行情保存到本地配置快照；JSON 导出/导入会验证日历来源、日期范围和 carry-forward 依据。后续回测、图表、逐日流水和 CSV 使用已保存日历。流水隐藏周末与推定/官方休市日；引擎继续按所有日历日累计利息。
+- Yahoo 下载与保存仍沿用差异预览、手动价格冲突保护、候选回测对比、用户确认、原子保存及失败回滚。
 
-## 历史回测核对
+## 自动化测试结果
 
-数据：4,314 日（2015-01-01 至 2026-10-23），现有 24 条股息。比较旧的周一至周五交易许可规则与 Bursa 确认闭市规则，两策略逐日结果均完全一致：
+- `node --test tests/*.test.mjs`：13/13 文件通过。
+- P0 独立 oracle：276,096 数值断言、17,256 财富守恒断言通过。
+- 历史回测：4,314 个日历日、现金补仓与卖股还款两策略的全部比较字段不变；原有24笔股息不变。
+- 独立动态休市引擎测试：Yahoo 推定的两个工作日仍各产生融资利息，四日利息总额与可交易日基线一致，两策略账务字段一致。
+- Yahoo 导入覆盖：普通及连续周末、官方与连续休市日、Yahoo 基准推定休市、基准交易但个股缺价、未确认工作日缺价、重复/无效价格、5,000日限制、手动价格选择、保存失败回滚。
+- 本地 Chromium 动态导入 E2E：Yahoo 股票与 `^KLSE` fixture、候选生成/确认保存、导出来源、页面重载、逐日流水隐藏推定休市日、利息累计；PASS。
+- 本地 Chromium UI 矩阵：2152/1440/1075/390 px × Light/Dark，8/8 PASS；日期过滤/定位、趋势图、Tooltip、价格曲线、股息表、无横向溢出及浏览器错误0均通过。
+- Yahoo 基准使用测试 fixture；本轮没有通过生产 Yahoo 请求做完整线上历史回测。新股票的实际请求范围和返回数据应在 Site 发布后按页面安全导入流程人工预览确认。
 
-| 策略 | 期末持股 | 股票市值 RM | 贷款 RM | 净资产 RM | LSR | 累计利息 RM | 累计股息 RM | 追缴交易日数 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 现金补仓 | 171,100 | 1,705,867.00 | 1,118,885.71 | 586,981.29 | 65.5904% | 254,810.62 | 542,086.00 | 16 |
-| 卖股还款 | 72,500 | 722,825.00 | 474,072.49 | 248,752.51 | 65.5861% | 148,161.03 | 304,562.00 | 19 |
+## 资料来源与限制
 
-每日 shares、market value、loan、net worth、LSR、daily/accrued/capitalized interest、dividend、top-up 及 sold shares 均逐行相同；确认闭市日期没有造成历史追缴交易，因此无财务差异。利息公式及原始股息事件没有修改。
+- Yahoo Finance 将 `^KLSE` 列为 FTSE Bursa Malaysia KLCI 行情：[Yahoo Finance ^KLSE](https://finance.yahoo.com/quote/%5EKLSE/)。本系统使用其返回的交易日期作为市场基准。基准缺失工作日属于 Yahoo 数据推定，不作为 Bursa 公告确认。
+- 已确认的官方逐日闭市日期及 Bursa 来源见 Site 日历代码和 `docs/PROJECT_STATUS.md`；本轮未修改公共假期映射、财务公式、Payment Date 或24笔股息。
+- 年度覆盖边界继续如上标记；没有支持来源的工作日不会被标成官方确认闭市。
 
-## 自动化测试
+## 交付状态
 
-命令：node --test tests/*.test.mjs（Node 24.22.1）。
-
-- **12/12 test files passed**。
-- P0 oracle：276,096 项数值断言与 17,256 项财富守恒断言通过。
-- 历史日历比较：两策略各 4,314 日逐行财务字段相同。
-- Yahoo/快照：周末、连续周末、确认闭市、连续节假日、未知工作日缺价拒绝、重复价格、无效价格、扩充后超限、手工价格冲突保护、不可变候选与保存失败回滚通过。
-- 股息测试仍断言原始 24 条事件不变。
-- UI：**NOT RUN**。当前环境禁止本地 HTTP 监听；未报告浏览器、响应式或 Light/Dark 验收通过。
-
-## 官方资料与明确缺口
-
-- [Bursa 2022 Christmas / 2023 New Year closure](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-christmas-and-new-year-holidays)
-- [Bursa 2024 Malaysia Day closure](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-prophet-muhammads-birthday-and-malaysia-day-trading-resumes-on-17-september-2024)
-- [Bursa 2025 Chinese New Year closure](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday)
-- [Bursa 2024 Hari Raya notice](https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-hari-raya-aidilfitri-2024)提供条件式的两种安排，最终日期缺少可确认公告，本轮保持未确认。
-- 年度状态：2015–2021 **BLOCKED**；2022–2025 **PARTIAL**；2026 **PARTIAL**。名单不是完整年度交易所休市日历，未列日期仍按未确认处理。
-
-## GitHub / Site 状态
-
-- 目标 GitHub 分支：feat/trading-calendar-dividend-chart-controls；Draft PR #3 更新至 c5f2e94b18c468eb7d9aa8a782613922c72843ee。
-- GitHub Actions：run 59 / ID 40149002878，结论 SUCCESS。
-- 已将兼容线上 v38 的修改推送到同一 Site 源仓库 main：提交 38300dd7d5a9d1ab1653615d77adb1a0ffa919f3。发布为 Version 39，部署 succeeded；原 URL https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site 不变。所有者仍是唯一允许用户，访问策略 revision 1。
-- UI 浏览器回归 **NOT RUN**：打开生产 Site 显示登录门；通过站点的 ChatGPT 登录入口后，页面停在 Cloudflare 安全验证。未尝试解验证码或绕过。响应式、Light/Dark、Tooltip 和图表复选框的线上实测仍未完成。
-- Sites 运行时没有修改本地存储/历史行情/股息；原24笔股息保持不变。
+PR 分支、Actions、Site 源提交、版本和部署 URL 在发布完成后补录。

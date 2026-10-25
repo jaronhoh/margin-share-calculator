@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {expandYahooCalendarRows} from '../dist/yahoo-calendar.mjs';
+import {createYahooMarketCalendar,expandYahooCalendarRows} from '../dist/yahoo-calendar.mjs';
 import {classifyMarketDate} from '../dist/market-calendar.mjs';
 
 const weekend=expandYahooCalendarRows([
@@ -40,5 +40,27 @@ assert.throws(()=>expandYahooCalendarRows([
   {date:'2025-01-03',close:6.2},
 ],{endDate:'2025-01-03',classifyMarketDate}),/重复价格日期/);
 assert.throws(()=>expandYahooCalendarRows([{date:'2025-01-03',close:0}],{endDate:'2025-01-03',classifyMarketDate}),/无效/);
+
+const marketCalendar=createYahooMarketCalendar([
+  {date:'2025-02-04',close:1600},
+  {date:'2025-02-07',close:1610},
+],{startDate:'2025-02-04',endDate:'2025-02-07'});
+assert.deepEqual(marketCalendar.closedDates,['2025-02-05','2025-02-06']);
+assert.equal(classifyMarketDate('2025-02-05',{marketCalendar}).status,'yahoo-market-holiday');
+const dynamicClosure=expandYahooCalendarRows([
+  {date:'2025-02-04',close:6.3},
+  {date:'2025-02-07',close:6.4},
+],{endDate:'2025-02-07',classifyMarketDate,marketCalendar});
+assert.deepEqual(dynamicClosure.slice(1,3),[
+  {date:'2025-02-05',close:6.3,carryForward:true,carryForwardFrom:'2025-02-04',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
+  {date:'2025-02-06',close:6.3,carryForward:true,carryForwardFrom:'2025-02-04',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
+]);
+assert.throws(()=>expandYahooCalendarRows([
+  {date:'2025-02-04',close:6.3},
+  {date:'2025-02-07',close:6.4},
+],{endDate:'2025-02-07',classifyMarketDate,marketCalendar:createYahooMarketCalendar([
+  {date:'2025-02-04',close:1600},{date:'2025-02-05',close:1601},{date:'2025-02-07',close:1610},
+],{startDate:'2025-02-04',endDate:'2025-02-07'})}),/基准显示 2025-02-05 是交易日/);
+assert.throws(()=>createYahooMarketCalendar([{date:'2025-02-04',close:0}],{startDate:'2025-02-04',endDate:'2025-02-04'}),/价格无效/);
 
 console.log('PASS Yahoo full-history calendar expansion: weekends, confirmed Bursa closures, carry-forward provenance, unconfirmed weekday rejection, duplicate and invalid prices');

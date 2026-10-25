@@ -1,4 +1,4 @@
-import {confirmedMarketHoliday} from './market-calendar.mjs';
+import {classifyMarketDate} from './market-calendar.mjs';
 
 const DATE_RE=/^\d{4}-\d{2}-\d{2}$/;
 
@@ -46,11 +46,11 @@ export function comparePriceRows(current,incoming){
   return incoming.map(row=>({ ...row, kind:!existing.has(row.date)?'new':Math.abs(existing.get(row.date)-row.close)<1e-10?'same':'conflict', currentClose:existing.get(row.date)??null }));
 }
 
-export function buildPriceSnapshot(current,incoming,selectedDates,manualPriceDates=[]){
+export function buildPriceSnapshot(current,incoming,selectedDates,manualPriceDates=[],marketCalendar){
   const selected=new Set(selectedDates),incomingByDate=new Map(incoming.map(row=>[row.date,row]));
   for(const date of selected)if(!incomingByDate.has(date))throw new Error(`所选日期不在导入数据中：${date}。`);
   const merged=new Map(current.map(row=>[row.date,{...row}])),manual=new Set(manualPriceDates);
-  for(const date of selected){const row=incomingByDate.get(date),old=merged.get(date);if(old&&Math.abs(old.close-row.close)>=1e-10)manual.add(date);merged.set(date,{...old,date,close:row.close});}
+  for(const date of selected){const row=incomingByDate.get(date),old=merged.get(date),next={...old,...row,date,close:row.close};if(row.carryForward!==true){delete next.carryForward;delete next.carryForwardFrom;delete next.reason;delete next.source;delete next.sourceUrl;}if(old&&Math.abs(old.close-row.close)>=1e-10)manual.add(date);merged.set(date,next);}
   const rows=[...merged.values()].sort((a,b)=>a.date.localeCompare(b.date));
   if(rows.length>5000)throw new Error('完整行情快照最多 5,000 条日历日记录。');
   // Interest accrues every calendar day. Carry only dates with evidence that trading was closed.
@@ -58,10 +58,10 @@ export function buildPriceSnapshot(current,incoming,selectedDates,manualPriceDat
     const previous=rows[i-1],next=rows[i];let cursor=Date.parse(previous.date+'T00:00:00Z')+86400000;
     const end=Date.parse(next.date+'T00:00:00Z');
     while(cursor<end){
-      const date=new Date(cursor).toISOString().slice(0,10),day=new Date(cursor).getUTCDay();
-      const holiday=confirmedMarketHoliday(date);
-      if(day!==0&&day!==6&&!holiday)throw new Error(`完整行情快照缺少交易日或未核实的休市日 ${date}；不能擅自填补。`);
-      rows.splice(i,0,{date,close:previous.close,carryForward:true,carryForwardFrom:previous.date,reason:holiday?'confirmed-market-holiday':'weekend',...(holiday?{source:holiday.source,sourceUrl:holiday.url}:{})});i++;cursor+=86400000;
+      const date=new Date(cursor).toISOString().slice(0,10),classification=classifyMarketDate(date,{marketCalendar});
+      if(!['weekend','confirmed-market-holiday','yahoo-market-holiday'].includes(classification.status))throw new Error(`完整行情快照缺少交易日或未核实的休市日 ${date}；不能擅自填补。`);
+      const reason=classification.status;
+      rows.splice(i,0,{date,close:previous.close,carryForward:true,carryForwardFrom:previous.date,reason,...(classification.source?{source:classification.source,sourceUrl:classification.url}:{})});i++;cursor+=86400000;
     }
   }
   if(rows.length>5000)throw new Error('补齐周末后的完整行情快照超过 5,000 条日历日记录。');
@@ -77,4 +77,3 @@ export function commitSnapshot(storage,key,snapshot,commit,rollback=()=>{}){
 export function restoreSnapshot(storage,key,previous){
   if(previous===null)storage.removeItem(key);else storage.setItem(key,previous);
 }
-

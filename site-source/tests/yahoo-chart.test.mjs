@@ -12,6 +12,7 @@ const rhb=parseYahooChart(rhbPayload,{ticker:'1066.KL'});assert.equal(rhb.ticker
 assert.match(buildYahooChartUrl('1155.KL',{period1:1,period2:2}),/interval=1d/);assert.match(buildYahooChartUrl('1155.KL',{period1:1,period2:2}),/events=div%2Csplits/);
 assert.equal(new URL(buildYahooChartUrl('1023.KL',{period1:1,period2:2})).pathname,'/v8/finance/chart/1023.KL');
 assert.equal(new URL(buildYahooChartUrl('1066.KL',{period1:1,period2:2})).pathname,'/v8/finance/chart/1066.KL');
+assert.equal(new URL(buildYahooChartUrl('^KLSE',{period1:1,period2:2})).pathname,'/v8/finance/chart/%5EKLSE');
 assert.throws(()=>buildYahooChartUrl('AAPL',{period1:1,period2:2}),/Bursa Malaysia/);
 assert.throws(()=>parseYahooChart({chart:{result:[{meta:{symbol:'AAPL',currency:'USD'},timestamp:[1],indicators:{quote:[{close:[10]}]}}],error:null}},{ticker:'AAPL'}),/币种为 USD/);
 assert.throws(()=>parseYahooChart({chart:{result:[{meta:{symbol:'1023.KL',currency:'MYR',exchangeTimezoneName:'America/New_York'},timestamp:[1],indicators:{quote:[{close:[10]}]}}],error:null}},{ticker:'1023.KL'}),/交易时区/);

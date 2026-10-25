@@ -49,17 +49,21 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
     assert.equal(calls[0].options.headers.get('accept-language'), 'zh-MY');
     assert.equal(calls[0].options.headers.get('referer'), 'https://finance.yahoo.com/');
 
+    const calendar = await worker.fetch(new Request('https://site.example/api/yahoo-chart?ticker=%5EKLSE&period1=1&period2=2'));
+    assert.equal(calendar.status, 200, 'Yahoo Bursa market benchmark is available for dynamic calendar updates');
+    assert.equal(new URL(calls[1].url).pathname, '/v8/finance/chart/%5EKLSE');
+
     const invalid = await worker.fetch(new Request('https://site.example/api/yahoo-chart?ticker=AAPL&period1=1&period2=2'));
     assert.equal(invalid.status, 400);
-    assert.equal(calls.length, 1, 'invalid ticker must not reach Yahoo');
+    assert.equal(calls.length, 2, 'invalid ticker must not reach Yahoo');
 
     const klBoundary = Math.floor(Date.now() / 1000) + 2 * 86400;
     const malaysiaMidnight = await worker.fetch(new Request(`https://site.example/api/yahoo-chart?ticker=1155.KL&period1=1&period2=${klBoundary}`));
     assert.equal(malaysiaMidnight.status, 200, 'exclusive KL-midnight date boundary remains valid across UTC dates');
-    assert.equal(calls.length, 2);
+    assert.equal(calls.length, 3);
     const farFuture = await worker.fetch(new Request(`https://site.example/api/yahoo-chart?ticker=1155.KL&period1=1&period2=${klBoundary + 1}`));
     assert.equal(farFuture.status, 400, 'requests beyond two days are rejected');
-    assert.equal(calls.length, 2);
+    assert.equal(calls.length, 3);
 
     globalThis.fetch = async () => new Response('rate limited', { status: 429 });
     const limited = await worker.fetch(new Request('https://site.example/api/yahoo-chart?ticker=1155.KL&period1=1&period2=2'));

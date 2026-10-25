@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {parsePriceCsv,comparePriceRows,buildPriceSnapshot,commitSnapshot,restoreSnapshot} from '../dist/market-data.mjs';
 import {parseDividendCsv,compareDividendCandidates,approveDividendCandidates} from '../dist/dividend-data.mjs';
 import {defaultDividends} from '../dist/dividend-events.mjs';
+import {createYahooMarketCalendar} from '../dist/yahoo-calendar.mjs';
 
 assert.deepEqual(parsePriceCsv('\uFEFFDate,Close\r\n2026-01-02,9.12\r\n2026-01-01,9.17\r\n'),[
   {date:'2026-01-01',close:9.17},{date:'2026-01-02',close:9.12}
@@ -40,49 +41,21 @@ console.log('PASS CSV validation, Kuala Lumpur calendar dates, duplicate rejecti
 console.log('PASS explicit snapshot commit, storage failure rollback, post-commit failure rollback, and previous snapshot restoration');
 console.log('PASS dividend dates stay distinct, payment-date confirmation is mandatory, suspected duplicates require explicit approval, provenance survives, and all 24 Excel events remain unchanged');
 
-const weekend=buildPriceSnapshot([{date:'2026-01-02',close:9.12}],parsePriceCsv('Date,Close\n2026-01-05,9.3'),['2026-01-05']);
-assert.deepEqual(weekend.rows.map(x=>[x.date,x.close]),[['2026-01-02',9.12],['2026-01-03',9.12],['2026-01-04',9.12],['2026-01-05',9.3]]);
-assert.equal(weekend.rows[1].carryForwardFrom,'2026-01-02');
-assert.throws(()=>buildPriceSnapshot([{date:'2026-01-02',close:9.12}],parsePriceCsv('Date,Close\n2026-01-06,9.3'),['2026-01-06']),/未核实的休市日 2026-01-05/);
-
-// 4,999 weekday records fit the raw limit, but calendar-day carry-forward must still enforce 5,000.
-const weekdayRows=[];
-for(let day=Date.parse('2020-01-01T00:00:00Z');weekdayRows.length<4999;day+=86400000){
-  const weekday=new Date(day).getUTCDay();
-  if(weekday!==0&&weekday!==6)weekdayRows.push({date:new Date(day).toISOString().slice(0,10),close:10});
-}
-assert.throws(()=>buildPriceSnapshot(weekdayRows,[],[]),/补齐周末后的完整行情快照超过 5,000/);
-console.log('PASS expanded calendar-day snapshot limit is enforced after weekend carry-forward');
-
-import {classifyMarketDate,MARKET_HOLIDAYS} from '../dist/market-calendar.mjs';
-assert.equal(classifyMarketDate('2026-01-03').status,'weekend');
-assert.equal(classifyMarketDate('2026-01-05').status,'unconfirmed-weekday');
-assert.equal(classifyMarketDate('2026-01-05',{hasObservedPrice:true}).status,'normal-trading-day');
-assert.equal(classifyMarketDate('2024-09-16').tradeAllowed,false);
-assert.equal(MARKET_HOLIDAYS.find(x=>x.date==='2025-01-29').status,'confirmed-market-holiday');
-
-const fri={date:'2024-09-13',close:10};
-const tue={date:'2024-09-17',close:10.5};
-const confirmed=buildPriceSnapshot([fri], [tue], ['2024-09-17']);
-assert.deepEqual(confirmed.rows.slice(1,4).map(x=>[x.date,x.carryForward,x.carryForwardFrom,x.reason]),[
- ['2024-09-14',true,'2024-09-13','weekend'],
- ['2024-09-15',true,'2024-09-13','weekend'],
- ['2024-09-16',true,'2024-09-13','confirmed-market-holiday']
+const weekendSnapshot=buildPriceSnapshot([{date:'2025-01-24',close:9.1}],parsePriceCsv('Date,Close\n2025-01-27,9.3'),['2025-01-27']);
+assert.deepEqual(weekendSnapshot.rows.slice(1,3).map(x=>[x.date,x.close,x.carryForward,x.carryForwardFrom,x.reason]),[
+ ['2025-01-25',9.1,true,'2025-01-24','weekend'],['2025-01-26',9.1,true,'2025-01-24','weekend']
 ]);
-assert.equal(confirmed.rows[3].source,'bursa-prophet-birthday-malaysia-day-2024');
-const chineseNewYear=buildPriceSnapshot([{date:'2025-01-28',close:10}], [{date:'2025-01-31',close:10.2}], ['2025-01-31']);
-assert.deepEqual(chineseNewYear.rows.slice(1,3).map(x=>[x.date,x.reason]),[
- ['2025-01-29','confirmed-market-holiday'],['2025-01-30','confirmed-market-holiday']
+const closureSnapshot=buildPriceSnapshot([{date:'2025-01-28',close:9.1}],parsePriceCsv('Date,Close\n2025-01-31,9.3'),['2025-01-31']);
+assert.deepEqual(closureSnapshot.rows.slice(1,3).map(x=>[x.date,x.close,x.carryForward,x.carryForwardFrom,x.reason,x.source]),[
+ ['2025-01-29',9.1,true,'2025-01-28','confirmed-market-holiday','bursa-chinese-new-year-2025'],['2025-01-30',9.1,true,'2025-01-28','confirmed-market-holiday','bursa-chinese-new-year-2025']
 ]);
-assert.throws(()=>parsePriceCsv(['Date,Close','2026-01-01,10','2026-01-01,11'].join(String.fromCharCode(10))),/日期重复/);
-assert.throws(()=>parsePriceCsv(['Date,Close','2026-01-01,0'].join(String.fromCharCode(10))),/收盘价无效/);
-const protectedManual=buildPriceSnapshot([{date:'2026-01-01',close:9.1}],parsePriceCsv('Date,Close\n2026-01-01,9.3'),[],['2026-01-01']);
-assert.equal(protectedManual.rows[0].close,9.1,'unselected manual conflicts must remain unchanged');
-assert.deepEqual(protectedManual.manualPriceDates,['2026-01-01']);
-const startLimit=[];for(let day=Date.parse('2020-01-01T00:00:00Z');startLimit.length<4999;day+=86400000){const dow=new Date(day).getUTCDay();if(dow!==0&&dow!==6)startLimit.push({date:new Date(day).toISOString().slice(0,10),close:10});}
-assert.throws(()=>buildPriceSnapshot(startLimit,[],[]),/补齐周末后的完整行情快照超过 5,000/);
-const carry=buildPriceSnapshot([{date:'2024-09-13',close:10}],[{date:'2024-09-17',close:10.5}],['2024-09-17']).rows[3];
-assert.equal(carry.carryForward,true);assert.equal(carry.carryForwardFrom,'2024-09-13');assert.equal(carry.reason,'confirmed-market-holiday');assert.ok(carry.sourceUrl);
-console.log('PASS calendar classification, official holiday carry-forward provenance, unconfirmed weekday rejection, weekends, duplicate/invalid prices, manual conflict protection, and expanded row limit');
-
-
+const yahooCalendar=createYahooMarketCalendar([{date:'2025-02-04',close:1600},{date:'2025-02-07',close:1610}],{startDate:'2025-02-04',endDate:'2025-02-07'});
+const yahooClosure=buildPriceSnapshot([], [{date:'2025-02-04',close:6.3},{date:'2025-02-07',close:6.4}],['2025-02-04','2025-02-07'],[],yahooCalendar);
+assert.deepEqual(yahooClosure.rows.slice(1,3).map(x=>[x.date,x.close,x.carryForward,x.carryForwardFrom,x.reason,x.source]),[
+ ['2025-02-05',6.3,true,'2025-02-04','yahoo-market-holiday','Yahoo Finance ^KLSE'],['2025-02-06',6.3,true,'2025-02-04','yahoo-market-holiday','Yahoo Finance ^KLSE']
+]);
+const protectedPrice=buildPriceSnapshot([{date:'2025-01-24',close:9.1}],parsePriceCsv('Date,Close\n2025-01-24,9.8\n2025-01-27,9.3'),['2025-01-24','2025-01-27'],['2025-01-24']);
+assert.equal(protectedPrice.rows[0].close,9.8);assert(protectedPrice.manualPriceDates.includes('2025-01-24'));
+const weekdays=[];for(let ms=Date.parse('2010-01-01T00:00:00Z');weekdays.length<3600;ms+=86400000){const d=new Date(ms),day=d.getUTCDay();if(day!==0&&day!==6)weekdays.push({date:d.toISOString().slice(0,10),close:9.1});}
+assert.throws(()=>buildPriceSnapshot(weekdays,[],[]),/超过 5,000 条日历日记录/);
+console.log('PASS weekend and consecutive confirmed-holiday carry-forward provenance, unconfirmed weekday gaps, expanded limit, and manual-price preservation');

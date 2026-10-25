@@ -108,18 +108,11 @@
 - **Yahoo 数据边界**：自动化覆盖 `1066.KL` 的解析、请求构造及 Worker 转发（fixture/模拟响应）；未声称本轮实际抓取并回测了该代码的完整线上历史。未确认的历史工作日缺价按规则会阻止导入，需补充可靠闭市资料或人工核实价格。
 - **GitHub**：本跟进代码和报告已同步至 Draft PR #3。Actions run 61（ID 40151136852）在功能提交 5046a1d964da0ced4be565bec3fa677ad30296d3 上 SUCCESS。Sites 与 GitHub 分支仍分别管理。
 
+## Yahoo 驱动的 Bursa 动态日历（2026-10-25）
 
-## Bursa closure evidence follow-up: 2015-02-02 (2026-10-25)
-
-- Yahoo history for 1066.KL omitted 2015-02-02; the import correctly stopped because the date was not in the confirmed closure calendar. This was a calendar coverage gap, not evidence that Yahoo omitted a trading session.
-- Bursa Malaysia's Participating Organisations' Circular R/R 2 of 2015, dated 19 January 2015, confirms Bursa Malaysia Securities was closed on 2015-02-02 and reopened on 2015-02-03. The date-specific record and source URL have been added to the calendar; carry-forward prices retain provenance.
-- A focused regression test verifies the classification and carry-forward provenance. Other historical dates remain unconfirmed unless supported by source evidence; 2015–2021 overall coverage remains BLOCKED.
-- Source: https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bb55aa65f36ca0c3028d89b/Closure_of_The_Exchange_for_Chinese_New_Year.pdf
-
-
-## 2015-02-02 closure in the daily ledger (2026-10-25)
-
-- The transaction ledger filters on the date-specific market calendar and excludes confirmed Bursa closures; it does not stop calendar-day interest accrual in the engine.
-- Added an explicit UI regression assertion that the confirmed 2015-02-02 closure cannot be located in daily ledger rows, is absent from CSV export, and decreases visible trading-day rows by one. Month-end/page expectations were adjusted for the removed row.
-- Full local Node regression: 13/13 files pass, including 276,096 independent P0 numeric checks and 17,256 wealth-conservation checks. Local Chromium: all 8 viewport/theme combinations (2152/1440/1075/390 × Light/Dark) pass; 3,076 ledger trading-day rows, no browser errors.
-- Site source was pushed as commit `94b6e655916c27c5ef5436d0635c5cb1dc100507`; the existing owner-only Site was published as Version 41, deployment `appgdep_6add65b7a1588191b9c47581f384d519` succeeded. The original URL and owner-only access policy revision 1 were retained.
+- 导入第一步同时读取用户所选 `.KL` 行情与 Yahoo `^KLSE` FBM KLCI 市场基准，以基准返回的交易日期更新日历。基准有价、个股缺价时拒绝自动补价；基准相邻交易日之间缺少的工作日标为 Yahoo 推定休市，附基准来源并沿用上一有效收盘价。
+- 推定休市与 Bursa 官方公告确认日期分开分类。动态日历随行情快照保存/导入校验，并由回测、图表、逐日流水和 CSV 使用。流水隐藏周末及闭市日，财务引擎仍按日历日累计融资利息。
+- 原安全流程仍保留：差异预览、手动价格保护、候选回测对比、用户确认和保存失败回滚；快照和日历均受 5,000 日限制。
+- Node 自动化 13/13 通过；P0 276,096 数值断言和17,256财富守恒断言通过；4,314日两策略结果、原24笔股息不变。Chromium 动态导入/保存/重载用例通过；8种桌面和移动尺寸/主题组合通过。
+- Yahoo `^KLSE` fixture 测试通过，未执行生产环境全历史 Yahoo 抓取。Bursa 官方年度资料覆盖仍为 2015–2021 `BLOCKED`、2022–2026 `PARTIAL`；Yahoo 推定缺市日不会冒称官方公告确认。
+- 代码不更改 Payment Date、既有24条股息或财务公式。PR CI 和 Site 部署详情待发布后补录。
