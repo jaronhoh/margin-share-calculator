@@ -238,3 +238,14 @@
 - **测试**：付款日匹配专项 Node 测试、全套 Node 37/37、单表 Chromium 金额差异确认与快照来源金额留痕均 PASS；浏览器错误0；Worker 构建与 `git diff --check` PASS。GitHub Actions run 161（ID `40176185358`）SUCCESS，测试代码提交 `32adb862c780fa1f087f66a452317a958b740b6b`。
 - **发布**：PR #3 已更新。现有 owner-only Site Version 58 已部署成功（deployment `appgdep_6addbd5ba334819194ea56940f79b4a4`），来源 Site commit `b6ba77aa19bfb02100731e471bc9ed622c8fe1c1`；原 URL 与 owner-only 权限不变。已验证部署记录成功并在新浏览器标签加载线上 Site。线上本轮未点击 Yahoo「运行」，避免刷新个人行情快照；候选数据需按所选股票点击运行后重新获取。
 - **限制**：此改进只解决“同一 Ex-Date 有唯一 KLSE 记录但金额不同”；Yahoo 未返回的 Ex-Date、KLSE 无数据的历史行仍无自动候选；KLSE Screener 是第三方来源，记录仍需用户核验。
+
+
+### 历史 Payment Date Percentage 候选与页眉调整（2026-10-25）
+
+- **现象与修复**：KLSE Screener 返回的旧股息行可能以 `Percentage` 表示金额。旧解析器丢弃这些行，导致 1295.KL 的历史 Ex-Date（例如 2015-02-18）没有付款日候选。现在保留 `sourceAmount` 与 `sourceIndicator`，百分比不换算成 RM/股；同股票、同 Ex-Date 的唯一付款日期候选显示于 Payment Date 栏并标记待确认。Yahoo 未覆盖但已保存的股息也可参与候选匹配。采用候选只应用付款日，不改股息金额；已绑定原始记录时避免确认后重复计入。
+- **UI**：头部标签改为显示当前 Site 版本号（VERSION 59）；「回测参数」入口移到主题按钮旁。候选操作文案改为「采用付款日」，提示只应用日期。
+- **验证**：Node 全套 38/38 PASS；4,314 日、两种策略 P0 回归保持通过，276,096 财务断言和17,256财富守恒断言通过。Chromium 股息流程通过，实际测试 2015-02-18 对应 2015-03-05 候选及原始 31 Percentage 单位、金额不换算；页眉版本/参数按钮、人工采用、股息快照、无旧结果和零浏览器错误均 PASS。Site Worker 构建与 `git diff --check` PASS。
+- **来源说明**：KLSE Screener 页面显示 2015-02-18 Ex-Date、2015-03-05 Payment Date、31.0000 Percentage；The Star 的 PB Bank 历史市场页独立显示 2015-03-05 付款日。来源为 [KLSE Screener](https://www.klsescreener.com/v2/stocks/view/1295) 和 [The Star](https://www.thestar.com.my/business/marketwatch/stocks/?qcounter=PBBANK)。第三方记录仍非 Bursa 官方核验，百分比来源金额没有转换为 RM/股。
+- **GitHub**：代码提交 `26d25e8116b37f3b42fc63747d8a7e96a252c110` 已更新现有 Draft PR #3；GitHub Actions run 163（ID `40177953269`）SUCCESS。
+- **Site**：现有 owner-only Site Version 59、deployment `appgdep_6addc15d61ec8191a94dd7a6e29bf1f8` 成功；源代码提交 `92d2df62a42e25258c5ca7616d6c073e19b29895`。原 URL、owner-only 访问策略和配置保留。
+- **限制**：KLSE Screener 是第三方资料，历史覆盖仍按股票而异。Payment Date 候选仍需用户明确采用；本次未改付款日与财务引擎规则。
