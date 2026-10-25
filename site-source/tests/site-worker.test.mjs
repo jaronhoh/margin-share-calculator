@@ -81,7 +81,10 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
     assert.equal(historyData.events[0].exDate, '2025-03-21');
     assert.equal(historyData.events[0].paymentDate, '2025-04-09');
     assert.equal(historyData.events[0].perShare, 0.28);
-    assert.equal(historyData.events.length, 1, 'percentage-denominated dividend rows must not be treated as per-share currency');
+    assert.equal(historyData.events.length, 2, 'percentage-denominated history must be retained for payment-date matching');
+    assert.equal(historyData.events[1].perShare, null);
+    assert.equal(historyData.events[1].sourceAmount, 5);
+    assert.equal(historyData.events[1].sourceIndicator, 'Percentage');
     assert.equal(historyData.events[0].source, 'klsescreener-dividend-history');
     assert.equal(new URL(calls.at(-1).url).hostname, 'www.klsescreener.com');
     assert.equal(new URL(calls.at(-1).url).pathname, '/v2/stocks/view/1066');

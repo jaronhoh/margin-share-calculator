@@ -21,10 +21,15 @@ export function parseKlsescreenerDividendTable(text,{ticker,sourceUrl}={}){
   if(!line||/^[-|\s]+$/.test(line)||/^\d{1,2}\s+[A-Za-z]{3},?\s+\d{4}$/.test(line)||/^\d{4}-\d{2}-\d{2}$/.test(line))continue;
   const cols=line.split('|').map(x=>x.trim());
   if(cols.length<7){if(rows.length&&line.startsWith('Announced'))break;continue;}
-  const announced=date(cols[0]),exDate=date(cols[3]),paymentDate=date(cols[4]),perShare=Number(cols[5]);
-  if(!announced||!exDate||!paymentDate||!Number.isFinite(perShare)||perShare<=0||perShare>1000||!/^(currency|rm|myr)$/i.test(cols[6]||''))continue;
+  const announced=date(cols[0]),exDate=date(cols[3]),paymentDate=date(cols[4]),sourceAmount=Number(cols[5]),sourceIndicator=String(cols[6]||'').trim();
+  // Older KLSE Screener entries are quoted as a percentage of nominal value,
+  // not MYR/share. Keep those records for their ex/payment dates, but do not
+  // convert the percentage into a currency amount without verified par value.
+  const isCurrency=/^(currency|rm|myr)$/i.test(sourceIndicator),isPercentage=/^percentage$/i.test(sourceIndicator);
+  if(!announced||!exDate||!paymentDate||!Number.isFinite(sourceAmount)||sourceAmount<=0||sourceAmount>1000||(!isCurrency&&!isPercentage))continue;
+  const perShare=isCurrency?sourceAmount:null;
   const link=/\[?\d+\]?[^\n]*?View/.test(cols[7]||'')?cols[7]:null;
-  rows.push({ticker:symbol,announcedDate:announced,exDate,paymentDate,perShare,subject:cols[2],source:'klsescreener-dividend-history',sourceUrl:url.toString(),sourceRow:i+1,sourceLinkText:link,reviewStatus:'third-party-unverified'});
+  rows.push({ticker:symbol,announcedDate:announced,exDate,paymentDate,perShare,sourceAmount,sourceIndicator,subject:cols[2],source:'klsescreener-dividend-history',sourceUrl:url.toString(),sourceRow:i+1,sourceLinkText:link,reviewStatus:'third-party-unverified'});
  }
  if(!rows.length)throw Error('KLSE Screener 股息历史表没有可用的完整记录。');
  return rows;

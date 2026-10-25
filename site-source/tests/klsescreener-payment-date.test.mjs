@@ -5,7 +5,7 @@ import { parseKlsescreenerDividendHtml, fetchKlsescreenerPaymentDates, approveKl
 const sourceUrl = 'https://www.klsescreener.com/v2/stocks/view/1066';
 const html = '<title>RHBBANK: RHB BANK BERHAD (1066)</title><table><thead><tr><th>Announced</th><th>Financial Year</th><th>Subject</th><th>EX Date</th><th>Payment Date</th><th>Amount</th><th>Indicator</th><th>Event</th></tr></thead><tbody><tr><td>27 Feb 2025</td><td>31 Dec 2024</td><td>Second Interim Dividend</td><td>21 Mar 2025</td><td>09 Apr 2025</td><td>0.2800</td><td>Currency</td><td>View</td></tr><tr><td>28 Aug 2024</td><td>31 Dec 2023</td><td>First Interim Dividend</td><td>17 Sep 2024</td><td>30 Sep 2024</td><td>0.1500</td><td>Currency</td><td>View</td></tr></tbody></table>';
 
-test('parses public HTML history including stock identity, all relevant dates, amounts and source', () => {
+test('parses public HTML history including stock identity, all relevant dates, amounts and source', async () => {
   const rows = parseKlsescreenerDividendHtml(html, { ticker: '1066.KL', sourceUrl });
   assert.deepEqual(rows.map(x => [x.ticker, x.exDate, x.paymentDate, x.perShare]), [['1066.KL', '2025-03-21', '2025-04-09', 0.28], ['1066.KL', '2024-09-17', '2024-09-30', 0.15]]);
   assert.equal(rows[0].sourceUrl, sourceUrl);
@@ -14,8 +14,13 @@ test('parses public HTML history including stock identity, all relevant dates, a
   const fiveDigitHtml = html.replaceAll('1066', '03050');
   const fiveDigit = parseKlsescreenerDividendHtml(fiveDigitHtml, { ticker: '03050.KL', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/03050' });
   assert.equal(fiveDigit[0].ticker, '03050.KL');
-  const percentageHtml = html.replace('<td>0.1500</td><td>Currency</td>', '<td>0.1500</td><td>Percentage</td>');
-  assert.deepEqual(parseKlsescreenerDividendHtml(percentageHtml, { ticker: '1066.KL', sourceUrl }).map(x => x.exDate), ['2025-03-21'], 'percentage-denominated history cannot be mistaken for MYR per share');
+  const percentageHtml = html.replace('<td>0.1500</td><td>Currency</td>', '<td>31.0000</td><td>Percentage</td>');
+  const historical=parseKlsescreenerDividendHtml(percentageHtml, { ticker: '1066.KL', sourceUrl });
+  assert.equal(historical.length,2,'percentage-denominated history must remain available for dates');
+  assert.equal(historical[1].perShare,null);assert.equal(historical[1].sourceAmount,31);assert.equal(historical[1].sourceIndicator,'Percentage');
+  const oldDate=(await fetchKlsescreenerPaymentDates([{ticker:'1066.KL',exDate:'2024-09-17',perShare:0.05}],{ticker:'1066.KL',cached:{ticker:'1066.KL',expiresAt:Date.now()+10000,events:historical}})).events[0];
+  assert.equal(oldDate.paymentDateCandidate,'2024-09-30');assert.equal(oldDate.paymentDateCandidateStatus,'amount-mismatch-pending-review');
+  assert.equal(oldDate.paymentDateCandidateSourceAmount,31);assert.equal(oldDate.paymentDateCandidateSourceIndicator,'Percentage');
 });
 
 test('matches by same ticker and Ex-Date, and requires explicit approval', async () => {

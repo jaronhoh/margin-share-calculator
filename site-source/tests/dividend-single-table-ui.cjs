@@ -17,7 +17,10 @@ function yahooPayload(ticker, { crash = false } = {}) {
   const dates = datesBetween('2025-03-20', '2025-04-10');
   const timestamps = dates.map(date => Math.floor(Date.parse(`${date}T04:00:00Z`) / 1000));
   const closes = ticker === '^KLSE' ? dates.map((_, i) => 1600 + i) : dates.map((_, i) => crash && i === 2 ? 0.01 : 7.3 + i * 0.01);
-  const dividends = ticker === '1155.KL' ? { [Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000)]: { date: Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000), amount: 0.29 } } : {};
+  const dividends = ticker === '1155.KL' ? {
+    [Math.floor(Date.parse('2015-02-18T04:00:00Z') / 1000)]: { date: Math.floor(Date.parse('2015-02-18T04:00:00Z') / 1000), amount: 0.06 },
+    [Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000)]: { date: Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000), amount: 0.29 },
+  } : {};
   return { chart: { result: [{ meta: { symbol: ticker, currency: 'MYR', exchangeTimezoneName: 'Asia/Kuala_Lumpur' }, timestamp: timestamps, indicators: { quote: [{ close: closes }] }, events: { dividends } }], error: null } };
 }
 
@@ -49,11 +52,17 @@ function yahooPayload(ticker, { crash = false } = {}) {
     const ticker = new URL(route.request().url()).searchParams.get('ticker');
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
       ticker, source: 'klsescreener', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155',
-      events: [{ ticker, exDate: '2025-03-21', paymentDate: '2025-04-09', perShare: 0.28, source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' }],
+      events: [
+        { ticker, exDate: '2025-03-21', paymentDate: '2025-04-09', perShare: 0.28, sourceAmount: 0.28, sourceIndicator: 'Currency', source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' },
+        { ticker, exDate: '2015-02-18', paymentDate: '2015-03-05', perShare: null, sourceAmount: 31, sourceIndicator: 'Percentage', source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' },
+      ],
     }) });
   });
   await page.goto(`http://127.0.0.1:${server.address().port}`);
   await page.locator('#resultStatus').waitFor();
+  assert.equal(await page.locator('header #openSettings').count(), 1, 'backtest parameters are in the header beside the theme control');
+  assert.equal(await page.locator('.navrow #openSettings').count(), 0, 'backtest parameters are removed from the navigation row');
+  assert.match(await page.locator('header .tag').textContent(), /VERSION\s+59/, 'header identifies the current Site version');
   await page.locator('#navDividends').click();
   const dividendPage = page.locator('#dividendPage');
   assert.equal(await dividendPage.locator('table').count(), 1, 'dividend page has exactly one table');
@@ -90,24 +99,31 @@ function yahooPayload(ticker, { crash = false } = {}) {
   await page.locator('#run').click();
   await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('已停止') || document.querySelector('#error').textContent.length > 0);
   assert.match(await page.locator('#resultStatus').textContent(), /已停止/, `force-sell run status: ${await page.locator('#error').textContent()}`);
-  assert.match(await page.locator('#resultError').textContent(), /LSR 达到 80\\.00% 强制卖出线/);
+  assert.match(await page.locator('#resultError').textContent(), /LSR 达到 80\.00% 强制卖出线/);
   assert.doesNotMatch(await page.locator('#resultError').textContent(), /保存失败/);
   assert.ok(await page.locator('#rows tr').count() > 0, 'an unresolved force-sell threshold keeps the partial backtest visible');
   assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')).selectedStockCode), '1155.KL', 'a valid Yahoo snapshot is saved even when the backtest stops at the force-sell threshold');
   await page.locator('#run').click();
   await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('回测完成'));
   assert.equal(await page.locator('#resultError').textContent(), '', 'a later valid run clears the force-sell stop message');
-  await page.waitForFunction(() => document.querySelectorAll('#dividendRows tr[data-payment-candidate]').length === 1);
+  await page.waitForFunction(() => document.querySelectorAll('#dividendRows tr[data-payment-candidate]').length === 2 || document.querySelector('#dividendError').textContent.length > 0);
+  assert.equal(await page.locator('#dividendError').textContent(), '', 'online payment-date candidates load for both Yahoo and saved historical dividend events');
   await page.locator('#closeSettings').click();
   await page.locator('#navDividends').click();
   assert.equal(await dividendPage.locator('table').count(), 1);
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24);
-  const candidateRow = page.locator('#dividendRows tr[data-payment-candidate]').first();
+  const historicalCandidate = page.locator('#dividendRows tr[data-payment-candidate]').filter({ hasText: '2015-02-18' });
+  assert.equal(await historicalCandidate.locator('td').nth(3).textContent(), '2015-03-05', 'historical Payment Date candidate appears in the Payment Date column');
+  assert.match(await historicalCandidate.textContent(), /31%（来源单位 Percentage，未换算为 RM\/股）/);
+  assert.match(await historicalCandidate.locator('[data-approve-payment]').textContent(), /采用付款日/);
+  assert.equal(await historicalCandidate.locator('[data-approve-payment]').isEnabled(), true);
+  const candidateRow = page.locator('#dividendRows tr[data-payment-candidate]').filter({ hasText: '2025-03-21' });
   assert.match(await candidateRow.textContent(), /2025-04-09/);
-  assert.match(await candidateRow.textContent(), /金额不同 · 付款日待确认/);
-  assert.match(await candidateRow.textContent(), /来源金额 RM0.28 与 Yahoo RM0.29 不同/);
+  assert.match(await candidateRow.textContent(), /来源金额不同\/单位未确认 · 付款日待确认/);
+  assert.match(await candidateRow.textContent(), /来源金额 RM0.28；记录金额 RM0.29/);
+  assert.match(await candidateRow.locator('[data-approve-payment]').textContent(), /采用付款日/);
   await candidateRow.locator('[data-approve-payment]').click();
-  await page.waitForFunction(() => document.querySelector('#dividendRows tr[data-payment-candidate]')?.textContent.includes('已确认并纳入回测'));
+  await page.waitForFunction(() => [...document.querySelectorAll('#dividendRows tr[data-payment-candidate]')].find(row => row.textContent.includes('2025-03-21'))?.textContent.includes('已确认并纳入回测'));
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24, 'approving a candidate leaves original Excel events unchanged');
   const approvedSnapshot = await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')));
   assert.equal(approvedSnapshot.marketOverrides.paymentDateApprovals[0].sourceAmount, 0.28, 'the original third-party amount is kept for audit');

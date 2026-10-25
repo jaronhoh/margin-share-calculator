@@ -84,13 +84,15 @@ async function klsescreenerDividends(request, url) {
   if (tableRows.length < 2 || tableRows.length > 3002) return badRequest('KLSE Screener 股息历史行数无效。', 502);
   const seen = new Set(), events = [];
   for (const cells of tableRows.slice(1)) {
-    if (cells.length < 7 || !/^(currency|rm|myr)$/i.test(cells[6])) continue;
-    const announcedDate = klsescreenerDate(cells[0]), exDate = klsescreenerDate(cells[3]), paymentDate = klsescreenerDate(cells[4]), perShare = Number(cells[5]);
-    if (!announcedDate || !exDate || !paymentDate || !Number.isFinite(perShare) || perShare <= 0 || perShare > 1000) continue;
-    const signature = `${exDate}|${perShare}|${paymentDate}`;
+    if (cells.length < 7) continue;
+    const sourceIndicator = String(cells[6] || '').trim(), isCurrency = /^(currency|rm|myr)$/i.test(sourceIndicator), isPercentage = /^percentage$/i.test(sourceIndicator);
+    const announcedDate = klsescreenerDate(cells[0]), exDate = klsescreenerDate(cells[3]), paymentDate = klsescreenerDate(cells[4]), sourceAmount = Number(cells[5]);
+    if (!announcedDate || !exDate || !paymentDate || !Number.isFinite(sourceAmount) || sourceAmount <= 0 || sourceAmount > 1000 || (!isCurrency && !isPercentage)) continue;
+    const perShare = isCurrency ? sourceAmount : null;
+    const signature = `${exDate}|${sourceAmount}|${sourceIndicator}|${paymentDate}`;
     if (seen.has(signature)) continue;
     seen.add(signature);
-    events.push({ ticker, announcedDate, exDate, paymentDate, perShare, subject: String(cells[2] || '').slice(0, 300), source: 'klsescreener-dividend-history', sourceUrl: upstreamUrl, reviewStatus: 'third-party-unverified' });
+    events.push({ ticker, announcedDate, exDate, paymentDate, perShare, sourceAmount, sourceIndicator, subject: String(cells[2] || '').slice(0, 300), source: 'klsescreener-dividend-history', sourceUrl: upstreamUrl, reviewStatus: 'third-party-unverified' });
   }
   if (!events.length) return badRequest('KLSE Screener 页面没有可用的完整股息记录。', 502);
   return jsonResponse({ ticker, source: 'klsescreener', sourceUrl: upstreamUrl, retrievedAt: new Date().toISOString(), expiresAt: Date.now() + 21600_000, events }, 200, 21600);
