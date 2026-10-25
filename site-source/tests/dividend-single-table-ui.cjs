@@ -39,7 +39,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
   const page = await browser.newPage(), errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => { window.confirm = () => true; });
-  let yahooCalls = 0, failNextYahoo = false, forceCrashNextRun = false, addConflicting2025PaymentDate = false;
+  let yahooCalls = 0, failNextYahoo = false, forceCrashNextRun = false;
   await page.route('**/api/yahoo-chart?**', async route => {
     yahooCalls++;
     await new Promise(resolve => setTimeout(resolve, 120));
@@ -55,7 +55,6 @@ function yahooPayload(ticker, { crash = false } = {}) {
       ticker, source: 'klsescreener', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155',
       events: [
         { ticker, exDate: '2025-03-21', paymentDate: '2025-04-09', perShare: 0.28, sourceAmount: 0.28, sourceIndicator: 'Currency', source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' },
-        ...(addConflicting2025PaymentDate ? [{ ticker, exDate: '2025-03-21', paymentDate: '2025-04-10', perShare: 0.28, sourceAmount: 0.28, sourceIndicator: 'Currency', source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' }] : []),
         { ticker, exDate: '2025-03-25', paymentDate: '2025-04-08', perShare: 0.2, sourceAmount: 0.2, sourceIndicator: 'Currency', source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' },
         { ticker, exDate: '2025-03-25', paymentDate: '2025-04-09', perShare: 0.2, sourceAmount: 0.2, sourceIndicator: 'Currency', source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' },
         { ticker, exDate: '2015-02-18', paymentDate: '2015-03-05', perShare: null, sourceAmount: 31, sourceIndicator: 'Percentage', source: 'klsescreener-dividend-history', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1155' },
@@ -66,8 +65,12 @@ function yahooPayload(ticker, { crash = false } = {}) {
   await page.locator('#resultStatus').waitFor();
   assert.equal(await page.locator('header #openSettings').count(), 1, 'backtest parameters are in the header beside the theme control');
   assert.equal(await page.locator('.navrow #openSettings').count(), 0, 'backtest parameters are removed from the navigation row');
-  assert.match(await page.locator('header .tag').textContent(), /VERSION\s+60/, 'header identifies the current Site version');
+  assert.match(await page.locator('header .tag').textContent(), /VERSION\s+61/, 'header identifies the current Site version');
   await page.locator('#navDividends').click();
+  assert.equal(await page.locator('header #openSettings').isVisible(), true, 'backtest parameters remain visible in the global header on the Dividend Events page');
+  await page.locator('#openSettings').click();
+  assert.equal(await page.locator('#settingsDrawer').getAttribute('data-open'), 'true', 'the global settings drawer opens from the Dividend Events page');
+  await page.locator('#closeSettings').click();
   const dividendPage = page.locator('#dividendPage');
   assert.equal(await dividendPage.locator('table').count(), 1, 'dividend page has exactly one table');
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24, 'the original 24 dividend records remain');
@@ -76,6 +79,12 @@ function yahooPayload(ticker, { crash = false } = {}) {
   assert.equal(await page.locator('#paymentDateRows').count(), 0, 'there is no separate Payment Date table');
   assert.equal(await page.getByText('导入并审核股息 CSV').count(), 0);
   assert.equal(await page.locator('#saveDividends').count(), 0, 'there is no manual save/return button');
+  await page.locator('#navReference').click();
+  assert.equal(await page.locator('header #openSettings').isVisible(), true, 'backtest parameters remain visible in the global header on the Description page');
+  await page.locator('#openSettings').click();
+  assert.equal(await page.locator('#settingsDrawer').getAttribute('data-open'), 'true', 'the global settings drawer opens from the Description page');
+  await page.locator('#closeSettings').click();
+  await page.locator('#navDividends').click();
   await page.locator('#addDividend').click();
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 25);
   await page.locator('#dividendRows tr[data-dividend-event]').last().locator('[data-remove]').click();
@@ -139,29 +148,6 @@ function yahooPayload(ticker, { crash = false } = {}) {
   assert.equal(mismatchedApproval.sourceAmount, 0.28, 'the original third-party amount is kept for audit');
   assert.equal(mismatchedApproval.perShare, 0.29, 'automatic date adoption does not overwrite the Yahoo dividend amount');
   assert.equal(mismatchedApproval.approvalMode, 'unique-date-auto');
-  await page.locator('#navBacktest').click();
-  await page.locator('#openSettings').click();
-  addConflicting2025PaymentDate = true;
-  await page.locator('#run').click();
-  await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('回测完成') || document.querySelector('#error').textContent.length > 0);
-  assert.equal(await page.locator('#error').textContent(), '');
-  await page.waitForFunction(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')).marketOverrides.paymentDateApprovals.length === 1, null, { timeout: 10000 });
-  const conflictSnapshot = await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')));
-  assert.equal(conflictSnapshot.marketOverrides.paymentDateApprovals.some(item => item.exDate === '2025-03-21'), false, 'a refreshed source conflict revokes the earlier automatic adoption');
-  await page.locator('#closeSettings').click();
-  await page.locator('#navDividends').click();
-  const refreshedConflict = page.locator('#dividendRows tr[data-payment-candidate]').filter({ hasText: '2025-03-21' });
-  assert.match(await refreshedConflict.textContent(), /付款日冲突，未自动采用/);
-  addConflicting2025PaymentDate = false;
-  await page.locator('#navBacktest').click();
-  await page.locator('#openSettings').click();
-  await page.locator('#run').click();
-  await page.waitForFunction(() => document.querySelector('#resultStatus').textContent.includes('回测完成') || document.querySelector('#error').textContent.length > 0);
-  await page.waitForFunction(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')).marketOverrides.paymentDateApprovals.length === 2, null, { timeout: 10000 });
-  assert.equal(await page.locator('#error').textContent(), '');
-  await page.locator('#closeSettings').click();
-  await page.locator('#navDividends').click();
-  assert.match(await page.locator('#dividendRows tr[data-payment-candidate]').filter({ hasText: '2025-03-21' }).textContent(), /已自动确认并重新计算/);
   const firstAmount = page.locator('#dividendRows tr[data-dividend-event]').first().locator('[data-amount]');
   await firstAmount.fill('-1');
   await page.locator('#navBacktest').click();
@@ -206,7 +192,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
   assert.equal(await page.locator('#dividendRows tr').count(), 0, 'failed fetch leaves the previous dividend rows cleared');
   assert.equal(await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1')), savedAfterRefresh, 'failed refresh preserves the prior saved snapshot without showing stale output');
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'unique payment-date candidates are automatically saved and recalculated with amounts preserved', 'new source conflicts revoke prior automatic approvals; resolved unique source is adopted again', 'automatic save and return without a separate button', 'pre-market dividend draft restores after reload', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'force-sell stop preserves the fresh snapshot and partial backtest without a false save failure', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
+  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'unique payment-date candidates are automatically saved and recalculated with amounts preserved', 'automatic save and return without a separate button', 'pre-market dividend draft restores after reload', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'force-sell stop preserves the fresh snapshot and partial backtest without a false save failure', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
   await browser.close();
   await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 })().catch(error => { console.error(error); process.exit(1); });

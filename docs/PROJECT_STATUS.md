@@ -259,3 +259,9 @@
 - GitHub Actions run 167（ID `40179193857`）成功；现有 Draft PR #3 已更新。
 - 现有 owner-only Site Version 60 成功部署，源提交 `e047eed1b2eaf53eff01566d1987da566fadfdcd`，deployment `appgdep_6addc575cc0881919550002f80fc2c19`。生产地址、Owner allowlist、owner-only 策略 revision 1 和零外部访客未变。生产 Yahoo/KLSE Run 本次未执行。
 - 部署后需刷新浏览器并点一次「运行」下载当前股票最新 Yahoo 行情/KLSE 股息历史；唯一候选随后自动采用，多个日期冲突仍会暂停采用。
+
+
+## 全局回测参数入口跨标签页（2026-10-25）
+
+- 「回测参数」固定在主题切换按钮旁的全局页眉中；在「回测」「股息事件」「说明」三页始终可见并可打开抽屉，切页时抽屉按既有行为关闭。
+- Node 38/38、Chromium 端到端断言、Worker 构建及 `git diff --check` 通过。现有 owner-only Site Version 61 已部署成功，来源 `6b9251681f62048ccab8dc9f39216a520f3bba02`，deployment `appgdep_6addca2576d0819196b18c829c6a2d60`；URL 和访问策略 revision 1 未变。
