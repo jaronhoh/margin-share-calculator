@@ -17,7 +17,8 @@ export function validateYahooMarketCalendar(calendar){
   if(calendar==null)return null;
   const validDate=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d+'T00:00:00Z'))&&new Date(d+'T00:00:00Z').toISOString().slice(0,10)===d;
   const valid=values=>Array.isArray(values)&&values.every(validDate);
-  if(calendar.sourceTicker!=='^KLSE'||calendar.source!=='yahoo-chart-market-calendar'||!valid(calendar.observedTradingDates)||!valid(calendar.closedDates)||typeof calendar.startDate!=='string'||typeof calendar.endDate!=='string'||!valid([calendar.startDate,calendar.endDate])||calendar.endDate<calendar.startDate)throw new Error('Yahoo 市场日历来源无效。');
+  const supplemental=calendar.supplementalObservedDates??[];
+  if(calendar.sourceTicker!=='^KLSE'||calendar.source!=='yahoo-chart-market-calendar'||!valid(calendar.observedTradingDates)||!valid(calendar.closedDates)||!Array.isArray(supplemental)||supplemental.some(item=>!item||!validDate(item.date)||!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(item.ticker)||!calendar.observedTradingDates.includes(item.date))||typeof calendar.startDate!=='string'||typeof calendar.endDate!=='string'||!valid([calendar.startDate,calendar.endDate])||calendar.endDate<calendar.startDate)throw new Error('Yahoo 市场日历来源无效。');
   const observed=new Set(calendar.observedTradingDates),closed=new Set(calendar.closedDates);
   if(observed.size!==calendar.observedTradingDates.length||closed.size!==calendar.closedDates.length||[...observed].some(d=>closed.has(d))||[...observed,...closed].some(d=>d<calendar.startDate||d>calendar.endDate)||observed.size+closed.size>5000||(Date.parse(calendar.endDate+'T00:00:00Z')-Date.parse(calendar.startDate+'T00:00:00Z'))/86400000>4999)throw new Error('Yahoo 市场日历日期冲突或超过 5,000 个日历日。');
   return{...calendar,observedTradingDates:[...observed],closedDates:[...closed]};
@@ -32,6 +33,8 @@ export function classifyMarketDate(date,{hasObservedPrice=false,marketCalendar=y
   const closure=holidayByDate.get(date);
   if(closure)return{...closure,tradeAllowed:false};
   if(marketCalendar?.closedDates?.includes(date))return{date,status:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',url:'https://finance.yahoo.com/quote/%5EKLSE/history/',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/',tradeAllowed:false};
+  const supplemental=marketCalendar?.supplementalObservedDates?.find(item=>item.date===date);
+  if(supplemental)return{status:'normal-trading-day',tradeAllowed:true,source:`Yahoo Finance ${supplemental.ticker}`};
   if(marketCalendar?.observedTradingDates?.includes(date))return{status:'normal-trading-day',tradeAllowed:true,source:'Yahoo Finance ^KLSE'};
   if(hasObservedPrice)return{status:'normal-trading-day',tradeAllowed:true};
   return{status:'unconfirmed-weekday',tradeAllowed:false};
