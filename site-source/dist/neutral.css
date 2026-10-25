@@ -20,12 +20,12 @@
 #dividendPage{grid-column:1/-1;justify-self:stretch}
 /* Give dividend entry fields comfortable widths across desktop viewports. */
 .dividend-table{table-layout:fixed;width:100%;min-width:0}
-.dividend-table th:nth-child(1),.dividend-table td:nth-child(1){width:25%}
-.dividend-table th:nth-child(2),.dividend-table td:nth-child(2){width:25%}
-.dividend-table th:nth-child(3),.dividend-table td:nth-child(3){width:42%}
-.dividend-table th:nth-child(4),.dividend-table td:nth-child(4){width:8%}
+.dividend-table th:nth-child(1),.dividend-table td:nth-child(1){width:19%}
+.dividend-table th:nth-child(2),.dividend-table td:nth-child(2){width:12%}
+.dividend-table th:nth-child(3),.dividend-table td:nth-child(3){width:29%}
+.dividend-table th:nth-child(4),.dividend-table td:nth-child(4){width:18%}
+.dividend-table th:nth-child(5),.dividend-table td:nth-child(5){width:22%}
 .dividend-table th:nth-child(n),.dividend-table td:nth-child(n){text-align:left}
-.dividend-table th:nth-child(4),.dividend-table td:nth-child(4){text-align:right}
 .dividend-table td{padding-top:10px;padding-bottom:10px}
 .dividend-table input{min-width:0;width:100%}
 @media(max-width:700px){.dividend-table{min-width:760px}}

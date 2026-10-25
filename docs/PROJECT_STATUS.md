@@ -198,26 +198,10 @@
 - **回归**：Node 全套 36/36 通过，包括 4,314 日两策略、P0 oracle 276,096项数值断言、17,256项财富守恒、24条原始股息不变、单位过滤、四/五位代码、跨股票与冲突隔离。Chromium mock E2E PASS：自动匹配、九指标预览、显式确认、付款日逐日流水入账、JSON 来源导出/导入往返，页面错误0。Site Worker build 与 `git diff --check` PASS。详细见 `docs/analysis/PAYMENT_DATE_KLSE_SCREENER_REGRESSION_2026-10-25.md`。
 - **GitHub / Sites**：源码已准备在 `feat/trading-calendar-dividend-chart-controls`；此记录先记本地验证，新的 Actions、PR 更新及现有 owner-only Site 发布结果待推送后补录。
 
+### 股息事件单表简化（2026-10-25）
 
-### Payment Date 发布补录（2026-10-25）
-
-- **GitHub**：Draft PR #3 保持 Draft；功能代码提交 `7bd3588fb8a8ade3670d6d1f34ad38a1745c09fe`；GitHub Actions `Site source tests` run 125（ID `40167908980`）SUCCESS。修复提交恢复了完整源码文件后通过自动测试。
-- **Sites**：现有 owner-only Site 已部署 Version 47，部署 `appgdep_6add9c8e3a448191aac29a6fa65568ef` 状态 succeeded；Site 源码提交 `4dcdf5ce3112029dc01d98438aec478de750f074`。原 URL、访问策略 revision 1、唯一 Owner 和零外部访客保持不变。
-- **回归**：Node 36/36 文件通过；P0 oracle 276,096 数值断言、17,256 财富守恒断言、4,314 日两策略回归、原24条股息未变。Chromium 模拟数据端到端核对、九项预览、逐笔确认、Payment Date 入账和 JSON 往返通过。
-- **资料/UI 边界**：KLSE Screener 为第三方来源，不是 Bursa 官方核实；用户必须逐笔查看来源后确认。覆盖范围依赖该站当前返回数据，未证明所有股票/年份完整。生产环境登录后的浏览器操作回归 NOT RUN；没有改变线上用户快照。
-
-
-## KLSE Screener 股息事件为空修复（2026-10-25）
-
-- **原因**：Site Worker 请求公开股票页时未发送明确的 `User-Agent`，上游返回缺少股票身份的页面；身份校验因此按安全规则拒绝显示候选，界面显示为空。
-- **修复**：股息查询请求改为携带 `MarginShareCalculator/1.0 (personal-use dividend lookup)` 应用标识及 HTML Accept 类型；不伪装成浏览器。若上游仍不含请求股票代码，保留失败关闭，并返回短身份摘要用于诊断。
-- **验证**：Site Worker 单测通过；完整 Node 自动测试 36/36 通过；现有线上 Site v50 的只读 API 验证，`1155.KL` 返回 43 条、`1066.KL` 返回 29 条股息候选，且候选均保留第三方未核实状态与来源 URL。未在生产浏览器触发 Yahoo 回测，以免改写用户本地行情快照。
-- **发布**：原 owner-only Site v50 已部署成功，源提交 `1a15d7a1ffbd8da3a66eec61485fd33bc21bf56c`；原 URL 和访问策略 revision 1 不变。PR #3 保持 Draft；代码与测试提交 `b6444c59dd4e45f3d263267c039e8ca211b8fefc` 的 GitHub Actions run 141（`40169155312`）SUCCESS，后续状态文档提交 `0ee48a4a58ebd26bfb5d2432f64c0986ebc78ca6` 的 run 142（`40169186137`）SUCCESS。
-
-
-## 股票代码与运行按钮同行布局修复（2026-10-25）
-
-- **原因与修复**：股票代码输入框继承了整行宽度，挤压运行按钮至下一行。为 `.ticker-run` 增加响应式 Grid：输入框占用剩余空间，运行按钮保持内容宽度并固定同行。
-- **浏览器回归**：本地 Chromium 在 1224×1139 桌面和 390×844 手机视口检查输入框与按钮的纵坐标相同、按钮紧随输入框；既有 Payment Date UI mock 流程也通过，页面错误为0。
-- **GitHub**：PR #3 分支已更新，CSS 提交 `3c375dee7785e6a17868af6a485d28818fc4d022`，桌面/手机布局断言提交 `830f21f5bde208dc4c2df9ea4022e2ba36815086`；布局测试提交的 GitHub Actions `Site source tests` run 145（ID `40170128515`）SUCCESS。
-- **Sites**：现有 owner-only Site 已部署 Version 51，部署 `appgdep_6adda5573bc08191861bc95511a406f8` succeeded；Site 源码提交 `2eb521ca95d8a2bf86e618f75b86ce1c5aa9d010`。原 URL 不变，访问策略仍为唯一 Owner、零外部访客。
+- **需求调整**：股息事件页面只保留一张表；移除股息 CSV 导入与审核、独立 Payment Date 候选表和指标比较表。Yahoo × KLSE Screener 匹配候选行内展示并逐项确认，来源/人工确认仍随 JSON 快照保存。
+- **数据/财务**：原 MAYBANK Excel 24 笔事件保持不变；不修改回测公式。逐日流水仍显示日历日和休市日利息。
+- **验证**：新增 Chromium 专项回归，检查唯一股息表、无股息 CSV 控件、原24条不变、事件增删、候选同表展示、逐行确认和来源快照；PASS，浏览器错误0。完整 Node 套件 36/36 PASS；P0 oracle 276,096 数值断言、17,256 财富守恒断言及4,314日两策略历史回归 PASS；`git diff --check` PASS。
+- **GitHub / Sites**：更新现有开发分支和 Draft PR #3、Actions 及现有 owner-only Site 的发布结果待本轮完成后记录；Site URL、权限和配置保持原样。
+- **限制**：KLSE Screener 是第三方来源，不等于 Bursa 官方确认；各股票可见历史完整性未被证明。线上 owner 登录态的独立 UI 交互回归未执行。
