@@ -168,3 +168,10 @@
 - 外部资料确认 Bursa 公告消息结构字段 171=Ex-Date、174=Payment Date；上市公司公开的 Bursa 公告页面含 Ex-Date、Entitlement Date、Payment Date、每股股息和 Reference Number（例如 MAYBANK 2026-09-23 除息、2026-10-22 付款）。参考：https://www.bursamalaysia.com/sites/5bb54be15f36ca0af339077a/assets/5bc04a415f36ca5cab8bf756/Announcements_Message_Structure_v1.6.pdf 与 https://maybank.listedcompany.com/news.html/id/2626995 。
 - 新增 `site-source/dist/bursa-entitlement-parser.mjs` 和 `site-source/tests/bursa-entitlement-parser.test.mjs`，从结构化公告文字抽取日期/金额/公告编号；严格拒绝缺失和无效日期。解析结果仅标记 `unverified-extracted-fields`，不能视为来源/公司身份已验证或可直接入账。
 - **PARTIAL / NOT INTEGRATED**：解析器尚未连接公开页面抓取、Yahoo 导入、股息资格引擎或 UI；真实可调用且符合授权的 Bursa API 尚未确认。新增测试文件尚未在实际 CI/Node 环境执行，未部署。
+
+### Payment Date 第四轮：KLSE Screener 取代 PDF 解析方向（2026-10-25）
+
+- 用户要求避免 Bursa PDF，优先研究 KLSE Screener 股票页面，例如 https://www.klsescreener.com/v2/stocks/view/1155/malayan-banking-berhad 。
+- 页面可公开阅读，股息历史表含 Announced / EX Date / Payment Date / Amount；示例 2026-02-27 宣布、2026-03-12 除息、2026-03-26 付款、每股 RM0.3300；2025-08-27 宣布、2025-09-11 除息、2025-09-26 付款、每股 RM0.3000。第三方资料不得标记为 Bursa 官方核实。
+- 新增 `site-source/dist/klsescreener-dividends.mjs` 和 `site-source/tests/klsescreener-dividends.test.mjs`：解析该页面股息表文字、股票代码和 URL 约束、分离 Ex-Date/Payment Date、来源和待审核标记；fixture 测试已提交，但未运行。
+- **PARTIAL**：只实现文本解析，不包含未经许可的网页抓取、反爬绕过或自动付款日应用。KLSE Screener 站点条款/机器访问授权及 Sites Worker 实际请求尚未核实；UI/Yahoo 自动运行流程未接入；不修改原24条股息、不部署。
