@@ -36,13 +36,13 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
         headers: { 'content-type': 'application/json' },
       });
     };
-    const ok = await worker.fetch(new Request('https://site.example/api/yahoo-chart?ticker=1155.KL&period1=1&period2=2', { headers: { 'user-agent': 'Test Browser', 'accept-language': 'zh-MY' } }));
+    const ok = await worker.fetch(new Request('https://site.example/api/yahoo-chart?ticker=1066.KL&period1=1&period2=2', { headers: { 'user-agent': 'Test Browser', 'accept-language': 'zh-MY' } }));
     assert.equal(ok.status, 200);
     assert.equal(ok.headers.get('cache-control'), 'no-store');
     assert.equal(calls.length, 1);
     const upstream = new URL(calls[0].url);
     assert.equal(upstream.hostname, 'query1.finance.yahoo.com');
-    assert.equal(upstream.pathname, '/v8/finance/chart/1155.KL');
+    assert.equal(upstream.pathname, '/v8/finance/chart/1066.KL');
     assert.equal(upstream.searchParams.get('interval'), '1d');
     assert.equal(upstream.searchParams.get('events'), 'div,splits');
     assert.equal(calls[0].options.headers.get('user-agent'), 'Test Browser');

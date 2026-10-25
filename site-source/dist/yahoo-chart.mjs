@@ -11,6 +11,8 @@ export function parseYahooChart(payload,{ticker='1155.KL'}={}){
   const result=chart?.result?.[0];
   if(!result)throw new Error('Yahoo 没有返回行情数据；可能为空、代码无效或请求受限。');
   if(result.meta?.symbol&&result.meta.symbol.toUpperCase()!==ticker.toUpperCase())throw new Error(`Yahoo 返回代码不匹配：${result.meta.symbol}。`);
+  if(result.meta?.currency&&result.meta.currency!=='MYR')throw new Error(`该股票报价币种为 ${result.meta.currency}；当前计算器只处理 MYR。`);
+  if(result.meta?.exchangeTimezoneName&&result.meta.exchangeTimezoneName!=='Asia/Kuala_Lumpur')throw new Error(`该股票交易时区为 ${result.meta.exchangeTimezoneName}；当前计算器只处理 Bursa Malaysia。`);
   const timestamps=result.timestamp||[],closes=result.indicators?.quote?.[0]?.close||[];
   if(!timestamps.length||timestamps.length!==closes.length)throw new Error('Yahoo 行情日期与收盘价数据不完整。');
   const rows=[],seen=new Set();
@@ -35,7 +37,7 @@ export function parseYahooChart(payload,{ticker='1155.KL'}={}){
 
 export function buildYahooChartUrl(ticker,{period1,period2}={}){
   const symbol=String(ticker||'').trim().toUpperCase();
-  if(!/^[0-9]{4}\.KL$/.test(symbol))throw new Error('Yahoo 更新只支持马来西亚股票代码，例如 1155.KL。');
+  if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(symbol))throw new Error('请输入 Yahoo Finance 的 Bursa Malaysia 代码，例如 1155.KL 或 1023.KL。');
   if(!Number.isInteger(period1)||!Number.isInteger(period2)||period1<0||period2<=period1)throw new Error('Yahoo 查询日期范围无效。');
   const url=new URL(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`);
   url.search=new URLSearchParams({period1:String(period1),period2:String(period2),interval:'1d',events:'div,splits'}).toString();

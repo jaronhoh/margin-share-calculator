@@ -7,8 +7,14 @@ assert.equal(parsed.currency,'MYR');assert.equal(parsed.timeZone,'Asia/Kuala_Lum
 assert.deepEqual(parsed.rows,[{date:'2025-10-24',close:9.12},{date:'2025-10-25',close:9.11}]);
 assert.equal(parsed.dividends[0].exDate,'2025-10-24');assert.equal(parsed.dividends[0].paymentDate,'');assert.equal(parsed.dividends[0].dateType,'ex-date-only');
 assert.deepEqual(parsed.splits,[{date:'2025-10-25',numerator:2,denominator:1,source:'yahoo-chart',ticker:'1155.KL'}]);
+const rhbPayload=structuredClone(sample);rhbPayload.chart.result[0].meta.symbol='1066.KL';
+const rhb=parseYahooChart(rhbPayload,{ticker:'1066.KL'});assert.equal(rhb.ticker,'1066.KL');assert.deepEqual(rhb.rows,parsed.rows);
 assert.match(buildYahooChartUrl('1155.KL',{period1:1,period2:2}),/interval=1d/);assert.match(buildYahooChartUrl('1155.KL',{period1:1,period2:2}),/events=div%2Csplits/);
-assert.throws(()=>buildYahooChartUrl('AAPL',{period1:1,period2:2}),/只支持马来西亚/);
+assert.equal(new URL(buildYahooChartUrl('1023.KL',{period1:1,period2:2})).pathname,'/v8/finance/chart/1023.KL');
+assert.equal(new URL(buildYahooChartUrl('1066.KL',{period1:1,period2:2})).pathname,'/v8/finance/chart/1066.KL');
+assert.throws(()=>buildYahooChartUrl('AAPL',{period1:1,period2:2}),/Bursa Malaysia/);
+assert.throws(()=>parseYahooChart({chart:{result:[{meta:{symbol:'AAPL',currency:'USD'},timestamp:[1],indicators:{quote:[{close:[10]}]}}],error:null}},{ticker:'AAPL'}),/币种为 USD/);
+assert.throws(()=>parseYahooChart({chart:{result:[{meta:{symbol:'1023.KL',currency:'MYR',exchangeTimezoneName:'America/New_York'},timestamp:[1],indicators:{quote:[{close:[10]}]}}],error:null}},{ticker:'1023.KL'}),/交易时区/);
 assert.throws(()=>parseYahooChart({chart:{error:{code:'Too Many Requests',description:'Rate limited'}}}),/Yahoo 返回错误/);
 assert.throws(()=>parseYahooChart({chart:{result:[],error:null}}),/没有返回行情/);
 assert.throws(()=>parseYahooChart({chart:{result:[{meta:{symbol:'1155.KL'},timestamp:[1,2],indicators:{quote:[{close:[null,null]}]}}],error:null}}),/空收盘价/);
@@ -19,6 +25,8 @@ const fetchImpl=async url=>{requestUrls.push(String(url));return{ok:true,json:as
 const recent=await fetchYahooChart('1155.KL',{startDate:'2025-10-24',endDate:'2025-10-25',fetchImpl,now:new Date('2025-10-26T00:00:00Z')});
 assert.equal(recent.rows.length,2);
 assert.match(requestUrls[0],/^\/api\/yahoo-chart\?/);assert.equal(new URL(requestUrls[0],'https://site.example').searchParams.get('ticker'),'1155.KL');
+const recentRhb=await fetchYahooChart('1066.KL',{startDate:'2025-10-24',endDate:'2025-10-25',fetchImpl:async()=>({ok:true,json:async()=>rhbPayload}),now:new Date('2025-10-26T00:00:00Z')});
+assert.equal(recentRhb.ticker,'1066.KL');assert.equal(recentRhb.rows.length,2);
 await assert.rejects(()=>fetchYahooChart('1155.KL',{startDate:'2025-10-24',endDate:'2025-10-25',fetchImpl:async()=>({ok:false,status:429}),now:new Date('2025-10-26')}),/限制请求/);
 await assert.rejects(()=>fetchYahooChart('1155.KL',{startDate:'2025-10-24',endDate:'2025-10-25',fetchImpl:async()=>({ok:true,json:async()=>({})}),now:new Date('2025-10-26')}),/没有返回行情/);
 console.log('PASS Yahoo Chart close-only parsing, Kuala Lumpur dates, dividend Ex-Date separation, split events, empty/error/rate-limit responses and request URL');
