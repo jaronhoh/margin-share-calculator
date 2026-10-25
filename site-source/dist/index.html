@@ -34,7 +34,7 @@
   <div id="drawerBackdrop" class="drawer-backdrop" data-open="false"></div>
   <aside id="settingsDrawer" class="drawer" data-open="false" role="dialog" aria-modal="true" aria-labelledby="inputs-title" aria-hidden="true" tabindex="-1">
     <section class="card"><div class="drawer-title"><h2 id="inputs-title">回测参数</h2><button id="closeSettings" class="secondary" type="button">关闭</button></div>
-      <div class="pair"><div class="field"><label for="stockCode">股票代码</label><div class="ticker-run"><input id="stockCode" type="text" value="1155.KL" maxlength="24" autocomplete="off"><button id="run" class="primary" type="button">运行</button></div><small>输入 Bursa Malaysia 代码（例如 1155.KL、1066.KL），「运行」会直接从 Yahoo Finance 获取并回测。</small></div><div class="field"><label for="startDate">回测开始日</label><input id="startDate" type="date" value="2015-01-01"></div></div><div class="field"><label for="endDate">回测结束日</label><input id="endDate" type="date"><small>默认到今天；未完成的当日行情不会纳入。</small></div>
+      <div class="field"><label for="stockCode">股票代码</label><div class="ticker-run"><input id="stockCode" type="text" value="1155.KL" maxlength="24" autocomplete="off"><button id="run" class="primary" type="button">运行</button></div><small>输入 Bursa Malaysia 代码（例如 1155.KL、1066.KL），「运行」会直接从 Yahoo Finance 获取并回测。</small></div><div class="field"><label for="startDate">回测开始日</label><input id="startDate" type="date" value="2015-01-01"></div><div class="field"><label for="endDate">回测结束日</label><input id="endDate" type="date"><small>默认到今天；未完成的当日行情不会纳入。</small></div>
       <div class="field"><label for="cashBudget">手上可用现金 (RM)</label><input id="cashBudget" type="number" min="0" step="0.01" value="105139.75" aria-describedby="cashBudgetHelp"><small id="cashBudgetHelp">按目标 LSR 自动拆分自有/融资股数，并计入初始买入费用；仅买入100股整手。<span id="allocationEstimate" role="status"></span></small></div>
       <div class="pair"><div class="field"><label for="ownShares">自有股数（自动）</label><input id="ownShares" type="number" min="0" step="100" value="11400" readonly></div><div class="field"><label for="financedShares">融资股数（自动）</label><input id="financedShares" type="number" min="0" step="100" value="17100" readonly></div></div>
       <div class="pair"><div class="field"><label for="startPrice">开始日收盘价 (RM)</label><input id="startPrice" type="number" min="0.01" step="0.01" value="9.17" readonly></div><div class="field"><label for="annualRate">年利率 (%)</label><input id="annualRate" type="number" min="0" max="100" step="0.01" value="5"><small>沿用 PoC 默认 5%；请按合约更新（示例：<a href="https://www.rakutentrade.my/b/press-office/rakuten-trade-lowers-rakumargin-interest-rate-to-5-5-p-a-reinforcing-commitment-to-cost-efficient-trading" target="_blank" rel="noopener">Rakuten 5.5%</a>、<a href="https://www.berjayasecurities.com.my/share-margin-financing/" target="_blank" rel="noopener">Berjaya 10.5%</a>）。</small></div></div>
@@ -59,7 +59,7 @@
     import {commitSnapshot} from './market-data.mjs';
     import {clearSnapshot,loadSnapshot,saveSnapshot} from './persistence.mjs';
     import {fetchYahooChart} from './yahoo-chart.mjs';
-    import {classifyMarketDate,setYahooMarketCalendar} from './market-calendar.mjs';
+    import {classifyMarketDate,setYahooMarketCalendar,confirmedMarketHoliday} from './market-calendar.mjs';
     import {createYahooMarketCalendar,expandYahooCalendarRows,mergeYahooMarketCalendars} from './yahoo-calendar.mjs';
     const $=id=>document.getElementById(id), ids=['startDate','endDate','cashBudget','ownShares','financedShares','startPrice','annualRate','targetLsr','refinanceTrigger','marginCallLsr','forceSellLsr','callStrategy','safeGap','feeRate','brokerageMinimum','stampDutyRate','clearingFeeRate','sstRate','lotSize'];
     const klToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kuala_Lumpur',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -128,9 +128,11 @@
         let effectiveEnd=end;if(end===today&&calendarLast<end&&new Date(`${end}T00:00:00Z`).getUTCDay()!==0&&new Date(`${end}T00:00:00Z`).getUTCDay()!==6)effectiveEnd=calendarLast;
         if(calendarLast<effectiveEnd){for(let date=addDays(calendarLast,1);date<=effectiveEnd;date=addDays(date,1)){const status=classifyMarketDate(date).status;if(!['weekend','confirmed-market-holiday'].includes(status))throw new Error(`Yahoo ^KLSE 尚未确认 ${date} 是否为休市日；请将回测结束日设为最近已确认的交易日。`);}}
         const calendarEnd=calendarLast<effectiveEnd?calendarLast:effectiveEnd;
-        const freshCalendar=createYahooMarketCalendar(calendarData.rows,{startDate:start,endDate:calendarEnd});
         const targetObserved=data.rows.filter(row=>row.date>=start&&row.date<=effectiveEnd);
-        if(targetObserved.some(row=>!freshCalendar.observedTradingDates.includes(row.date)))throw new Error('Yahoo 股票行情与 ^KLSE 基准交易日期不一致，已停止回测。');
+        const tickerOnlyDates=targetObserved.filter(row=>!calendarData.rows.some(marketRow=>marketRow.date===row.date));
+        const invalidTickerDates=tickerOnlyDates.filter(row=>{const weekday=new Date(`${row.date}T00:00:00Z`).getUTCDay();return weekday===0||weekday===6||confirmedMarketHoliday(row.date);});
+        if(invalidTickerDates.length){const dates=invalidTickerDates.slice(0,5).map(row=>row.date).join('、'),more=invalidTickerDates.length>5?` 等 ${invalidTickerDates.length} 日`:'';throw new Error(`Yahoo 日期冲突：${ticker} 在周末或 Bursa 已确认休市日返回行情（${dates}${more}）。为避免误按休市日交易，请检查 Yahoo 日期或交易所资料后再试。`);}
+        const freshCalendar=createYahooMarketCalendar(calendarData.rows,{startDate:start,endDate:calendarEnd,additionalObservedRows:tickerOnlyDates,additionalSourceTicker:ticker});
         const marketCalendar=mergeYahooMarketCalendars(marketDataSource.marketCalendar,freshCalendar);
         const incoming=expandYahooCalendarRows(data.rows,{startDate:start,endDate:effectiveEnd,classifyMarketDate,marketCalendar});
         const startPrice=incoming.find(row=>row.date===start)?.close;if(!startPrice)throw new Error(`Yahoo 行情无法为开始日 ${start} 提供有效估值。`);
