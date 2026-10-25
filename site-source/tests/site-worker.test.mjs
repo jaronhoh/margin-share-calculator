@@ -92,6 +92,7 @@ test('Site Worker serves the app and same-origin Yahoo requests with safe valida
     globalThis.fetch = async () => new Response(marketHtml.replaceAll('1066', '1155'), { status: 200 });
     const wrongStock = await worker.fetch(new Request('https://site.example/api/klsescreener-dividends?ticker=1066.KL'));
     assert.equal(wrongStock.status, 502, 'source page must contain the requested stock code');
+    assert.match((await wrongStock.json()).error, /RHBBANK.*1155/, 'stock identity failures include a short title diagnostic');
     globalThis.fetch = async url => {
       calls.push({ url: String(url) });
       return new Response(marketHtml.replaceAll('1066', '03050'), { status: 200, headers: { 'content-type': 'text/html' } });
