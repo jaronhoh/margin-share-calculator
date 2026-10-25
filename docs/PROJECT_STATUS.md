@@ -305,3 +305,74 @@
 
 - PR #3 分支源码、测试与 Markdown 已对齐现有 Site Version 64；对应提交 `798237a22ba51ecfc7b0966bfda70589bdb820ec` 的 GitHub Actions run 187（ID `40185041703`）SUCCESS。
 - 最新工作副本验证：Node 38/38、P0 两策略 4,314 日财务回归、Chromium 股息表 E2E 和 Worker build 通过。PR 保持 Draft；Sites 已部署记录见上文。
+
+## Production UAT — Version 64（2026-10-25）
+
+### 范围与环境
+
+- Site: [Margin Share Calculator](https://margin-share-calculator-poc-20261021.savoryboar128.chatgpt.site/)，实测标签显示 **PRIVATE · OWNER ONLY · VERSION 64**；项目记录中 Version 64 部署源为 `f11eb94d385096e06c9a3fb38c21844aee7f43c2`，deployment `appgdep_6addd7bfdd9c8191a1f46771293f4d68`。Site URL、Owner-only 权限、allowlist 与配置未更改，也未重新部署。
+- 用户原有 Safari 标签只读；测试在独立 IAB 浏览器配置中运行，以隔离其 localStorage。未修改原有股息数据。
+- 通过 Yahoo Finance 分别运行 1155.KL、1066.KL、1295.KL；每只均显示 4,316 日（2015-01-01 至 2026-10-25）并使用各自 ticker 的 KLSE Screener 候选来源。
+- Site Version 64 的日期为用户验收目标版本；GitHub PR 源码和部署源分别核对，PR #3 仍为 Draft/open。Actions 最近已知成功记录是功能分支 commit `6a0e8f539917ad8eb413f9a1302aa71356cf5dc9` 的 run 189（ID `40185121667`）；本次文档提交后的运行状态见后续 Actions 查询，不将旧 run 当作新提交结果。
+
+### 总体结果
+
+| 项目 | 结果 |
+|---|---:|
+| Site Version / Test Date | Version 64 / 2026-10-25 |
+| 环境 / 类型 | ChatGPT Sites / Production UAT（业务页面）；改动与输入限独立浏览器配置 |
+| 测试案例总数 | 18 |
+| Passed / Failed / Blocked / Not Tested | 12 / 1 / 4 / 1 |
+| Executed / Pass Rate | 13 / 92.3%（12 ÷ 13） |
+| Overall Status | **FAIL** |
+
+### 按股票结果
+
+| 股票 | Yahoo 行情 | 股息历史 | Payment Date | 回测 | Overall |
+|---|---|---|---|---|---|
+| 1155.KL MAYBANK | PASS | PASS（候选可见；来源金额/日期完整性未证实） | BLOCKED（未逐笔独立核实） | PASS | BLOCKED |
+| 1066.KL RHB BANK | PASS | PASS（23 个在线候选） | BLOCKED（未逐笔独立核实） | PASS | BLOCKED |
+| 1295.KL PUBLIC BANK | PASS | PASS（19 个在线候选） | BLOCKED（存在待核验金额差异） | FAIL（重跑覆盖手工每股金额） | FAIL |
+
+### 详细测试结果
+
+| No. | 测试描述 | 预期 | 实际结果 | 结果 |
+|---|---|---|---|---|
+| TC-001 | Yahoo Finance 历史价格（三股） | 各 ticker 获取并完成行情回测 | 三股均实际运行成功；各显示4,316日。 | PASS |
+| TC-002 | KLSE Screener 股息候选（三股） | 返回所选股票的候选，不串股 | MAYBANK显示24条原始事件/24个在线候选；RHB 23个候选；PBB 19个候选，候选来源指向对应 ticker 页面。 | PASS |
+| TC-003 | Ex-Date 与来源核对 | 日期逐项与可追溯来源一致 | 本次只核验界面呈现与单条/默认映射，未逐笔比对全部历史来源。 | BLOCKED |
+| TC-004 | Payment Date 来源正确性 | 付款日与来源一致 | 唯一日期能自动采用；但未逐笔独立核实三股完整历史日期。PBB 页面还显示多个日期/金额待核验状态。 | BLOCKED |
+| TC-005 | 股息金额正确性 | 与来源单位一致；差异有标记 | PBB 候选与现存金额可见差异，例如 2018-03-13 来源 0.34、现有 0.07；2018-09-05 来源 0.32、现有 0.06。金额单位未获独立核实，不能推断换算。 | BLOCKED |
+| TC-006 | 唯一 Payment Date 自动采用 | 单一付款日期自动保存并重算 | RHB/PBB 页面显示自动采用；MAYBANK默认日期映射显示24项。 | PASS |
+| TC-007 | 多 Payment Date 冲突 | 冲突阻止自动采用 | 未构造或观察到真实多日期冲突事件。 | NOT TESTED |
+| TC-008 | Ex-Date 与 Payment Date 分离入账 | 只在 Payment Date 入账 | PBB 2017-08-17 付款日逐日流水显示股息 RM4,033.80；Ex-Date 不作为入账日。 | PASS |
+| TC-009 | 每日融资利息 | 周末、休市日仍逐日计息 | PBB 2015-01-01 与 1月3、4日逐日各计 RM21.41；累计由 RM21.41 增至 RM85.63，价格/市值空白。 | PASS |
+| TC-010 | Loan Balance 与回测汇总 | 债务/净资产/LSR 等有值 | 三股均完成实际回测并显示贷款余额、净资产和 LSR；MAYBANK债务 RM1,118,885.70 / 净资产 RM602,380.37 / LSR 65.00%；RHB RM2,344,752.54 / RM1,089,791.54 / 68.27%；PBB（编辑后）RM1,951,778.46 / RM1,084,421.54 / 64.28%。本次未以独立引擎 oracle 逐日复算。 | PASS |
+| TC-011 | Ledger、图表、价格线与日期筛选 | 图表/流水与当前回测数据呈现一致 | 图表可见；股票价格曲线开关关闭/恢复时 SVG 路径数由5变4再回5；筛选控件显示“全部日期/每月最后一天”。本次未保存逐项筛选前后行数，筛选结果完整性未作判定。 | PASS（呈现与开关）；筛选深度未验证 |
+| TC-012 | 手动编辑三项股息字段 | Ex-Date、Payment Date、金额可保存 | 隔离 PBB 行将 Ex-Date 2017-08-07→08-08、Payment Date 08-17→08-18、金额 0.054→0.055；页面确认人工编辑已保存。 | PASS |
+| TC-013 | 刷新后持久化 | 三个字段刷新后均恢复 | 刷新后两项日期仍显示编辑值；本轮未在刷新后核实金额字段。 | BLOCKED |
+| TC-014 | 重跑保留人工编辑 | 手工改值不得被在线候选覆盖 | 重跑 1295.KL 后 Ex-Date/Payment Date 保留，但每股金额从 0.055 恢复为 0.05400000140070915。复现于线上 Version 64 的隔离配置。 | FAIL |
+| TC-015 | 股票间数据隔离 | 不混用其他股票的行情/股息 | 切换 RHB、PBB 后分别显示对应 ticker 与候选数；其他股票不显示 MAYBANK 24 条默认事件。 | PASS |
+| TC-016 | MAYBANK 原24笔股息 | 24笔原始数据保持完整 | 隔离 Site 数据显示24条原始事件；用户原 Safari 标签只读看到24条，未做任何写操作。 | PASS |
+| TC-017 | Browser Console | 无未处理错误 | 三股运行及本轮 UI 检查后，隔离标签 Console error 日志为空。 | PASS |
+| TC-018 | 行情来源失败处理 | 明确错误且不伪造价格 | 使用不存在的 99999.KL 实际请求后显示“Yahoo 请求失败（HTTP 404）”；无行情记录，状态提示旧快照保留。 | PASS |
+
+### 缺陷与证据边界
+
+| 缺陷 | 严重度 | 股票 | 描述 | 根因 | 状态 |
+|---|---|---|---|---|---|
+| BUG-UAT-001 | High（数据完整性） | 1295.KL | 自动确认的线上事件在重跑后将手动金额 0.055 改回 Yahoo 候选 0.054，尽管 Ex-Date/Payment Date 编辑被保留。 | Version 64 的实际运行路径在重新匹配时未保留该手工金额；原因待源码/部署差异进一步定位。PR 源码分支包含相应的编辑保留回归，但此次线上结果与分支测试记录不一致。 | Open / 需针对 Site 运行路径修复并再测 |
+| BUG-UAT-002 | Medium（市场数据可信度） | 1295.KL | 多笔候选 sourceAmount 与现有每股金额相差约5倍，页面保留待核验提示。 | KLSE Screener 的 Currency/Percentage/sourceAmount 语义与旧记录单位未通过权威资料完成核对。没有擅自换算或改值。 | Open / 人工核实 |
+
+Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态、三股真实回测摘要、PBB 付款日流水和逐日利息、编辑/重跑前后值、Yahoo 404 文案，以及本轮 Console 查询。浏览器截图在本次交互会话中采集，未导出为持久化文件。来源入口：[KLSE Screener 1155](https://www.klsescreener.com/v2/stocks/view/1155)、[1066](https://www.klsescreener.com/v2/stocks/view/1066)、[1295](https://www.klsescreener.com/v2/stocks/view/1295)。来源页面为第三方资料，UAT未将其描述为交易所权威数据。原始用户标签及数据未改；破坏性操作只在隔离配置执行。
+
+### 最终 UAT 结论
+
+1. 是否可以正常使用：**BLOCKED**（行情与一般回测可用；自动股息及手工修订保护尚有未通过项）。
+2. Payment Date 是否可以自动获取：**PASS（可取候选并在唯一日期时自动采用）**；历史来源正确性整体 **BLOCKED**。
+3. Payment Date 是否正确影响回测：**PASS（已观察到付款日流水入账）**；全历史金额/日期精度仍 **BLOCKED**。
+4. 是否存在 Critical/High 缺陷：**YES**（BUG-UAT-001，High 数据完整性）。
+5. 是否建议正式验收：**REJECT**，修复并重测线上对应路径后再验收。
+6. 后续事项：修复并用隔离配置重测 Version 64/后续授权版本的手工金额保护；核实 KLSE Screener金额单位与历史事件日期；补测多付款日冲突、刷新金额持久化、逐项筛选结果、Tooltip、移动端及亮/暗模式矩阵。数据源故障已用 HTTP 404 覆盖；真实超时/限流场景未注入。
+7. Sites：**NOT DEPLOYED — 等待用户批准。**
+
