@@ -53,3 +53,9 @@
 - PR 分支源码现已同步 Site Version 64，含24笔独立 Ex-Date/Payment Date 映射、编辑保存、旧快照迁移保护及不向其他代码套用默认日期。
 - 原始 Excel Table1 24笔记录不变；KLSE Screener 日期表为用户提供的第三方资料，不表示 Bursa 官方核实。
 - Node 38/38、P0 两策略4,314日回归、Chromium E2E、Worker build 在工作副本通过；当前 Actions 结果见项目状态文件的发布补录。
+
+
+## GitHub 同步验收补录（2026-10-25）
+
+- PR #3 的 `site-source`、单元测试、Chromium 回归及需求/PRD/状态/分析 Markdown 已同步至 Version 64 对应行为；Actions run 187（提交 `798237a22ba51ecfc7b0966bfda70589bdb820ec`，ID `40185041703`）SUCCESS。
+- PR 维持 Draft。Sites 原 URL 与 owner-only 访问策略不变。
