@@ -16,7 +16,7 @@
 | 逐日流水 CSV（AC-CSV-01） | 文件名包含实际回测股票代码和起止日；数据内容维持全日历日和休市日利息 | Chromium 下载检查默认 `1155.KL` 与非默认 `1066.KL` 文件名；CSV 行内容与利息断言通过 | PASS | 文件名清理规则将非字母数字、点、连字符字符替换为连字符 |
 | 股息与付款日 | 保留 Excel 原始24笔；Ex-Date、Record Date、Payment Date 分开；未知付款日不得伪造 | 股息回归确认原24条及来源信息未被更改；审核功能要求付款日确认 | PARTIAL | 真实 Payment Date、金额和逐条公司公告仍待人工/来源核实 |
 | 图表与响应式 UI | 趋势线复选框、Tooltip、价格曲线、日期过滤、Light/Dark、桌面/移动端可用 | 本地 Chromium 2152/1440/1075/390 px × Light/Dark 共8组通过；页面错误0 | PASS（本地） | 线上登录态跨浏览器回归 NOT RUN |
-| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 仍 Draft；代码/测试 Actions run 92（ID `40158780725`）和 PRD v0.17 Actions run 95（ID `40159224630`）成功；现有 Site Version 46 部署 succeeded | PASS（已记录发布） | 本次新文档整理的 Actions 运行须在提交后复核 |
+| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 仍 Draft；代码/测试 Actions run 92（ID `40158780725`）和 PRD v0.17 Actions run 95（ID `40159224630`）成功；现有 Site Version 46 部署 succeeded | PASS（已记录发布） | 文档整理阶段的 GitHub Actions run 99（ID `40159877853`）于提交 `7fdebb292300122778ee3ccf635111a3c6728351` 上成功；源码测试仍为 run 92（ID `40158780725`） |
 
 ## 当前有效规则与旧文档处理
 
