@@ -2,7 +2,7 @@
 
 更新时间：2026-10-25（Asia/Kuala_Lumpur）  
 适用分支：`feat/trading-calendar-dividend-chart-controls`  
-本文件是当前实现/验收状态的单一摘要。需求定义见 [Requirements](REQUIREMENTS.md) 与 [PRD v0.23](../prd/PRD文档.md)。旧章节与早期状态报告用于历史追溯；冲突时以本矩阵和更新日期较新的状态记录为准。
+本文件是当前实现/验收状态的单一摘要。需求定义见 [Requirements](REQUIREMENTS.md) 与 [PRD v0.24](../prd/PRD文档.md)。旧章节与早期状态报告用于历史追溯；冲突时以本矩阵和更新日期较新的状态记录为准。
 
 状态含义：**PASS** = 本地实现和指定回归通过；**PARTIAL** = 部分验证完成且有明确缺口；**BLOCKED** = 缺少必要资料/标准；**NOT RUN** = 未执行。
 
@@ -14,11 +14,12 @@
 | P0 财务引擎 | 每日计息及月末资本化；休市日仍计息；交易不得发生于非交易日；持股、债务、净资产、LSR、风险动作按规则计算 | P0 oracle 276,096 数值断言、17,256 财富守恒断言通过；4,314日两策略结果与已保存基线一致；休市日计息专测通过 | PASS（规则回归） | 与 Excel 原公式/缓存逐行等价性仍 FAIL/BLOCKED，不能把 oracle 通过解释为 Excel 等价 |
 | 逐日流水（AC-LEDGER-01） | 展示整个模拟日历；休市日行情/估值/风险/交易栏空白，贷款与日息保留；日期筛选和排序可用 | 本地 Chromium Yahoo E2E 与主 UI 回归通过；休市日行和正日息均有断言 | PASS | 生产 Site 登录后的完整交互验收未执行 |
 | 逐日流水 CSV（AC-CSV-01） | 文件名包含实际回测股票代码和起止日；数据内容维持全日历日和休市日利息 | Chromium 下载检查默认 `1155.KL` 与非默认 `1066.KL` 文件名；CSV 行内容与利息断言通过 | PASS | 文件名清理规则将非字母数字、点、连字符字符替换为连字符 |
-| 股息与付款日（R-027 / AC-PAY） | MAYBANK `1155.KL` 为默认并支持其他四/五位 Bursa 代码；Yahoo 运行后按代码读取 KLSE Screener 历史；原始事件与候选共用唯一股息表；逐项显式确认后纳入回测；不提供股息 CSV 导入/审核；来源和确认随 JSON 保存 | Node 覆盖解析、匹配、跨代码隔离、金额差异、冲突、缓存、Worker 与快照；Chromium 专测覆盖唯一表、无 CSV、原24条保持、增加/删除事件、候选行内确认及快照来源保存；全套 Node 36/36 通过，P0 oracle 276,096 数值断言、17,256 财富守恒断言及4,314日两策略回归通过 | PASS（本地实现/回归）；PARTIAL（资料权威性） | KLSE Screener 是第三方，不代表 Bursa 官方核验；页面历史范围会变化，未证明每个股票/年份完整；生产 Site/CI 状态以本轮最终记录为准 |
+| 股息与付款日（R-027 / AC-PAY） | MAYBANK `1155.KL` 为默认并支持其他四/五位 Bursa 代码；Yahoo 运行后按代码读取 KLSE Screener 历史；原始事件与候选共用唯一股息表；逐项显式确认后纳入回测；不提供股息 CSV 导入/审核；来源和确认随 JSON 保存 | Node 覆盖解析、匹配、跨代码隔离、金额差异、冲突、缓存、Worker 与快照；Chromium 专测覆盖唯一表、无 CSV、原24条保持、增加/删除事件、候选行内确认及快照来源保存；全套 Node 37/37 通过，P0 oracle 276,096 数值断言、17,256 财富守恒断言及4,314日两策略回归通过 | PASS（本地实现/回归）；PARTIAL（资料权威性） | KLSE Screener 是第三方，不代表 Bursa 官方核验；页面历史范围会变化，未证明每个股票/年份完整；生产 Site/CI 状态以本轮最终记录为准 |
 | 强制卖出阈值停止（AC-FS-01/02） | 达到阈值时停止并显示原因/部分结果；不自动卖出；业务停止不误报保存失败；有效 Yahoo 快照仍保存 | Chromium 强平阈值崩盘专项：部分流水可见、快照保存，错误文案无“保存失败”；随后正常回测通过 | PASS（本地专项回归） | 强制卖出交易执行规则仍待业务确认 |
+| Payment Date 候选匹配（R-027 / AC-PAY-04/05） | 同一股票与 Ex-Date 唯一命中时，金额不同仍展示付款日候选；差异、源链接可见；确认不改 Yahoo 金额；多个付款日期冲突时禁用确认 | Node 37/37；单表 Chromium 金额差异确认与快照来源金额保留 PASS | PASS（本地回归） | Yahoo 未提供该 Ex-Date 或 KLSE 无对应记录时仍无候选；KLSE 仍为第三方资料，须人工确认 |
 | 股息事件自动保存（R-029 / AC-DIV-SAVE） | 股息编辑自动保存；有行情时写入快照，无行情时按代码存草稿并在刷新后恢复；点击「回测」时同步校验/保存并返回，不显示单独保存按钮；失败留在当前页；Payment Date 仍逐项确认 | Chromium 专项回归覆盖按钮移除、无行情草稿跨刷新恢复、编辑后导航、JSON 快照及无效数据/存储失败处理 | PASS | GitHub Actions run 156 成功；现有 owner-only Site Version 55 发布成功 |
 | 图表与响应式 UI | 趋势线复选框、Tooltip、价格曲线、日期过滤、Light/Dark、桌面/移动端可用 | 本地 Chromium 2152/1440/1075/390 px × Light/Dark 共8组通过；页面错误0 | PASS（本地） | 线上登录态跨浏览器回归 NOT RUN |
-| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 保持 Draft；实现提交 `7760eceef0b98a101d0a872f358ee6443b21a511` 的 Actions run 159（ID `40173805028`）成功；现有 owner-only Site Version 57 部署 succeeded | PASS | Site URL 与 owner-only 权限保持不变；线上交互验收仍 NOT RUN |
+| GitHub / 发布 | 当前开发分支、Draft PR、Actions 与原 Site 发布状态可追溯 | PR #3 保持 Draft；实现提交 `32adb862c780fa1f087f66a452317a958b740b6b` 的 Actions run 161（ID `40176185358`）成功；现有 owner-only Site Version 58 已部署成功，来源 Site commit `b6ba77aa19bfb02100731e471bc9ed622c8fe1c1`，部署 ID `appgdep_6addbd5ba334819194ea56940f79b4a4` | PASS | Site URL 与 owner-only 权限保持不变；线上交互验收仍 NOT RUN |
 
 ## 当前有效规则与旧文档处理
 

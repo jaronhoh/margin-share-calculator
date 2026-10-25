@@ -229,3 +229,12 @@
 - **修复**：回测停止提示与渲染/持久化状态分离。业务阈值触发时停止并保留部分结果，不执行未经确认的自动卖出；只要行情验证与快照保存成功，就保存新快照和部分结果。只有真实渲染、校验或保存失败才回滚，原失败安全边界保留。财务公式与触发规则未改。
 - **回归**：Chromium 强平阈值崩盘场景通过：达到80%后结果显示“已停止”和业务原因，部分流水可见，未出现“保存失败”，候选快照已保存；随后正常运行恢复成功。该专项测试随实现提交 `7760eceef0b98a101d0a872f358ee6443b21a511` 通过。GitHub Actions run 159（ID `40173805028`）SUCCESS。该记录不代表待确认的强平执行规则已获业务确认。
 - **GitHub / Site**：实现提交已更新现有 Draft PR #3。现有 owner-only Site Version 57、deployment `appgdep_6addb31b5f70819198353f1308bf715e` 成功，来源 Site commit `e5af80718898d1aa4cd02f8d0b1aa87e45133b87`；Site URL 与访问权限不变。此文档更新只同步 PR 内容，不需重新部署 Site。
+
+
+### KLSE Screener 付款日候选金额不一致处理（2026-10-25）
+
+- **问题**：付款日匹配原先要求 Yahoo 与 KLSE Screener 的 Ex-Date、每股金额完全一致。若日期唯一但金额因来源精度/调整口径不同，界面直接显示“金额不一致”且不给付款日，尽管 KLSE Screener 有对应记录。
+- **改进**：同股票、同 Ex-Date 且只有一个 KLSE 付款日时保留待确认日期；界面展示 Yahoo 与第三方金额差异和来源链接。确认只采纳 Payment Date，回测金额继续采用 Yahoo 金额；不自动确认或改股息额。若日期冲突则维持阻止状态，不做邻近日期猜测。确认快照保存第三方金额用于追溯。
+- **测试**：付款日匹配专项 Node 测试、全套 Node 37/37、单表 Chromium 金额差异确认与快照来源金额留痕均 PASS；浏览器错误0；Worker 构建与 `git diff --check` PASS。GitHub Actions run 161（ID `40176185358`）SUCCESS，测试代码提交 `32adb862c780fa1f087f66a452317a958b740b6b`。
+- **发布**：PR #3 已更新。现有 owner-only Site Version 58 已部署成功（deployment `appgdep_6addbd5ba334819194ea56940f79b4a4`），来源 Site commit `b6ba77aa19bfb02100731e471bc9ed622c8fe1c1`；原 URL 与 owner-only 权限不变。已验证部署记录成功并在新浏览器标签加载线上 Site。线上本轮未点击 Yahoo「运行」，避免刷新个人行情快照；候选数据需按所选股票点击运行后重新获取。
+- **限制**：此改进只解决“同一 Ex-Date 有唯一 KLSE 记录但金额不同”；Yahoo 未返回的 Ex-Date、KLSE 无数据的历史行仍无自动候选；KLSE Screener 是第三方来源，记录仍需用户核验。
