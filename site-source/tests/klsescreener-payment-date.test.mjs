@@ -18,7 +18,7 @@ test('parses public HTML history including stock identity, all relevant dates, a
   assert.deepEqual(parseKlsescreenerDividendHtml(percentageHtml, { ticker: '1066.KL', sourceUrl }).map(x => x.exDate), ['2025-03-21'], 'percentage-denominated history cannot be mistaken for MYR per share');
 });
 
-test('matches only same ticker, Ex-Date and exact per-share amount, and requires explicit approval', async () => {
+test('matches by same ticker and Ex-Date, and requires explicit approval', async () => {
   const yahoo = [{ ticker: '1066.KL', exDate: '2025-03-21', perShare: 0.28 }];
   const klse = parseKlsescreenerDividendHtml(html, { ticker: '1066.KL', sourceUrl });
   const [candidate] = (await fetchKlsescreenerPaymentDates(yahoo, { ticker: '1066.KL', cached: { ticker: '1066.KL', expiresAt: Date.now() + 10000, events: klse } })).events;
@@ -28,7 +28,15 @@ test('matches only same ticker, Ex-Date and exact per-share amount, and requires
   assert.throws(() => approveKlsescreenerPaymentDate(candidate), /人工确认/);
   assert.equal(approveKlsescreenerPaymentDate(candidate, { confirm: true }).paymentDate, '2025-04-09');
   const mismatch = (await fetchKlsescreenerPaymentDates([{ ...yahoo[0], perShare: 0.29 }], { ticker: '1066.KL', cached: { ticker: '1066.KL', expiresAt: Date.now() + 10000, events: klse } })).events[0];
-  assert.equal(mismatch.paymentDateCandidateStatus, 'amount-mismatch');
+  assert.equal(mismatch.paymentDateCandidate, '2025-04-09');
+  assert.equal(mismatch.paymentDateCandidateStatus, 'amount-mismatch-pending-review');
+  assert.equal(mismatch.paymentDateCandidateSourceAmount, 0.28);
+  assert.equal(approveKlsescreenerPaymentDate(mismatch, { confirm: true }).perShare, 0.29, 'approving the date does not replace the Yahoo amount');
+  const ambiguousHtml = html.replace('09 Apr 2025', '10 Apr 2025');
+  const ambiguousRows = parseKlsescreenerDividendHtml(ambiguousHtml, { ticker: '1066.KL', sourceUrl });
+  const ambiguous = (await fetchKlsescreenerPaymentDates([{ ...yahoo[0], perShare: 0.29 }], { ticker: '1066.KL', cached: { ticker: '1066.KL', expiresAt: Date.now() + 10000, events: [...klse, ...ambiguousRows] } })).events[0];
+  assert.equal(ambiguous.paymentDateCandidate, null);
+  assert.equal(ambiguous.paymentDateCandidateStatus, 'conflicting-payment-dates');
 });
 
 test('fetches only same-origin Worker route, validates ticker isolation, and supports six-hour cached history', async () => {

@@ -12,13 +12,18 @@ export function reconcileKlsescreenerDividends(yahooEvents,klseEvents,{ticker:st
   if(ticker(y.ticker||symbol)!==symbol||!iso(y.exDate)||!amount(y.perShare))throw Error('Yahoo 股息记录无效。');
   const sameDay=records.filter(x=>x.exDate===y.exDate);
   const exact=sameDay.filter(x=>Math.abs(x.perShare-y.perShare)<=amountTolerance);
-  const dates=[...new Set(exact.map(x=>x.paymentDate))];
-  const status=dates.length>1?'conflicting-payment-dates':dates.length===1?'third-party-match-pending-review':sameDay.length?'amount-mismatch':'no-matching-payment-date';
-  return {...y,paymentDate:y.paymentDate||'',paymentDateCandidate:dates.length===1?dates[0]:null,paymentDateCandidateSource:dates.length===1?exact[0].sourceUrl:null,paymentDateCandidateStatus:status,paymentDateCandidates:exact.map(x=>({paymentDate:x.paymentDate,sourceUrl:x.sourceUrl,perShare:x.perShare})),paymentDateApproved:false};
+  const exactDates=[...new Set(exact.map(x=>x.paymentDate))];
+  // Ex-Date is the primary identity. Yahoo can report adjusted/rounded amounts,
+  // so a unique same-day KLSE record remains reviewable even when its amount differs.
+  const candidates=exact.length?exact:sameDay;
+  const dates=[...new Set(candidates.map(x=>x.paymentDate))];
+  const status=dates.length>1?'conflicting-payment-dates':exactDates.length===1?'third-party-match-pending-review':dates.length===1?'amount-mismatch-pending-review':sameDay.length?'conflicting-payment-dates':'no-matching-payment-date';
+  const selected=dates.length===1?candidates.find(x=>x.paymentDate===dates[0]):null;
+  return {...y,paymentDate:y.paymentDate||'',paymentDateCandidate:dates.length===1?dates[0]:null,paymentDateCandidateSource:selected?.sourceUrl||null,paymentDateCandidateSourceAmount:selected?.perShare??null,paymentDateCandidateStatus:status,paymentDateCandidates:candidates.map(x=>({paymentDate:x.paymentDate,sourceUrl:x.sourceUrl,perShare:x.perShare})),paymentDateApproved:false};
  });
 }
 export function approveKlsescreenerPaymentDate(event,{confirm=false}={}){
- if(!confirm||event.paymentDateCandidateStatus!=='third-party-match-pending-review'||!iso(event.paymentDateCandidate))throw Error('Payment Date 必须经过人工确认且没有匹配冲突。');
+ if(!confirm||!['third-party-match-pending-review','amount-mismatch-pending-review'].includes(event.paymentDateCandidateStatus)||!iso(event.paymentDateCandidate))throw Error('Payment Date 必须经过人工确认且没有匹配冲突。');
  if(event.paymentDate&&event.paymentDate!==event.paymentDateCandidate)throw Error('已有付款日期不同，拒绝静默覆盖。');
  return {...event,date:event.paymentDateCandidate,paymentDate:event.paymentDateCandidate,paymentDateApproved:true,dateType:'third-party-payment-date-user-approved',source:'klsescreener-user-approved'};
 }

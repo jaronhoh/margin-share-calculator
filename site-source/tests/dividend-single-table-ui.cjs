@@ -17,7 +17,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
   const dates = datesBetween('2025-03-20', '2025-04-10');
   const timestamps = dates.map(date => Math.floor(Date.parse(`${date}T04:00:00Z`) / 1000));
   const closes = ticker === '^KLSE' ? dates.map((_, i) => 1600 + i) : dates.map((_, i) => crash && i === 2 ? 0.01 : 7.3 + i * 0.01);
-  const dividends = ticker === '1155.KL' ? { [Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000)]: { date: Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000), amount: 0.28 } } : {};
+  const dividends = ticker === '1155.KL' ? { [Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000)]: { date: Math.floor(Date.parse('2025-03-21T04:00:00Z') / 1000), amount: 0.29 } } : {};
   return { chart: { result: [{ meta: { symbol: ticker, currency: 'MYR', exchangeTimezoneName: 'Asia/Kuala_Lumpur' }, timestamp: timestamps, indicators: { quote: [{ close: closes }] }, events: { dividends } }], error: null } };
 }
 
@@ -104,10 +104,13 @@ function yahooPayload(ticker, { crash = false } = {}) {
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24);
   const candidateRow = page.locator('#dividendRows tr[data-payment-candidate]').first();
   assert.match(await candidateRow.textContent(), /2025-04-09/);
-  assert.match(await candidateRow.textContent(), /第三方匹配 · 待确认/);
+  assert.match(await candidateRow.textContent(), /金额不同 · 付款日待确认/);
+  assert.match(await candidateRow.textContent(), /来源金额 RM0.28 与 Yahoo RM0.29 不同/);
   await candidateRow.locator('[data-approve-payment]').click();
   await page.waitForFunction(() => document.querySelector('#dividendRows tr[data-payment-candidate]')?.textContent.includes('已确认并纳入回测'));
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24, 'approving a candidate leaves original Excel events unchanged');
+  const approvedSnapshot = await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')));
+  assert.equal(approvedSnapshot.marketOverrides.paymentDateApprovals[0].sourceAmount, 0.28, 'the original third-party amount is kept for audit');
   const firstAmount = page.locator('#dividendRows tr[data-dividend-event]').first().locator('[data-amount]');
   await firstAmount.fill('-1');
   await page.locator('#navBacktest').click();
