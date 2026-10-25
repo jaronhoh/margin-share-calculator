@@ -50,3 +50,10 @@ PR 分支、Actions、Site 源提交、版本和部署 URL 在发布完成后补
 
 
 - GitHub Actions `Site source tests` run 86（`40158244803`）SUCCESS，覆盖本次代码与测试变更。
+
+## 逐日流水 CSV 文件名包含股票代码（2026-10-25）
+
+- 导出文件名现在包含当前行情快照股票代码，例如 `margin-share-daily-ledger-1066.KL-2025-02-04-to-2025-02-07.csv`；代码经安全字符清理，日期范围保持不变。
+- Chromium 回归覆盖默认 `1155.KL` 和非默认 `1066.KL`；Node 13/13、P0 独立回归、历史结果和 Yahoo UI 回归均通过。8 组尺寸/主题检查通过。
+- 现有 owner-only Site 已部署 Version 46，源码提交 `140c069dd5c83c805a058a90cbdc915ddf52c248`，deployment `appgdep_6add78b06cf08191a9fa68df232e3976` 状态 succeeded；原 URL 不变。
+- GitHub PR #3 和 Actions 本轮结果待发布后补录。
