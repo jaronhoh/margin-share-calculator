@@ -203,5 +203,5 @@
 - **需求调整**：股息事件页面只保留一张表；移除股息 CSV 导入与审核、独立 Payment Date 候选表和指标比较表。Yahoo × KLSE Screener 匹配候选行内展示并逐项确认，来源/人工确认仍随 JSON 快照保存。
 - **数据/财务**：原 MAYBANK Excel 24 笔事件保持不变；不修改回测公式。逐日流水仍显示日历日和休市日利息。
 - **验证**：新增 Chromium 专项回归，检查唯一股息表、无股息 CSV 控件、原24条不变、事件增删、候选同表展示、逐行确认和来源快照；PASS，浏览器错误0。完整 Node 套件 36/36 PASS；P0 oracle 276,096 数值断言、17,256 财富守恒断言及4,314日两策略历史回归 PASS；`git diff --check` PASS。
-- **GitHub / Sites**：更新现有开发分支和 Draft PR #3、Actions 及现有 owner-only Site 的发布结果待本轮完成后记录；Site URL、权限和配置保持原样。
+- **GitHub / Sites**：开发分支提交 `e7361496ddb94ad96de1452bcde69745d6ce6ef2` 已更新 PR #3；Actions run 148（`40171083848`）SUCCESS。现有 owner-only Site Version 52 已从 Site 源提交 `60cf2471659e8cc4046793052badd4b3750cca2f` 发布，deployment `appgdep_6adda82b91b48191a3d79f52c6d7f45d` succeeded；原 URL、权限与配置保持原样。
 - **限制**：KLSE Screener 是第三方来源，不等于 Bursa 官方确认；各股票可见历史完整性未被证明。线上 owner 登录态的独立 UI 交互回归未执行。
