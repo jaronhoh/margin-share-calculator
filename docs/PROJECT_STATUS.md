@@ -249,3 +249,13 @@
 - **GitHub**：代码提交 `26d25e8116b37f3b42fc63747d8a7e96a252c110` 已更新现有 Draft PR #3；GitHub Actions run 163（ID `40177953269`）SUCCESS。
 - **Site**：现有 owner-only Site Version 59、deployment `appgdep_6addc15d61ec8191a94dd7a6e29bf1f8` 成功；源代码提交 `92d2df62a42e25258c5ca7616d6c073e19b29895`。原 URL、owner-only 访问策略和配置保留。
 - **限制**：KLSE Screener 是第三方资料，历史覆盖仍按股票而异。Payment Date 候选仍需用户明确采用；本次未改付款日与财务引擎规则。
+
+
+## 唯一 Payment Date 自动采用发布补录（2026-10-25）
+
+- 同股票代码、同 Ex-Date 的 KLSE Screener 付款日候选只有一个不同日期时，现会自动保存该付款日并立即重算；即使来源金额不一致也只改变日期，不改原始/Yahoo 每股金额。Percentage 保留原单位。
+- 多日期冲突时不自动采用；后续刷新才发现冲突时撤销此前自动确认并重算；冲突消失再自动采用。来源链接/金额/单位及自动采用标记写入 JSON。
+- Node 全套 38/38 PASS；P0 历史独立 oracle 276,096 数值断言与17,256财富守恒断言通过，4,314日两策略回归通过。Chromium E2E 验证金额匹配/不匹配、付款日入账、冲突阻止与自动采用撤销/恢复、原24条不变、无浏览器错误。Worker build 与 `git diff --check` PASS。
+- GitHub Actions run 167（ID `40179193857`）成功；现有 Draft PR #3 已更新。
+- 现有 owner-only Site Version 60 成功部署，源提交 `e047eed1b2eaf53eff01566d1987da566fadfdcd`，deployment `appgdep_6addc575cc0881919550002f80fc2c19`。生产地址、Owner allowlist、owner-only 策略 revision 1 和零外部访客未变。生产 Yahoo/KLSE Run 本次未执行。
+- 部署后需刷新浏览器并点一次「运行」下载当前股票最新 Yahoo 行情/KLSE 股息历史；唯一候选随后自动采用，多个日期冲突仍会暂停采用。

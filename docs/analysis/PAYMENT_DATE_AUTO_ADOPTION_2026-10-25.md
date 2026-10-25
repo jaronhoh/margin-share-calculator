@@ -10,6 +10,6 @@
 - Node 全套：38/38 PASS。
 - P0：既有历史 oracle 276,096 数值断言及 17,256 财富守恒断言通过；4,314 日、两策略回归 PASS。此次仅改付款日应用流程，不改财务公式。
 - Site Worker build 与 `git diff --check`：PASS。
-- GitHub Actions `Site source tests` run 165 / ID `40178821358`：SUCCESS。
+- GitHub Actions `Site source tests` run 167 / ID `40179193857`：SUCCESS。
 - 已部署现有 owner-only Site Version 60；Site source commit `e047eed1b2eaf53eff01566d1987da566fadfdcd`，deployment `appgdep_6addc575cc0881919550002f80fc2c19` succeeded。原 URL、owner-only access policy revision 1、Owner allowlist 和外部访客数 0 不变。
 - 当前线上生产登录态没有执行 Run；用户浏览器需刷新到 Version 60，并再次按「运行」获取最新 Yahoo/KLSE 数据，随后唯一日期候选会自动确认并重算。生产资料本身仍需留意第三方准确性和完整性。
