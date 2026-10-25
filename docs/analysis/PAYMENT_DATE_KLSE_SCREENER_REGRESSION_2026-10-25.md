@@ -32,3 +32,10 @@
 - `site-source/dist/index.html`
 - `site-source/tests/klsescreener-payment-date.test.mjs`
 - `site-source/tests/klsescreener-payment-date-ui.cjs`
+
+
+## 补充回归：MAYBANK 默认日期与可编辑性（2026-10-25）
+
+- 对照用户给出的24行 Ex-Date、Payment Date、Dividend 与 MAYBANK 原始 Excel 来源行逐项匹配；用户提供的 KLSE Screener 页面是日期数据来源，本文不将其描述为 Bursa 官方休市/付款日公告。
+- Ex-Date、付款日、金额均可修改；旧快照迁移只填未编辑原始行的缺省记录，用户值优先；其他股票不套用 MAYBANK 日期。
+- 单元测试、Chromium 单表端到端测试、P0 与历史回测均在本地工作副本通过。PR 源码及测试已同步至 Site Version 64 对应实现；最新 CI 状态以项目状态记录为准。
