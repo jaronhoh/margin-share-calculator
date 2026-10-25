@@ -19,7 +19,7 @@ export function mergeYahooMarketCalendars(previous,next){
   return{...next,startDate:previous.startDate<next.startDate?previous.startDate:next.startDate,endDate:previous.endDate>next.endDate?previous.endDate:next.endDate,observedTradingDates,closedDates};
 }
 
-export function expandYahooCalendarRows(rows,{endDate,classifyMarketDate,marketCalendar}={}){
+export function expandYahooCalendarRows(rows,{startDate=rows?.[0]?.date,endDate,classifyMarketDate,marketCalendar}={}){
   if(!Array.isArray(rows)||rows.length===0)throw new Error('Yahoo 没有返回有效价格。');
   if(typeof endDate!=='string'||typeof classifyMarketDate!=='function')throw new Error('Yahoo 日历补齐参数无效。');
   const byDate=new Map();
@@ -30,8 +30,11 @@ export function expandYahooCalendarRows(rows,{endDate,classifyMarketDate,marketC
   }
   const observed=[...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
   let priorClose=null,priorDate=null;
-  const start=Date.parse(`${observed[0].date}T00:00:00Z`),end=Date.parse(`${endDate}T00:00:00Z`);
+  if(!validDate(startDate)||observed.at(-1).date<startDate)throw new Error('Yahoo 日历补齐日期范围无效。');
+  for(const row of observed){if(row.date>=startDate)break;priorClose=row.close;priorDate=row.date;}
+  const start=Date.parse(`${startDate}T00:00:00Z`),end=Date.parse(`${endDate}T00:00:00Z`);
   if(!Number.isFinite(start)||!Number.isFinite(end)||end<start)throw new Error('Yahoo 日历补齐日期范围无效。');
+  if((end-start)/86400000+1>5000)throw new Error('Yahoo 补齐后的行情最多 5,000 个日历日。');
   for(let ms=start;ms<=end;ms+=86400000){
     const date=new Date(ms).toISOString().slice(0,10),row=byDate.get(date);
     if(row){priorClose=row.close;priorDate=date;continue;}
@@ -41,5 +44,5 @@ export function expandYahooCalendarRows(rows,{endDate,classifyMarketDate,marketC
     const reason=marketDay.status==='weekend'?'weekend':marketDay.status==='confirmed-market-holiday'?'confirmed-market-holiday':'yahoo-market-holiday';
     byDate.set(date,{date,close:priorClose,carryForward:true,carryForwardFrom:priorDate,reason,...(marketDay.source?{source:marketDay.source,sourceUrl:marketDay.url}:{})});
   }
-  return [...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
+  return [...byDate.values()].filter(row=>row.date>=startDate&&row.date<=endDate).sort((a,b)=>a.date.localeCompare(b.date));
 }
