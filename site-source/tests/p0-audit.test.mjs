@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {runBacktest,transactionFees,calculateInitialAllocation} from '../dist/engine.mjs';
 import {validateImportedConfig} from '../dist/config.mjs';
 import {defaultDividends} from '../dist/dividend-events.mjs';
+import {classifyMarketDate} from '../dist/market-calendar.mjs';
 const base={ownShares:1000,financedShares:1500,startPrice:10,annualRate:0,targetLsr:.6,refinanceTrigger:.58,marginCallLsr:.7,forceSellLsr:null,callStrategy:'cash',safeGap:.001,feeRate:0,lotSize:100};
 const fees={feeRate:.001,brokerageMinimum:8,stampDutyRate:.001,clearingFeeRate:.0003,sstRate:0};
 const one=(config,price,dividendPerShare=0)=>runBacktest({...base,...config},[{date:'2026-01-02',price,dividendPerShare}]);
@@ -47,3 +48,5 @@ for(const costs of [false,true])for(const callStrategy of ['cash','sell']){
  console.log(`PASS independent historical oracle: fees=${costs} ${callStrategy}, 4314 days`);
 }
 console.log(`PASS ${checks} independent numerical checks and ${conservation} wealth-conservation checks`);
+
+
