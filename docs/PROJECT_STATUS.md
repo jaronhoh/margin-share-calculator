@@ -299,3 +299,9 @@
 - 同步 Node 单元测试和 Chromium 股息表回归。工作副本验证：Node 38/38、P0 两策略 4,314 日回归、Chromium E2E 与 Worker build 通过。线上 Site v64 部署记录见上文。
 - `docs/REQUIREMENTS.md` 新增 R-030；PRD、验收矩阵及付款日分析记录已同步本规则及来源边界。
 - 最新 PR commit 与 GitHub Actions 状态以本节后续补录为准；Site 与 PR 分支独立发布。
+
+
+## GitHub 同步验收补录（2026-10-25）
+
+- PR #3 分支源码、测试与 Markdown 已对齐现有 Site Version 64；对应提交 `798237a22ba51ecfc7b0966bfda70589bdb820ec` 的 GitHub Actions run 187（ID `40185041703`）SUCCESS。
+- 最新工作副本验证：Node 38/38、P0 两策略 4,314 日财务回归、Chromium 股息表 E2E 和 Worker build 通过。PR 保持 Draft；Sites 已部署记录见上文。
