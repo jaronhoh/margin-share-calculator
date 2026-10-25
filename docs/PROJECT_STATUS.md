@@ -182,3 +182,10 @@
 - 新增 `site-source/tests/klsescreener-reconciliation.test.mjs`：覆盖匹配、金额不符、付款日期冲突、跨股票隔离、人工确认及已有日期防覆盖。
 - 人工确认函数 `approveKlsescreenerPaymentDate` 只有显式 `confirm:true` 且唯一候选日期时才能把候选变成入账日期；KLSE Screener 仍属于第三方数据。
 - **未完成**：实际站点访问许可核验、真实页面解析验证、Worker 获取、UI 确认流程集成、实际执行新增测试、回归测试和 Sites 部署。此轮仅为 GitHub 代码提交，不能宣称功能已交付。
+
+### Payment Date 第六轮：UI 候选核对集成（2026-10-25）
+
+- `site-source/dist/index.html` 新增 KLSE Screener 股息表文字输入和「核对 Payment Date」按钮；导入解析结果与本次 Yahoo 股息事件比对，显示 Ex-Date、Yahoo 股息金额、候选 Payment Date 和状态。
+- 为避免更改已部署 JSON snapshot schema，Yahoo 股息事件只临时保存在当前页面内存 `lastYahooDividends`；重新打开页面需重新运行 Yahoo 才能核对。
+- 本版是手动粘贴的候选比对 UI，不是自动抓取，也不自动入账、确认、改写 Excel 24 条股息或变更回测引擎。
+- **UNTESTED / NOT DEPLOYED**：GitHub 代码已更新，未执行 Node 或浏览器回归；需核对真实 KLSE Screener 页面表格格式和第三方访问授权后才能实现真正自动获取。
