@@ -397,3 +397,11 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - 变更文件：`site-source/dist/index.html`、`site-source/tests/dividend-single-table-ui.cjs`、本状态文档。相关提交：实现 `c973445e63231849924534b898dc6185c021a696`；回归 `4e85f8eefe8c187104f9147abf30c3d1c4070272`。GitHub Actions `Site source tests` Run 197（ID `40189322824`）对回归提交 **SUCCESS**。
 - 本轮不部署、不改 Site 数据/权限/URL、不合并 main；Draft PR #3 保持打开。
 
+
+## CR-003 — Footer 发布版本与更新时间（2026-11-06）
+
+- 需求：用户已确认在页面最底部居中显示 `Version <实际 Sites 版本> · Updated: YYYY-MM-DD HH:mm (MYT)`；小号浅灰文字，响应式，不更改数据库或回测行为。
+- GitHub 功能分支已新增 Footer、`site-source/dist/release-info.mjs` 发布元数据占位符及 `site-source/tests/release-footer.test.mjs` 静态回归测试；移除顶部可能过期的硬编码 `VERSION 64`，保留 Owner-only 标签。
+- `release-info.mjs` 的版本及 ISO 8601 时间均为 `null`，直到**实际成功发布现有 Sites**且可核对 Sites 版本及发布时刻，才可填写真实数据；不得使用 GitHub 提交时间、浏览器当前时间或猜测值。未提供元数据时 Footer 显示 `Version unavailable · Updated: unavailable`。
+- 状态：需求 CONFIRMED；代码已提交功能分支；自动化测试和 GitHub Actions 结果待验证；未合并 main；未部署现有 Site；生产版本仍按此前记录为 Version 64（未在本轮独立核对 Sites）。
+- 发布注意：发布流程需先取得实际版本号及成功发布时刻，并使所部署的 `release-info.mjs` 与发布事实一致；若 Sites 不支持此步骤，必须如实显示 unavailable，不能假称自动更新。
