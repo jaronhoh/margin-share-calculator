@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./neutral.css?v=f05-responsive">
 </head>
 <body>
-  <header><div><div class="eyebrow">Bursa Malaysia · MYR · 回测实验</div><h1>Margin Share Calculator</h1><p id="marketSourceLabel">当前行情：MAYBANK (1155.KL) 收盘价历史数据</p></div><div class="header-actions"><button id="themeToggle" class="theme-toggle" type="button" aria-label="切换暗色主题"></button><button id="openSettings" class="secondary" type="button" aria-haspopup="dialog" aria-controls="settingsDrawer" aria-expanded="false">回测参数</button><span class="tag">PRIVATE · OWNER ONLY · VERSION 64</span></div></header>
+  <header><div><div class="eyebrow">Bursa Malaysia · MYR · 回测实验</div><h1>Margin Share Calculator</h1><p id="marketSourceLabel">当前行情：MAYBANK (1155.KL) 收盘价历史数据</p></div><div class="header-actions"><button id="themeToggle" class="theme-toggle" type="button" aria-label="切换暗色主题"></button><button id="openSettings" class="secondary" type="button" aria-haspopup="dialog" aria-controls="settingsDrawer" aria-expanded="false">回测参数</button><span class="tag">PRIVATE · OWNER ONLY</span></div></header>
   <main>
     <div class="notice"><b>行情来源：</b>默认股票代码为 MAYBANK（1155.KL）；点击参数中的「运行」后，价格和市场交易日历均从 Yahoo Finance 获取。也可输入其他 Bursa Malaysia `.KL` 代码。非交易日照常计算每日融资利息，股票行情按前一有效收盘价估值。只有通过「导入 JSON」恢复行情快照；不提供 CSV 行情更新或行情审核。MAYBANK 的 24 条股息不会自动用于其他股票；MAYBANK 默认股息的 Ex-Date 与 Payment Date 按 KLSE Screener 对照表预填，仍可编辑；原 Excel Table1 数据保留。不连接券商或生产交易系统。</div>
     <div class="navrow"><nav class="tabs" aria-label="功能界面"><button class="tab" id="navBacktest" type="button" aria-controls="backtestPage" aria-selected="true">回测</button><button class="tab" id="navDividends" type="button" aria-controls="dividendPage" aria-selected="false">股息事件</button><button class="tab" id="navReference" type="button" aria-controls="referencePage" aria-selected="false">说明</button></nav></div>
@@ -59,7 +59,7 @@
     }else{
       version.textContent='Version unavailable';
     }
-    if(typeof SITE_RELEASE_UPDATED_AT==='string'&&/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:Z|[+-]\\d{2}:\\d{2})$/.test(SITE_RELEASE_UPDATED_AT)){
+    if(typeof SITE_RELEASE_UPDATED_AT==='string' && !Number.isNaN(Date.parse(SITE_RELEASE_UPDATED_AT))){
       const date=new Date(SITE_RELEASE_UPDATED_AT);
       if(!Number.isNaN(date.getTime())){
         const formatted=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kuala_Lumpur',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date);
