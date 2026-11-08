@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD 草案 v0.16
+# Margin Share Calculator — PRD 草案 v0.17
 
 > 状态：已建立需求基线，核心业务规则已确认；实现与验证状态以 PROJECT_STATUS 和版本报告为准。2026-10-24，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
@@ -254,7 +254,7 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 
 ## CR-004 回测参数界面整理（2026-11-08）
 
-- **目标与范围**：在完整的 Version 69 应用基线上调整回测参数 UI，并发布完整应用至新的 ChatGPT Site。新 Site 标题及 slug 均为 `margin-share-calculator`，保持默认 Owner-only。不会部署测试探针/空白页，也不会重开已关闭的 PR #3。
+- **目标与范围**：在完整的 Version 69 应用基线上调整回测参数 UI，并更新现有 ChatGPT Site `https://margin-share-calculator.jaron-hoh.chatgpt.site/`，保持 Owner-only、URL、Site ID 与现有数据。不会部署测试探针/空白页，也不会重开已关闭的 PR #3。
 - **界面要求**：桌面和宽手机视口的回测开始/结束日期并排；360px 及以下单列；保留日期标签和结束日说明。在基础参数、高级设置、马股交易成本估算及底部操作区域之间加入水平分隔线。移除页首可见的 `PRIVATE · OWNER ONLY` 文案。
 - **参考链接**：在马股交易成本估算下提供 [Spark Finance｜马来西亚股票交易成本](https://sparksparkfinance.com/investment/investing-basics/what-is-leverage-in-trading/#馬來西亞股票交易成本)。
 - **验收标准**：
@@ -283,20 +283,20 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 - **AC-BUG-UI-005-03**：日终贷款余额与股票价格明显可区分，五条曲线、图例、Tooltip 颜色一致，Light/Dark 均通过视觉检查。
 - **AC-BUG-UI-005-04**：逐项点击图例可独立隐藏/恢复对应曲线，不影响其他指标、坐标轴和日期提示。
 - **AC-BUG-UI-005-05**：Node、Worker、Chromium 图表及响应式回归通过；MAYBANK `1155.KL` 回测结果与修复前保持一致。
-- **AC-BUG-UI-005-06**：使用 GitHub 指定 Commit 的完整应用源码创建全新 ChatGPT Site，默认 Owner-only；新 Site 部署后独立核验 URL、Site ID、版本、Deployment ID、图例、回测及股息。旧 Site 的 URL 与浏览器本地数据不保证自动继承；删除旧 Site 前优先确保新 Site 可用，并对可导出的数据做好备份。
+- **AC-BUG-UI-005-06**：使用 GitHub 指定 Commit 的完整应用源码更新现有 ChatGPT Site `appgprj_6af072845a7c8191bed2cd50b876fb54`；保持原 URL、Owner-only 与用户数据，不创建或删除 Site。发布后独立核验实际版本、Deployment ID、图例、回测及股息。
 
 **状态**：需求已确认；实现、自动测试、GitHub 功能提交及 Sites 部署须分别核验，不因本 PRD 更新而标记完成。
 
 
-## 发布策略变更 — GitHub 基准与 ChatGPT Sites 重建（2026-11-09，v0.16）
+## 发布策略最终纠正 — 沿用现有 ChatGPT Site（2026-11-09，v0.17）
 
-- **唯一源码基准**：GitHub Repository `jaronhoh/margin-share-calculator`，开发分支 `fix/bug-ui-005-chart-legend-colors`，BUG-UI-005 实现基准 Commit `f595cb783997505722c631d351bad7d751e37586`。若后续仅更新文档，部署时仍须确认实际应用源码与该基准一致。
-- **变更原因**：旧 Production Site 的源码绑定分支 HEAD 与 GitHub 指定 Commit 不匹配；既有 Work 环境未取得可用的 Sites 内部 Git 更新通道及完整部署归档，导致部署未启动。该证据不能证明 GitHub 故障或 Sites 服务整体故障。
-- **决策**：停止尝试修复旧 Site 的源码绑定；使用完整应用源码建立全新 Site，名称目标 `margin-share-calculator`，默认 Owner-only，不部署探针或空白页面。用户已授权在重建成功后删除旧 Site；如果平台要求先删除才能释放名称或 URL，须先核实限制、准备部署材料与数据备份，不能假设原 URL 可恢复。
-- **发布范围**：完整应用（含 CR-004、BUG-UI-005、回测、股息、行情、配置和 Footer），而非仅 UI 差异文件。不得因重建改变融资、股息、交易费用或数据存储规则。
-- **验收门槛**：新 Site 实际运行、BUG-UI-005 图例与 Tooltip、回测、股息、CR-004 UI、响应式布局、Owner-only 均须有真实验证记录。只有实际成功才记录 Deployment ID、Site ID、URL、Production Version 与 PASS；未运行标记 NOT RUN。
-- **数据迁移边界**：旧域名的 localStorage 不会因创建新域名而自动迁移。能够安全导出时先备份 JSON；未实际迁移与核验不得声称用户数据已保留。
-- **当前状态**：截至本次 PRD 更新，旧 Site 仍为 Version 1；新 Site 尚未创建，BUG-UI-005 尚未部署，Production UAT 尚未执行。本次仅更新 PRD 与 GitHub 状态文档，不执行 Sites 操作。
+- **最终决策（覆盖 v0.16 重建计划）**：不创建新 Site，不删除或替换现有 Site；继续使用 `appgprj_6af072845a7c8191bed2cd50b876fb54`，URL `https://margin-share-calculator.jaron-hoh.chatgpt.site/`，Owner-only。之前的“重建/删除旧 Site”决策已撤销。
+- **GitHub Source of Truth**：Repository `jaronhoh/margin-share-calculator`，开发分支 `fix/bug-ui-005-chart-legend-colors`；BUG-UI-005 应用源码基准 Commit `f595cb783997505722c631d351bad7d751e37586`。后续文档提交不等同于新的应用源码版本。
+- **发布路径**：取得指定 Commit 的完整源码与可用部署归档，通过官方支持的 Sites 源码更新/发布机制更新**现有 Site**。需解决当前 Site 绑定分支 HEAD 与 GitHub Commit 不匹配及 Work 环境缺少可用发布通道的问题；不得把修改 `hosting.json` 当作已完成重新绑定，也不得虚报部署。
+- **保护要求**：保留现有 URL、Site ID、Owner-only、数据、配置及访问权限；不强制推送 GitHub `main`，不重开 PR #3，不创建测试探针。
+- **发布验收**：在现有 Site 实测 BUG-UI-005 图例/Tooltip、CR-004、回测、股息、响应式布局、Footer 版本及权限；只记录实际产生的 Production Version、Deployment ID 与 UAT 结果。
+- **当前状态**：现有 Site 最近确认 Version 1；BUG-UI-005 尚未部署，Production UAT 尚未执行。本轮只纠正文档和 GitHub，不执行 Sites 操作。
 
 ### PRD 变更记录（续）
-| 2026-11-09 | v0.16 | 修订 BUG-UI-005 发布验收：GitHub 为唯一源码基准，放弃旧 Site 源码绑定修复，改为全新 Owner-only Site 完整应用部署；明确旧 Site 删除顺序、localStorage 风险与未部署状态。 |
+| 2026-11-09 | v0.16 | 曾提出新建 Site 的发布策略；已由 v0.17 撤销。 |
+| 2026-11-09 | v0.17 | 用户最终确认沿用现有 Site；撤销重建与删除计划，保留 URL、Site ID、Owner-only 和数据；后续只更新现有 Site。 |
