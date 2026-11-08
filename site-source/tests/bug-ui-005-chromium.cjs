@@ -104,7 +104,7 @@ const fs = require('node:fs');
           return [name, solidMatches || patternedMatches];
         }));
         const tipColors = [...document.querySelector('.chart-tip').children].slice(1)
-          .map(line => getComputedStyle(line).borderLeftColor);
+          .map(line => normalize(getComputedStyle(line).borderLeftColor));
         return { variables, pathColors, dotStyles, tipColors };
       });
       const tipOrder = ['price', 'value', 'loan', 'net', 'lsr'];
