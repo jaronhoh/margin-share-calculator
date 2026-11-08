@@ -405,3 +405,11 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - `release-info.mjs` 的版本及 ISO 8601 时间均为 `null`，直到**实际成功发布现有 Sites**且可核对 Sites 版本及发布时刻，才可填写真实数据；不得使用 GitHub 提交时间、浏览器当前时间或猜测值。未提供元数据时 Footer 显示 `Version unavailable · Updated: unavailable`。
 - 状态：需求 CONFIRMED；代码已提交功能分支；自动化测试和 GitHub Actions 结果待验证；未合并 main；未部署现有 Site；生产版本仍按此前记录为 Version 64（未在本轮独立核对 Sites）。
 - 发布注意：发布流程需先取得实际版本号及成功发布时刻，并使所部署的 `release-info.mjs` 与发布事实一致；若 Sites 不支持此步骤，必须如实显示 unavailable，不能假称自动更新。
+
+## CR-003 与 UAT 分支复核（2026-11-08）
+
+- **CR-003**：以部署后写入的发布凭据替代源码中的空占位。发布工具校验 Sites 项目、保存版本、源码 SHA 和成功的生产部署；Worker 按构建 UUID 隔离凭据、保护写入并允许相同凭据重试。缺少凭据、凭据无效或存储故障时显示 unavailable。页脚时间固定使用 MYT，包含跨午夜测试。接入步骤见 [Site 源码发布说明](../site-source/README.md)。真实 Sites 发布仍需授权的 R2/密钥配置、发布时刻证据及写入步骤。
+- **BUG-UAT-001**：审查待提交字段在卸载及 Yahoo 重跑前落盘的既有实现。Chromium 原测试先被已经移除的页首 `VERSION 64` 断言拦住，更新为页脚断言后完整通过。仅发出 `input` 后立即刷新仍保留 RM0.055，重跑后保留 Ex-Date、Payment Date 和金额。另测仅发出 input 后立即运行，保留新输入的 RM0.056。开发分支复核通过，生产回归留待授权发布。
+- **BUG-UAT-002**：1295.KL 的 2017 年首期股息在发行人原始财务报表为每股 RM0.27，2017-08-17 派发。发行人记录 2021-01-29 完成每 1 股配 4 股红股，按配股后的 5 股口径折算为 RM0.054，与 UAT 记录的 Yahoo RM0.05400000140070915 一致至浮点精度。该案例加入回归，确认匹配只采用第三方付款日，保留回测的 Yahoo 金额与来源差异提示。其他历史事件、Percentage 记录和全历史行情股本基准仍需逐项核对。来源见 [发行人 2017 年财报第 22 页](https://www.publicbankgroup.com/media/bxlpcslc/pbb4q2017.pdf)、[发行人股息历史](https://www.publicbankgroup.com/investor-relations/share-dividend-information/dividend-information/cash-dividends-in-respect-of-financial-years-ended/)及 [KLSE Screener 1295 历史表](https://www.klsescreener.com/v2/stocks/view/1295)。
+- 验证：Node 42/42、Worker 构建、Chromium 股息 E2E 及 390px 页脚显示、`git diff --check` 均通过。
+- 本轮在 PR 分支开发及测试。现有 Sites Version 64 的历史部署记录仍返回成功，生产配置、数据及发布操作均未改动。

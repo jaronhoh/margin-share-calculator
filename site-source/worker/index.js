@@ -1,5 +1,7 @@
 // Site-local Worker: serves the existing static UI and makes a validated,
 // same-origin Yahoo Finance Chart request so browser CORS does not block it.
+__RELEASE_VALIDATION__
+const releaseTarget = __RELEASE_TARGET__;
 const siteAssets = __SITE_ASSETS__;
 
 const MIME = {
@@ -148,10 +150,83 @@ function assetResponse(path) {
   });
 }
 
+const MAX_RELEASE_BYTES = 4096;
+
+function matchesRelease(receipt) {
+  return isReleaseInfo(receipt) && receipt.projectId === releaseTarget.projectId &&
+    receipt.buildId === releaseTarget.buildId && /^[a-f0-9]{40}$/.test(receipt.sourceSha ?? '') &&
+    typeof receipt.versionId === 'string' && receipt.versionId.length > 0 &&
+    typeof receipt.deploymentId === 'string' && receipt.deploymentId.length > 0;
+}
+
+async function releaseInfo(bucket) {
+  if (!releaseTarget || !bucket) return jsonResponse(null);
+  try {
+    const object = await bucket.get(releaseTarget.key);
+    if (!object || object.size > MAX_RELEASE_BYTES) return jsonResponse(null);
+    const receipt = await object.json();
+    if (!matchesRelease(receipt)) return jsonResponse(null);
+    return jsonResponse({ version: receipt.version, updatedAt: receipt.updatedAt });
+  } catch {
+    return jsonResponse(null);
+  }
+}
+
+async function recordRelease(request, env) {
+  const secret = env?.RELEASE_WRITE_TOKEN;
+  const bucket = env?.RELEASE_BUCKET;
+  if (!releaseTarget || !bucket || !secret) return badRequest('Release writer is disabled.', 404);
+  const token = request.headers.get('x-release-write-token') || '';
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
+  const proof = await crypto.subtle.sign('HMAC', key, encoder.encode(secret));
+  if (!await crypto.subtle.verify('HMAC', key, proof, encoder.encode(token))) {
+    return badRequest('Invalid release writer credentials.', 403);
+  }
+
+  const reader = request.body?.getReader();
+  if (!reader) return badRequest('A release receipt is required.');
+  const bytes = new Uint8Array(MAX_RELEASE_BYTES);
+  let length = 0;
+  let receipt;
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (length + value.byteLength > bytes.length) {
+        await reader.cancel();
+        return badRequest('Release receipt is too large.', 413);
+      }
+      bytes.set(value, length);
+      length += value.byteLength;
+    }
+    receipt = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes.subarray(0, length)));
+  } catch {
+    return badRequest('Invalid release receipt JSON.');
+  }
+  if (!matchesRelease(receipt)) return badRequest('Release receipt does not match this build.');
+  const { projectId, buildId, sourceSha, versionId, deploymentId, version, updatedAt } = receipt;
+  const body = JSON.stringify({ projectId, buildId, sourceSha, versionId, deploymentId, version, updatedAt });
+  try {
+    const saved = await bucket.put(releaseTarget.key, body, { onlyIf: new Headers({ 'if-none-match': '*' }) });
+    if (saved) return jsonResponse({ version, updatedAt }, 201);
+    const existing = await bucket.get(releaseTarget.key);
+    if (existing?.size <= MAX_RELEASE_BYTES && await existing.text() === body) return jsonResponse({ version, updatedAt });
+    return badRequest('A different release receipt already exists for this build.', 409);
+  } catch {
+    return badRequest('Release receipt storage is unavailable.', 503);
+  }
+}
+
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/api/release-info' && request.method === 'PUT') return recordRelease(request, env);
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
+    if (url.pathname === '/api/release-info') {
+      if (request.method === 'HEAD') return new Response(null, { headers: { 'cache-control': 'no-store' } });
+      return releaseInfo(env?.RELEASE_BUCKET);
+    }
     if (url.pathname === '/api/yahoo-chart') {
       if (request.method === 'HEAD') return new Response(null, { status: 405 });
       return yahooChart(request, url);

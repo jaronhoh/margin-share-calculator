@@ -33,3 +33,16 @@ test('existing conflicting payment date cannot be overwritten',()=>{
  const [x]=reconcileKlsescreenerDividends([{...yahoo,paymentDate:'2026-03-25'}],[klse],{ticker:'1155.KL'});
  assert.throws(()=>approveKlsescreenerPaymentDate(x,{confirm:true}));
 });
+
+test('PBB 2017 first interim uses the candidate payment date without changing the Yahoo share basis', () => {
+ const ticker = '1295.KL', exDate = '2017-08-07', perShare = 0.05400000140070915;
+ const [candidate] = reconcileKlsescreenerDividends([{ ticker, exDate, perShare }], [{
+  ...klse, ticker, exDate, paymentDate: '2017-08-17', perShare: 0.27,
+  sourceAmount: 0.27, sourceIndicator: 'Currency', sourceUrl: 'https://www.klsescreener.com/v2/stocks/view/1295',
+ }], { ticker });
+ assert.equal(candidate.paymentDateCandidateStatus, 'amount-mismatch-pending-review');
+ assert.equal(candidate.paymentDateCandidateSourceAmount, 0.27);
+ const approved = approveKlsescreenerPaymentDate(candidate, { confirm: true });
+ assert.equal(approved.paymentDate, '2017-08-17');
+ assert.equal(approved.perShare, perShare);
+});

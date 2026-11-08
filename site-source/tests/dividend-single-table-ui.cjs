@@ -63,11 +63,24 @@ function yahooPayload(ticker, { crash = false } = {}) {
       ],
     }) });
   });
-  await page.goto(`http://127.0.0.1:${server.address().port}`);
+  const appUrl = `http://127.0.0.1:${server.address().port}`;
+  const footerPage = await browser.newPage({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
+  footerPage.on('pageerror', error => errors.push(error.message));
+  await footerPage.route('**/api/release-info', route =>
+    route.fulfill({ json: { version: 65, updatedAt: '2026-11-08T16:02:03Z' } }));
+  await footerPage.goto(appUrl);
+  await footerPage.getByText('Version 65', { exact: true }).waitFor();
+  assert.equal(await footerPage.locator('#releaseUpdated').textContent(), 'Updated: 2026-11-09 00:02 (MYT)');
+  assert.equal(await footerPage.locator('#releaseFooter').evaluate(element =>
+    element.scrollWidth <= element.clientWidth), true, 'footer fits the mobile viewport');
+  await footerPage.close();
+  await page.goto(appUrl);
   await page.locator('#resultStatus').waitFor();
   assert.equal(await page.locator('header #openSettings').count(), 1, 'backtest parameters are in the header beside the theme control');
   assert.equal(await page.locator('.navrow #openSettings').count(), 0, 'backtest parameters are removed from the navigation row');
-  assert.match(await page.locator('header .tag').textContent(), /VERSION\s+64/, 'header identifies the current Site version');
+  assert.match(await page.locator('header .tag').textContent(), /OWNER ONLY/);
+  assert.equal(await page.locator('#releaseVersion').textContent(), 'Version unavailable');
+  assert.equal(await page.locator('#releaseUpdated').textContent(), 'Updated: unavailable');
   await page.locator('#navDividends').click();
   assert.equal(await page.locator('header #openSettings').isVisible(), true, 'backtest parameters remain visible in the global header on the Dividend Events page');
   await page.locator('#openSettings').click();
@@ -229,7 +242,12 @@ function yahooPayload(ticker, { crash = false } = {}) {
   assert.equal(snapshot.marketOverrides.dividendEvents[0].perShare, 0.123, 'latest dividend edit is saved to the existing snapshot');
   const callsBeforeRefresh = yahooCalls, savedBeforeRefresh = await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1'));
   await page.locator('#startPrice').evaluate(element => { element.value = '99'; });
-  await page.locator('#run').click();
+  await page.evaluate(() => {
+    const amount = document.querySelector('tr[data-approved-ex-date="2025-03-21"] [data-approved-candidate-field="perShare"]');
+    amount.value = '0.056';
+    amount.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#run').click();
+  });
   await page.waitForTimeout(25);
   assert.equal(yahooCalls, callsBeforeRefresh + 2, 'every run fetches the selected ticker and fresh market calendar');
   assert.equal(await page.locator('#rows tr').count(), 0, 'old daily ledger is cleared while fresh Yahoo data loads');
@@ -240,7 +258,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
   await page.waitForFunction(() => document.querySelector('tr[data-approved-ex-date="2025-03-21"] [data-approved-candidate-field="paymentDate"]'));
   const refreshedManualApproval = await page.evaluate(() => JSON.parse(localStorage.getItem('margin-share-market-snapshot/v1')).marketOverrides.paymentDateApprovals.find(item => item.exDate === '2025-03-21'));
   assert.equal(refreshedManualApproval.editedExDate, '2025-03-22', 'a later source refresh does not overwrite the manually edited Ex-Date');
-  assert.equal(refreshedManualApproval.perShare, 0.055, 'a later source refresh does not overwrite the most recent manually edited amount');
+  assert.equal(refreshedManualApproval.perShare, 0.056, 'a run immediately after input flushes the amount before fetching fresh data');
   assert.equal(refreshedManualApproval.paymentDate, '2025-04-10', 'a later unique-date auto match does not overwrite the manually edited Payment Date');
   assert.ok(await page.locator('#rows tr').count() > 0, 'new daily ledger appears after fresh calculation');
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24, 'the same-ticker MAYBANK events are restored from retained user data');
@@ -253,7 +271,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
   assert.equal(await page.locator('#dividendRows tr').count(), 0, 'failed fetch leaves the previous dividend rows cleared');
   assert.equal(await page.evaluate(() => localStorage.getItem('margin-share-market-snapshot/v1')), savedAfterRefresh, 'failed refresh preserves the prior saved snapshot without showing stale output');
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({ status: 'PASS', checks: ['one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'unique payment-date candidates are automatically saved and recalculated with amounts preserved', 'auto-confirmed original and Yahoo-only dividend Ex-Date, amount and Payment Date remain editable and persist', 'manual dividend fields survive reload and fresh Yahoo/KLSE rerun', 'automatic save and return without a separate button', 'pre-market dividend draft restores after reload', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'force-sell stop preserves the fresh snapshot and partial backtest without a false save failure', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
+  console.log(JSON.stringify({ status: 'PASS', checks: ['release footer fallback and verified MYT display at 390px', 'one unified dividend table', 'no dividend CSV import/review', '24 original records preserved', 'add/remove event', 'Yahoo Payment Date candidate shown inline', 'unique payment-date candidates are automatically saved and recalculated with amounts preserved', 'auto-confirmed original and Yahoo-only dividend Ex-Date, amount and Payment Date remain editable and persist', 'manual dividend fields survive reload and fresh Yahoo/KLSE rerun', 'automatic save and return without a separate button', 'pre-market dividend draft restores after reload', 'invalid data and storage failures remain on the dividend page', 'each run clears stale ledger/dividend rows and fetches fresh Yahoo data', 'stale start price is replaced by fresh Yahoo quote', 'force-sell stop preserves the fresh snapshot and partial backtest without a false save failure', 'failed refresh keeps old saved snapshot but displays no stale output', 'zero browser errors'] }));
   await browser.close();
   await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 })().catch(error => { console.error(error); process.exit(1); });
