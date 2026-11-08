@@ -1,7 +1,7 @@
 // Update these values from the confirmed existing Site release immediately
 // before packaging each subsequent deployment.
-export const SITE_RELEASE_VERSION = 1;
-export const SITE_RELEASE_UPDATED_AT = '2026-11-08T18:21:45+08:00';
+export const SITE_RELEASE_VERSION = 2;
+export const SITE_RELEASE_UPDATED_AT = '2026-11-09T01:55:41+08:00';
 
 const timeZone = 'Asia/Kuala_Lumpur';
 
