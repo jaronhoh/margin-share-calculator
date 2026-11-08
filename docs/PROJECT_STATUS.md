@@ -427,9 +427,9 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 
 ### 发布核对（2026-11-08，历史状态）
 
-此前的记录描述了 V67 发布前一次推送失败，后续已通过 Sites 源码工作流完成推送并发布 V67；随后本轮发布 V68。请以本文件下方“最新发布：Sites Version 68”为当前线上状态，旧的失败记录不再代表现况。
+此前的记录描述了 V67 发布前一次推送失败，后续已通过 Sites 源码工作流完成推送并发布 V67；随后本轮发布 V68。当时请以 V68 节为当前线上状态，旧的失败记录不再代表现况。
 
-## 最新发布：Sites Version 68（2026-11-08）
+## 历史发布：Sites Version 68（2026-11-08）
 
 - CR-003 采用用户确认的简单方式：发布前在 `dist/release-info.mjs` 硬编码版本号和 MYT 时间。本次为 Version 68 / `2026-11-08T16:50:00+08:00`，没有增加运行时接口、部署后写入、发布收据、R2 或额外令牌机制。
 - 本地 Site 回归：Node **43/43** 通过，Worker build 通过，Chromium 股息单表 E2E **PASS**（包含页脚断言、24 条默认数据、股息编辑持久化、重跑/刷新和零浏览器错误）。
@@ -437,3 +437,14 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - 已推送 Site 源码提交 `1606a143bfe4c02fa7d49d18c4d2ba6a5d8e2e0b` 并部署现有 Site Version **68**；deployment `appgdep_6af037d1ef148191a0fd3ed8b473c5bf`，状态 succeeded，Sites 记录时间 2026-11-08 16:50:46 MYT。版本对象确认同一源码 SHA。
 - 线上页面页脚实测为 `Version 68` / `Updated: 2026-11-08 16:50 (MYT)`。原 URL 保持 `https://margin-share-calculator-poc-20261021.jaron-hoh.chatgpt.site`；访问仍为 custom Owner-only，策略 revision 1、1 个允许账户、0 外部访客、0 群组。验证期间没有修改生产股息数据。
 - PR #3 分支的版本常量和回归断言已同步至 V68；Draft PR 保持未合并。此前“发布未完成/远端仍在旧 SHA”的记录是 V68 成功前的状态，现由本节更新。
+
+
+## 最新发布：Sites Version 69（2026-11-08）
+
+- 复查“看不到版本号”反馈后确认，V68 的页脚采用了浅色背景变量作为文字色，导致低对比度。已改为 14px 半粗体和前景文字色。
+- CR-003 仍为简单硬编码：`dist/release-info.mjs` 的本次常量为 Version 69 / `2026-11-08T17:01:00+08:00`。Sites 实际部署成功时间为 17:05:23 MYT；两者分别记录。
+- Sites Version **69** 源码 SHA `08ebb4f9175dcc75f1826a3a2d2ab832fd7c2348`，deployment `appgdep_6af03b3fac0081918e7a29718b0ebfd2`，状态 succeeded。版本列表和 Site 概览均确认最新版本 69。
+- 线上 URL：[Margin Share Calculator](https://margin-share-calculator-poc-20261021.jaron-hoh.chatgpt.site)。页脚实测显示 `Version 69 · Updated: 2026-11-08 17:01 (MYT)`，文字颜色、14px字号与半粗体已验证；桌面和390px浅色/深色均无横向溢出。
+- Node **43/43**、Chromium 股息单表回归、Worker build 通过。线上股息数据未更改。
+- 原 URL、Owner-only 自定义访问、策略 revision 1、单一允许账户、0 外部访客及0群组均保持。PR #3 保持 Draft、未合并。
+
