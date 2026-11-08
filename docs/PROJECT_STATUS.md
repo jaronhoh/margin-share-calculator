@@ -413,3 +413,7 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - **BUG-UAT-002**：1295.KL 的 2017 年首期股息在发行人原始财务报表为每股 RM0.27，2017-08-17 派发。发行人记录 2021-01-29 完成每 1 股配 4 股红股，按配股后的 5 股口径折算为 RM0.054，与 UAT 记录的 Yahoo RM0.05400000140070915 一致至浮点精度。该案例加入回归，确认匹配只采用第三方付款日，保留回测的 Yahoo 金额与来源差异提示。其他历史事件、Percentage 记录和全历史行情股本基准仍需逐项核对。来源见 [发行人 2017 年财报第 22 页](https://www.publicbankgroup.com/media/bxlpcslc/pbb4q2017.pdf)、[发行人股息历史](https://www.publicbankgroup.com/investor-relations/share-dividend-information/dividend-information/cash-dividends-in-respect-of-financial-years-ended/)及 [KLSE Screener 1295 历史表](https://www.klsescreener.com/v2/stocks/view/1295)。
 - 验证：Node 42/42、Worker 构建、Chromium 股息 E2E 及 390px 页脚显示、`git diff --check` 均通过。
 - 本轮在 PR 分支开发及测试。现有 Sites Version 64 的历史部署记录仍返回成功，生产配置、数据及发布操作均未改动。
+
+### BUG-UAT-002 完整区间复核（2026-11-08）
+
+1295.KL 在 2015-01-01 至 2026-11-07 的 24 笔 Yahoo 股息均匹配到唯一第三方付款日候选。红股前 11 笔差异与 5:1 股数基准吻合，红股后 13 笔金额相等。五笔历史 Percentage 的 RM1.00 面值基准由发行人报表确认。已补充界面说明与回归，保持现有金额处理。详见 [数据对照与证据边界](analysis/BUG-UAT-002_PBB_DIVIDEND_BASIS.md)。

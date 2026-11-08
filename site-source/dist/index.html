@@ -19,7 +19,7 @@
       </section>
     </div>
     <section id="dividendPage" class="card hidden" aria-labelledby="dividend-title">
-      <div class="toolbar"><div><h2 id="dividend-title">股息事件</h2><p class="foot">原始股息和 Yahoo × KLSE Screener 的 Payment Date 候选共用下表；唯一付款日候选自动保存并重新回测，日期冲突不自动采用。</p></div><span class="status" id="dividendCount"></span></div>
+      <div class="toolbar"><div><h2 id="dividend-title">股息事件</h2><p class="foot">原始股息和 Yahoo × KLSE Screener 的 Payment Date 候选共用下表；唯一付款日候选自动保存并重新回测，日期冲突不自动采用。</p><p class="foot">历史红股或拆股可使原始派息与 Yahoo 每股股息采用不同的股数基准。付款日匹配保留回测现有金额，百分比按来源原样显示。</p></div><span class="status" id="dividendCount"></span></div>
       <div class="notice"><b>MAYBANK · Excel 原始股息：</b>已预填 Leverage Calculator.xlsx 的 Table1 全部 24 条（2015-05-26 至 2026-10-22），每股金额合计 RM6.99。保留原始日期与金额；表头虽写 Payment Date，尚未独立确认是否为实际付款日。回测暂按所列日期作为情景入账日，同日事件合并；修改不会改写原工作簿。</div>
       <div class="actions dividend-actions"><button id="addDividend" class="secondary" type="button">添加股息事件</button><span class="foot" id="dividendAutoSaveStatus" role="status">编辑会自动保存；点击「回测」返回</span></div>
       <div class="tablebox"><table class="dividend-table"><thead><tr><th>来源日期 / Ex-Date</th><th>每股股息 (RM)</th><th>来源与状态</th><th>Payment Date</th><th>操作</th></tr></thead><tbody id="dividendRows"></tbody></table></div>

@@ -46,3 +46,25 @@ test('PBB 2017 first interim uses the candidate payment date without changing th
  assert.equal(approved.paymentDate, '2017-08-17');
  assert.equal(approved.perShare, perShare);
 });
+
+test('PBB percentage records retain the raw rate and a post-bonus MYR record matches directly', () => {
+ const ticker = '1295.KL';
+ const yahoo = [
+  { ticker, exDate: '2015-02-18', perShare: 0.062 },
+  { ticker, exDate: '2021-03-11', perShare: 0.13 },
+ ];
+ const records = [
+  { ...klse, ticker, exDate: '2015-02-18', paymentDate: '2015-03-05', perShare: null,
+   sourceAmount: 31, sourceIndicator: 'Percentage' },
+  { ...klse, ticker, exDate: '2021-03-11', paymentDate: '2021-03-22', perShare: 0.13,
+   sourceAmount: 0.13, sourceIndicator: 'Currency' },
+ ];
+ const [before, after] = reconcileKlsescreenerDividends(yahoo, records, { ticker });
+ assert.equal(before.paymentDateCandidateStatus, 'amount-mismatch-pending-review');
+ assert.equal(before.paymentDateCandidateSourceAmount, 31);
+ assert.equal(before.paymentDateCandidateSourceIndicator, 'Percentage');
+ assert.equal(before.paymentDateCandidates[0].perShare, null);
+ assert.equal(approveKlsescreenerPaymentDate(before, { confirm: true }).perShare, 0.062);
+ assert.equal(after.paymentDateCandidateStatus, 'third-party-match-pending-review');
+ assert.equal(approveKlsescreenerPaymentDate(after, { confirm: true }).paymentDate, '2021-03-22');
+});
