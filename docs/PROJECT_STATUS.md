@@ -96,3 +96,12 @@
 - **GitHub**：PR #2 已合并至 `main`，Squash commit `16753f0053d4de08fd8615d4a4310db9a638a109`；GitHub Actions `Site source tests` run 53 成功。
 - **Sites**：已部署至 Version 37，部署 succeeded；源提交 `eb190a124d94bff2ff5252b13c051d6369fc2617`。原生产 URL、owner-only 权限及现有行情数据保持不变。
 - **存储范围**：保存在同一浏览器配置文件的本地存储；清除浏览器网站数据、使用无痕窗口或更换浏览器/设备时不会同步。可继续使用 JSON 导出备份。
+
+
+## BUG-UI-005 — 趋势图图例与颜色修复（2026-11-08）
+
+- **需求与 PRD**：已在 `prd/PRD文档.md` 增加 BUG-UI-005，指定五图例顺序、桌面单行、窄屏图例容器横向滚动、亮暗模式颜色一致与原有显隐交互。
+- **GitHub 开发分支**：`fix/bug-ui-005-chart-legend-colors`，基于 `feat/cr-004-ui-cleanup` 完整 CR-004 源码。修改 `site-source/dist/neutral.css`：五图例单行可滚动、日终贷款橙色与股票价格蓝色区分；修改 `site-source/dist/index.html`：Tooltip 各指标增加与曲线一致的颜色标识。
+- **测试状态**：Node / Worker / Chromium / 1440px / 390px / 320px 尚未执行，不能标记 PASS。
+- **部署状态**：**NOT DEPLOYED**。Production `https://margin-share-calculator.jaron-hoh.chatgpt.site/` 保持 Version 1；必须在完成必要测试后更新现有 Site，不新建 Site，保留 Owner-only 和数据。
+- **发布计划**：验证 GitHub 源码 → Node / Worker / Chromium 与亮暗模式、图例显隐和响应式回归 → 修复失败 → 更新现有 Site → 实测生产回测、图例、Tooltip、版本及权限 → 回写实际部署 ID、版本与源 SHA。
