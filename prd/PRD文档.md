@@ -254,8 +254,13 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 
 ## CR-004 回测参数界面整理（2026-11-08）
 
-- 回测开始日与结束日在桌面及常见手机宽度并排，360px 及以下单列，保留日期标签与结束日说明。
-- 在基础回测参数、高级设置、马股交易成本估算和底部操作之间加入水平分隔线。
-- 移除页首的 `PRIVATE · OWNER ONLY` 可见文案，生产和 staging 均使用站点层的仅所有者访问权限。
-- 在马股交易成本估算下提供 [Spark Finance｜马来西亚股票交易成本](https://sparksparkfinance.com/investment/investing-basics/what-is-leverage-in-trading/#馬來西亞股票交易成本)。
-- 以已发布的 Version 69 完整源码为基线。验收覆盖桌面、手机、主题切换、回测和参考链接。CR-004 在独立 staging 验收，生产保留 Version 69。
+- **目标与范围**：在完整的 Version 69 应用基线上调整回测参数 UI，并发布完整应用至新的 ChatGPT Site。新 Site 标题及 slug 均为 `margin-share-calculator`，保持默认 Owner-only。不会部署测试探针/空白页，也不会重开已关闭的 PR #3。
+- **界面要求**：桌面和宽手机视口的回测开始/结束日期并排；360px 及以下单列；保留日期标签和结束日说明。在基础参数、高级设置、马股交易成本估算及底部操作区域之间加入水平分隔线。移除页首可见的 `PRIVATE · OWNER ONLY` 文案。
+- **参考链接**：在马股交易成本估算下提供 [Spark Finance｜马来西亚股票交易成本](https://sparksparkfinance.com/investment/investing-basics/what-is-leverage-in-trading/#馬來西亞股票交易成本)。
+- **验收标准**：
+  - AC-CR004-01：桌面、390px 手机视口日期控件并排，320px 单列；1440/390/320px 均无页面或设置面板横向溢出。
+  - AC-CR004-02：亮色与暗色主题下，参数区块分隔线位置正确且控件仍可用。
+  - AC-CR004-03：页面没有 `PRIVATE · OWNER ONLY` 可见标签；站点访问策略仍为 Owner-only。
+  - AC-CR004-04：Spark Finance 链接的目标地址及马来西亚交易成本锚点准确。
+  - AC-CR004-05：完整应用的回测和股息功能在 Node、Worker 与 Chromium 回归通过；现有 24 条默认股息保持不变。
+  - AC-CR004-06：页面 Footer 显示有效发布版本及 MYT 更新时间；部署后的 Site 实际版本、访问权限和运行结果单独核验。

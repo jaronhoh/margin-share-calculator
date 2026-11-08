@@ -1,4 +1,4 @@
-const { chromium } = require('/Users/jaron/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const http = require('node:http');
 const path = require('node:path');
@@ -36,7 +36,7 @@ function yahooPayload(ticker, { crash = false } = {}) {
     res.end(Buffer.from(await response.arrayBuffer()));
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const browser = await chromium.launch({ headless: true, executablePath: '/Users/jaron/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell' });
+  const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || chromium.executablePath() });
   const page = await browser.newPage(), errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.addInitScript(() => { window.confirm = () => true; });

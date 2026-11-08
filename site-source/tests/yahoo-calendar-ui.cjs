@@ -1,9 +1,9 @@
-const {chromium}=require('/Users/jaron/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const {chromium}=require('playwright');
 const A=require('node:assert/strict');
 
 (async()=>{
   let failYahoo=false;
-  const browser=await chromium.launch({headless:true,executablePath:'/Users/jaron/Library/Caches/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-mac-arm64/chrome-headless-shell'});
+  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||chromium.executablePath()});
   const page=await browser.newPage({reducedMotion:"reduce"}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>{window.confirm=()=>true;const RealDate=Date;window.Date=class extends RealDate{constructor(...args){super(...(args.length?args:['2025-02-08T12:00:00Z']));}static now(){return new RealDate('2025-02-08T12:00:00Z').getTime();}};});
