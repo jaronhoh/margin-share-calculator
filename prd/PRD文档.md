@@ -1,4 +1,4 @@
-# Margin Share Calculator — PRD 草案 v0.15
+# Margin Share Calculator — PRD 草案 v0.16
 
 > 状态：已建立需求基线，核心业务规则已确认；实现与验证状态以 PROJECT_STATUS 和版本报告为准。2026-10-24，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
@@ -268,7 +268,7 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 
 ## BUG-UI-005 — 趋势图图例单行布局与颜色辨识度（2026-11-08）
 
-**范围：F05 分析输出／趋势图；UI-only 修复。** 保留 Production Version 1 已验证的 CR-004、回测引擎、交易成本、股息、行情、持久化、Owner-only 权限及现有 Site URL。
+**范围：F05 分析输出／趋势图；UI-only 修复。** 保留 CR-004、回测引擎、交易成本、股息、行情及持久化功能；以 GitHub 指定 Commit 为发布源码基准。Production Version 1 不是 BUG-UI-005 的验收证据。
 
 ### 功能需求
 - 图例顺序固定为：**日终贷款余额 → 股票市值 → 净资产 → LSR → 股票价格（RM/股）**。
@@ -283,6 +283,20 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 - **AC-BUG-UI-005-03**：日终贷款余额与股票价格明显可区分，五条曲线、图例、Tooltip 颜色一致，Light/Dark 均通过视觉检查。
 - **AC-BUG-UI-005-04**：逐项点击图例可独立隐藏/恢复对应曲线，不影响其他指标、坐标轴和日期提示。
 - **AC-BUG-UI-005-05**：Node、Worker、Chromium 图表及响应式回归通过；MAYBANK `1155.KL` 回测结果与修复前保持一致。
-- **AC-BUG-UI-005-06**：在更新现有 `https://margin-share-calculator.jaron-hoh.chatgpt.site/` 前确认测试及部署来源，保留 Owner-only、URL 和数据；发布后独立核验实际版本与 Deployment ID。
+- **AC-BUG-UI-005-06**：使用 GitHub 指定 Commit 的完整应用源码创建全新 ChatGPT Site，默认 Owner-only；新 Site 部署后独立核验 URL、Site ID、版本、Deployment ID、图例、回测及股息。旧 Site 的 URL 与浏览器本地数据不保证自动继承；删除旧 Site 前优先确保新 Site 可用，并对可导出的数据做好备份。
 
 **状态**：需求已确认；实现、自动测试、GitHub 功能提交及 Sites 部署须分别核验，不因本 PRD 更新而标记完成。
+
+
+## 发布策略变更 — GitHub 基准与 ChatGPT Sites 重建（2026-11-09，v0.16）
+
+- **唯一源码基准**：GitHub Repository `jaronhoh/margin-share-calculator`，开发分支 `fix/bug-ui-005-chart-legend-colors`，BUG-UI-005 实现基准 Commit `f595cb783997505722c631d351bad7d751e37586`。若后续仅更新文档，部署时仍须确认实际应用源码与该基准一致。
+- **变更原因**：旧 Production Site 的源码绑定分支 HEAD 与 GitHub 指定 Commit 不匹配；既有 Work 环境未取得可用的 Sites 内部 Git 更新通道及完整部署归档，导致部署未启动。该证据不能证明 GitHub 故障或 Sites 服务整体故障。
+- **决策**：停止尝试修复旧 Site 的源码绑定；使用完整应用源码建立全新 Site，名称目标 `margin-share-calculator`，默认 Owner-only，不部署探针或空白页面。用户已授权在重建成功后删除旧 Site；如果平台要求先删除才能释放名称或 URL，须先核实限制、准备部署材料与数据备份，不能假设原 URL 可恢复。
+- **发布范围**：完整应用（含 CR-004、BUG-UI-005、回测、股息、行情、配置和 Footer），而非仅 UI 差异文件。不得因重建改变融资、股息、交易费用或数据存储规则。
+- **验收门槛**：新 Site 实际运行、BUG-UI-005 图例与 Tooltip、回测、股息、CR-004 UI、响应式布局、Owner-only 均须有真实验证记录。只有实际成功才记录 Deployment ID、Site ID、URL、Production Version 与 PASS；未运行标记 NOT RUN。
+- **数据迁移边界**：旧域名的 localStorage 不会因创建新域名而自动迁移。能够安全导出时先备份 JSON；未实际迁移与核验不得声称用户数据已保留。
+- **当前状态**：截至本次 PRD 更新，旧 Site 仍为 Version 1；新 Site 尚未创建，BUG-UI-005 尚未部署，Production UAT 尚未执行。本次仅更新 PRD 与 GitHub 状态文档，不执行 Sites 操作。
+
+### PRD 变更记录（续）
+| 2026-11-09 | v0.16 | 修订 BUG-UI-005 发布验收：GitHub 为唯一源码基准，放弃旧 Site 源码绑定修复，改为全新 Owner-only Site 完整应用部署；明确旧 Site 删除顺序、localStorage 风险与未部署状态。 |
