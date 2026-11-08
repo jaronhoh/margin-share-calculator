@@ -66,8 +66,8 @@ function yahooPayload(ticker, { crash = false } = {}) {
   const appUrl = `http://127.0.0.1:${server.address().port}`;
   await page.goto(appUrl);
   await page.locator('#resultStatus').waitFor();
-  assert.equal(await page.locator('#releaseVersion').textContent(), 'Version 68');
-  assert.equal(await page.locator('#releaseUpdated').textContent(), 'Updated: 2026-11-08 16:50 (MYT)');
+  assert.equal(await page.locator('#releaseVersion').textContent(), 'Version 69');
+  assert.equal(await page.locator('#releaseUpdated').textContent(), 'Updated: 2026-11-08 17:01 (MYT)');
   assert.equal(await page.locator('header #openSettings').count(), 1, 'backtest parameters are in the header beside the theme control');
   assert.equal(await page.locator('.navrow #openSettings').count(), 0, 'backtest parameters are removed from the navigation row');
   assert.match(await page.locator('header .tag').textContent(), /OWNER ONLY/);
@@ -78,8 +78,8 @@ function yahooPayload(ticker, { crash = false } = {}) {
   await page.locator('#closeSettings').click();
   const dividendPage = page.locator('#dividendPage');
   assert.equal(await dividendPage.locator('table').count(), 1, 'dividend page has exactly one table');
-  assert.equal(await page.locator('#releaseVersion').textContent(), 'Version 68');
-  assert.equal(await page.locator('#releaseUpdated').textContent(), 'Updated: 2026-11-08 16:50 (MYT)');
+  assert.equal(await page.locator('#releaseVersion').textContent(), 'Version 69');
+  assert.equal(await page.locator('#releaseUpdated').textContent(), 'Updated: 2026-11-08 17:01 (MYT)');
   assert.equal(await page.locator('#dividendRows tr[data-dividend-event]').count(), 24, 'the original 24 dividend records remain');
   assert.equal(await page.locator('#dividendCsv').count(), 0, 'dividend CSV import is removed');
   assert.equal(await page.locator('#dividendReviewRows').count(), 0, 'dividend CSV review is removed');
