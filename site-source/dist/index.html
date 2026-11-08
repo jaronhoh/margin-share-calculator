@@ -30,7 +30,7 @@
       <div class="card section"><h2>PoC 口径与限制</h2><ul class="foot"><li>日历日计息：日初贷款 × 年利率 / 365；于每月最后一天资本化，包含当日日息。</li><li>逐日顺序：按日初贷款计算当日日息 → 月末将累计利息（含当天）加入贷款 → 股息事件偿债 → Margin Call → 再融资买股。</li><li>交易日目前按周一至周五近似标记，不含马股公众假期日历。</li><li>再融资用联立方程求解新增买入额；买卖每手固定100股；买入向下取整，卖出向上取整至解除追缴所需最小整手数。</li><li>现金补仓用于按当日收盘价买入现金持股，所需股数向上取整至最小100股整手，补仓金额含买入成交额及费用；不直接还贷。卖股策略按成交款偿债。买入后 LSR 低于 Margin Call 0.1 个百分点（可调）。</li><li>Site 使用 Excel Table2 收盘价及 Table1/可编辑股息事件；逐日表股息缓存与Table1总额一致，日期仍待付款日核实。交易费用是可编辑估算：佣金、印花税、结算费及SST；不含融资合同费用、开户费或平台费。行情供应商独立验证、强平动作及公司行动仍未确认；禁止将此 PoC 用于真实投资决策。</li></ul></div>
     </section>
   </main>
-  <footer id="releaseFooter" aria-label="版本信息" style="padding:20px 12px 28px;text-align:center;font-size:12px;color:var(--muted, #737373);line-height:1.6"><span id="releaseVersion">Version unavailable</span> · <span id="releaseUpdated">Updated: unavailable</span></footer>
+  <footer id="releaseFooter" aria-label="版本信息" style="padding:20px 12px 28px;text-align:center;font-size:14px;font-weight:600;color:var(--muted-foreground, #52525b);line-height:1.6"><span id="releaseVersion">Version unavailable</span> · <span id="releaseUpdated">Updated: unavailable</span></footer>
   <div id="drawerBackdrop" class="drawer-backdrop" data-open="false"></div>
   <aside id="settingsDrawer" class="drawer" data-open="false" role="dialog" aria-modal="true" aria-labelledby="inputs-title" aria-hidden="true" tabindex="-1">
     <section class="card"><div class="drawer-title"><h2 id="inputs-title">回测参数</h2><button id="closeSettings" class="secondary" type="button">关闭</button></div>
