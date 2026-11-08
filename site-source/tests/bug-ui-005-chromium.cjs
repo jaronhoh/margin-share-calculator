@@ -94,7 +94,10 @@ const fs = require('node:fs');
           const input = document.querySelector('[data-chart-series="' + dotInputs[name] + '"]');
           const dot = input.closest('label').querySelector('.dot');
           const style = getComputedStyle(dot);
-          return [name, style.backgroundColor + ' ' + style.backgroundImage];
+          const rawSeriesColor = rootStyle.getPropertyValue('--series-' + name).trim();
+          const solidMatches = normalize(style.backgroundColor) === variables[name];
+          const patternedMatches = style.backgroundImage.includes(rawSeriesColor);
+          return [name, solidMatches || patternedMatches];
         }));
         const tipColors = [...document.querySelector('.chart-tip').children].slice(1)
           .map(line => getComputedStyle(line).borderLeftColor);
@@ -104,7 +107,7 @@ const fs = require('node:fs');
       for (const item of series) {
         const expected = colors.variables[item.variable];
         assert.equal(colors.pathColors[item.variable], expected, item.variable + ' curve color');
-        assert(colors.dotStyles[item.variable].includes(expected), item.variable + ' legend color: expected ' + expected + ', got ' + colors.dotStyles[item.variable]);
+        assert.equal(colors.dotStyles[item.variable], true, item.variable + ' legend color matches its series token');
       }
       assert.deepEqual(colors.tipColors, tipOrder.map(name => colors.variables[name]), 'tooltip colors match their curves and legend');
       assert.notEqual(colors.variables.loan, colors.variables.price, 'loan and stock price colors are distinguishable');
