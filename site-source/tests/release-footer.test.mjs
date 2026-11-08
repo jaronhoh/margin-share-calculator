@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { formatReleaseInfo } from '../dist/release-info.mjs';
 
 test('release footer formats the hard-coded release in Malaysia time', () => {
-  assert.deepEqual(formatReleaseInfo(67, '2026-11-08T16:30:00+08:00'),
-    ['Version 67', 'Updated: 2026-11-08 16:30 (MYT)']);
+  assert.deepEqual(formatReleaseInfo(68, '2026-11-08T16:50:00+08:00'),
+    ['Version 68', 'Updated: 2026-11-08 16:50 (MYT)']);
   assert.deepEqual(formatReleaseInfo(65, '2026-11-08T16:02:03.123456Z'),
     ['Version 65', 'Updated: 2026-11-09 00:02 (MYT)']);
 });
