@@ -425,13 +425,9 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 
 按用户确认，每次发布只需在 `site-source/dist/release-info.mjs` 更新 Sites 版本号和 MYT 时间。发布后写入接口、构建 UUID、发布凭据和 R2 绑定均已从本地 Site 源码移除；`RELEASE_WRITE_TOKEN` 环境变量此前已清除。
 
-### 发布核对（2026-11-08）
+### 发布核对（2026-11-08，历史状态）
 
-- 本地 Site 源码完成简化，Node 自动化测试 43/43 通过，Site Worker 构建通过。
-- 当前 Sites 远端分支仍是旧 HEAD `0da0443ddd643b46eec6dbfa82a290c4c2245a09`。推送主机 `git.chatgpt-team.site` 在执行环境无法解析，Sites 保存接口也拒绝尚未推送的提交，因此本次简化尚未到达生产 Site。Site 当前仍为 Version 66；未更改 URL、Owner-only 权限或数据。
-- 有一次 Sites 调用返回 succeeded，但版本对象仍指向旧 SHA 和 Version 66，故不记作本次新代码部署。
-- PR #3 文档/源码同步及生产发布仍待完成；下次真正发布前，将版本常量改为届时 Sites 版本，并把时间改为该次发布的 MYT 时间。
-
+此前的记录描述了 V67 发布前一次推送失败，后续已通过 Sites 源码工作流完成推送并发布 V67；随后本轮发布 V68。请以本文件下方“最新发布：Sites Version 68”为当前线上状态，旧的失败记录不再代表现况。
 
 ## 最新发布：Sites Version 68（2026-11-08）
 
