@@ -398,17 +398,12 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - 本轮不部署、不改 Site 数据/权限/URL、不合并 main；Draft PR #3 保持打开。
 
 
-## CR-003 — Footer 发布版本与更新时间（2026-11-06）
+## CR-003 — Footer 发布版本与更新时间（2026-11-08）
 
-- 需求：用户已确认在页面最底部居中显示 `Version <实际 Sites 版本> · Updated: YYYY-MM-DD HH:mm (MYT)`；小号浅灰文字，响应式，不更改数据库或回测行为。
-- GitHub 功能分支已新增 Footer、`site-source/dist/release-info.mjs` 发布元数据占位符及 `site-source/tests/release-footer.test.mjs` 静态回归测试；移除顶部可能过期的硬编码 `VERSION 64`，保留 Owner-only 标签。
-- `release-info.mjs` 的版本及 ISO 8601 时间均为 `null`，直到**实际成功发布现有 Sites**且可核对 Sites 版本及发布时刻，才可填写真实数据；不得使用 GitHub 提交时间、浏览器当前时间或猜测值。未提供元数据时 Footer 显示 `Version unavailable · Updated: unavailable`。
-- 状态：需求 CONFIRMED；代码已提交功能分支；自动化测试和 GitHub Actions 结果待验证；未合并 main；未部署现有 Site；生产版本仍按此前记录为 Version 64（未在本轮独立核对 Sites）。
-- 发布注意：发布流程需先取得实际版本号及成功发布时刻，并使所部署的 `release-info.mjs` 与发布事实一致；若 Sites 不支持此步骤，必须如实显示 unavailable，不能假称自动更新。
+- Footer 显示 `Version <Sites 版本> · Updated: YYYY-MM-DD HH:mm (MYT)`。
+- 每次发布前只需在 `site-source/dist/release-info.mjs` 更新版本号和 ISO 8601 时间，再正常构建、打包、部署并核对页脚。
+- 不需要运行时接口、部署后回写、发布凭据、构建标识或 R2 存储。
 
-## CR-003 与 UAT 分支复核（2026-11-08）
-
-- **CR-003**：以部署后写入的发布凭据替代源码中的空占位。发布工具校验 Sites 项目、保存版本、源码 SHA 和成功的生产部署；Worker 按构建 UUID 隔离凭据、保护写入并允许相同凭据重试。缺少凭据、凭据无效或存储故障时显示 unavailable。页脚时间固定使用 MYT，包含跨午夜测试。接入步骤见 [Site 源码发布说明](../site-source/README.md)。真实 Sites 发布仍需授权的 R2/密钥配置、发布时刻证据及写入步骤。
 - **BUG-UAT-001**：审查待提交字段在卸载及 Yahoo 重跑前落盘的既有实现。Chromium 原测试先被已经移除的页首 `VERSION 64` 断言拦住，更新为页脚断言后完整通过。仅发出 `input` 后立即刷新仍保留 RM0.055，重跑后保留 Ex-Date、Payment Date 和金额。另测仅发出 input 后立即运行，保留新输入的 RM0.056。开发分支复核通过，生产回归留待授权发布。
 - **BUG-UAT-002**：1295.KL 的 2017 年首期股息在发行人原始财务报表为每股 RM0.27，2017-08-17 派发。发行人记录 2021-01-29 完成每 1 股配 4 股红股，按配股后的 5 股口径折算为 RM0.054，与 UAT 记录的 Yahoo RM0.05400000140070915 一致至浮点精度。该案例加入回归，确认匹配只采用第三方付款日，保留回测的 Yahoo 金额与来源差异提示。其他历史事件、Percentage 记录和全历史行情股本基准仍需逐项核对。来源见 [发行人 2017 年财报第 22 页](https://www.publicbankgroup.com/media/bxlpcslc/pbb4q2017.pdf)、[发行人股息历史](https://www.publicbankgroup.com/investor-relations/share-dividend-information/dividend-information/cash-dividends-in-respect-of-financial-years-ended/)及 [KLSE Screener 1295 历史表](https://www.klsescreener.com/v2/stocks/view/1295)。
 - 验证：Node 42/42、Worker 构建、Chromium 股息 E2E 及 390px 页脚显示、`git diff --check` 均通过。
@@ -423,4 +418,16 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - GitHub PRD v0.32 已同步至 Draft PR #3，提交 `3c1071d`。应用代码以 `eb02f48` 为基线，Node 43/43、Chromium 隔离回归、Worker build 与 GitHub Actions #206 通过。
 - 现有 Sites 项目从已发布 Version 65 更新到 **Version 66**。部署 `appgdep_6af02e3d86d481919d463c12211da84f` 成功，Sites 源码 `0da0443ddd643b46eec6dbfa82a290c4c2245a09`。发布响应时间为 **2026-11-08 16:09 MYT**。
 - [生产 Site](https://margin-share-calculator-poc-20261021.jaron-hoh.chatgpt.site) 仍仅向所有者开放，策略修订号 1、允许账户 1、外部访客 0。旧地址访问时由平台重定向至此地址。通过正常登录确认新版股息说明和 MAYBANK 24 笔默认记录可见。生产股息数据未编辑。
-- CR-003 页脚和专用发布记录存储随版本上线。生产页脚已确认显示缺少发布记录时的 unavailable 状态。免登录写入凭证生成被审批拒绝，真实发布记录尚未写入；带实际版本及 MYT 时间的生产页脚验收仍待完成。生产股息编辑持久化留待隔离 UAT。
+- 后续复核发现发布凭据和 R2 写入机制超出需求。CR-003 已更正为发布前在 site-source/dist/release-info.mjs 硬编码版本与 MYT 发布时间，随普通构建发布。
+
+
+### CR-003 简化为发布前硬编码（2026-11-08）
+
+按用户确认，每次发布只需在 `site-source/dist/release-info.mjs` 更新 Sites 版本号和 MYT 时间。发布后写入接口、构建 UUID、发布凭据和 R2 绑定均已从本地 Site 源码移除；`RELEASE_WRITE_TOKEN` 环境变量此前已清除。
+
+### 发布核对（2026-11-08）
+
+- 本地 Site 源码完成简化，Node 自动化测试 43/43 通过，Site Worker 构建通过。
+- 当前 Sites 远端分支仍是旧 HEAD `0da0443ddd643b46eec6dbfa82a290c4c2245a09`。推送主机 `git.chatgpt-team.site` 在执行环境无法解析，Sites 保存接口也拒绝尚未推送的提交，因此本次简化尚未到达生产 Site。Site 当前仍为 Version 66；未更改 URL、Owner-only 权限或数据。
+- 有一次 Sites 调用返回 succeeded，但版本对象仍指向旧 SHA 和 Version 66，故不记作本次新代码部署。
+- PR #3 文档/源码同步及生产发布仍待完成；下次真正发布前，将版本常量改为届时 Sites 版本，并把时间改为该次发布的 MYT 时间。
