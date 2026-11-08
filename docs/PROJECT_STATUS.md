@@ -96,3 +96,11 @@
 - **GitHub**：PR #2 已合并至 `main`，Squash commit `16753f0053d4de08fd8615d4a4310db9a638a109`；GitHub Actions `Site source tests` run 53 成功。
 - **Sites**：已部署至 Version 37，部署 succeeded；源提交 `eb190a124d94bff2ff5252b13c051d6369fc2617`。原生产 URL、owner-only 权限及现有行情数据保持不变。
 - **存储范围**：保存在同一浏览器配置文件的本地存储；清除浏览器网站数据、使用无痕窗口或更换浏览器/设备时不会同步。可继续使用 JSON 导出备份。
+
+
+## BUG-UI-005（2026-11-08）
+
+- **状态**：源码修复与 Node/Worker 自动化回归通过；Chromium 多视口与现有 Site 部署验证进行中。
+- **Production 基线**：`feat/cr-004-ui-cleanup`，`c0360e8659a66be9f54897cd7ca810e73f0fcc76`。
+- **改动**：趋势图五项图例保持指定顺序并采用单行横向滚动布局；系列颜色统一到图表、图例和 Tooltip，适配 Light/Dark Mode。仅更新图表 UI 和提示呈现，未改计算引擎、股息默认数据或用户数据逻辑。
+- **验证**：Node 44 项测试通过；Site Worker 构建输出包含 19 项静态资源。Chromium 1440px、390px、320px 与生产 Site 核验待完成。

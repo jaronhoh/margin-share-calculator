@@ -47,3 +47,15 @@
 
 .settings-divider{margin:16px 0;border:0;border-top:1px solid var(--border)}
 @media(max-width:360px){.date-pair{grid-template-columns:minmax(0,1fr)}}
+
+/* BUG-UI-005: distinct series palette and one-row, horizontally scrollable chart legend */
+:root{--series-loan:#b91c1c;--series-value:#1d4ed8;--series-net:#15803d;--series-lsr:#7e22ce;--series-price:#0e7490}
+:root[data-theme="dark"]{--series-loan:#f87171;--series-value:#60a5fa;--series-net:#4ade80;--series-lsr:#c084fc;--series-price:#22d3ee}
+.chartwrap~.legend{display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;text-align:left;padding:4px 0 8px;scrollbar-width:thin}
+.chartwrap~.legend>label{display:inline-flex;align-items:center;flex:0 0 auto;white-space:nowrap}
+.chartwrap~.legend-note{margin-top:2px}
+.chart-tip{display:grid;gap:5px;white-space:normal}
+.chart-tip-date,.chart-tip-price{margin-bottom:2px}
+.chart-tip-row{display:grid;grid-template-columns:10px minmax(0,1fr) auto;align-items:center;gap:7px}
+.chart-tip-swatch{width:9px;height:9px;border-radius:50%;background:var(--series-loan)}
+.chart-tip-swatch.marketValue{background:var(--series-value)}.chart-tip-swatch.netWorth{background:var(--series-net)}.chart-tip-swatch.lsr{background:var(--series-lsr)}.chart-tip-price{color:var(--series-price)}.dot.price{background:var(--series-price)}
