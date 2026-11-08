@@ -431,3 +431,13 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 - 当前 Sites 远端分支仍是旧 HEAD `0da0443ddd643b46eec6dbfa82a290c4c2245a09`。推送主机 `git.chatgpt-team.site` 在执行环境无法解析，Sites 保存接口也拒绝尚未推送的提交，因此本次简化尚未到达生产 Site。Site 当前仍为 Version 66；未更改 URL、Owner-only 权限或数据。
 - 有一次 Sites 调用返回 succeeded，但版本对象仍指向旧 SHA 和 Version 66，故不记作本次新代码部署。
 - PR #3 文档/源码同步及生产发布仍待完成；下次真正发布前，将版本常量改为届时 Sites 版本，并把时间改为该次发布的 MYT 时间。
+
+
+## 最新发布：Sites Version 68（2026-11-08）
+
+- CR-003 采用用户确认的简单方式：发布前在 `dist/release-info.mjs` 硬编码版本号和 MYT 时间。本次为 Version 68 / `2026-11-08T16:50:00+08:00`，没有增加运行时接口、部署后写入、发布收据、R2 或额外令牌机制。
+- 本地 Site 回归：Node **43/43** 通过，Worker build 通过，Chromium 股息单表 E2E **PASS**（包含页脚断言、24 条默认数据、股息编辑持久化、重跑/刷新和零浏览器错误）。
+- GitHub Actions `Site source tests` run 224（ID `42464380110`）SUCCESS。
+- 已推送 Site 源码提交 `1606a143bfe4c02fa7d49d18c4d2ba6a5d8e2e0b` 并部署现有 Site Version **68**；deployment `appgdep_6af037d1ef148191a0fd3ed8b473c5bf`，状态 succeeded，Sites 记录时间 2026-11-08 16:50:46 MYT。版本对象确认同一源码 SHA。
+- 线上页面页脚实测为 `Version 68` / `Updated: 2026-11-08 16:50 (MYT)`。原 URL 保持 `https://margin-share-calculator-poc-20261021.jaron-hoh.chatgpt.site`；访问仍为 custom Owner-only，策略 revision 1、1 个允许账户、0 外部访客、0 群组。验证期间没有修改生产股息数据。
+- PR #3 分支的版本常量和回归断言已同步至 V68；Draft PR 保持未合并。此前“发布未完成/远端仍在旧 SHA”的记录是 V68 成功前的状态，现由本节更新。
