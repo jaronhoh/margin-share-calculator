@@ -87,7 +87,7 @@ const fs = require('node:fs');
         const variables = Object.fromEntries(names.map(name => [name, normalize(rootStyle.getPropertyValue('--series-' + name).trim())]));
         const pathColors = Object.fromEntries(names.map(name => {
           const path = document.querySelector('#chart path[stroke="var(--series-' + name + ')"]');
-          return [name, path ? getComputedStyle(path).stroke : null];
+          return [name, path ? normalize(getComputedStyle(path).stroke) : null];
         }));
         const dotInputs = { loan: 'loan', value: 'marketValue', net: 'netWorth', lsr: 'lsr', price: 'price' };
         const dotStyles = Object.fromEntries(names.map(name => {
