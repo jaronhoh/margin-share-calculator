@@ -5,6 +5,12 @@ on:
     paths:
       - 'site-source/**'
       - '.github/workflows/site-source-tests.yml'
+  push:
+    branches:
+      - fix/bug-ui-005-chart-legend-colors
+    paths:
+      - 'site-source/**'
+      - '.github/workflows/site-source-tests.yml'
   workflow_dispatch:
 
 jobs:
@@ -17,3 +23,38 @@ jobs:
           node-version: 22
       - run: npm test
         working-directory: site-source
+
+  chromium-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: npm install --no-save --package-lock=false playwright@1.62.1
+        working-directory: site-source
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: site-source
+      - name: Run BUG-UI-005 viewport checks
+        run: |
+          mkdir -p artifacts
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory dist >/tmp/bug-ui-005-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/index.html >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          node tests/bug-ui-005-chromium.cjs
+        working-directory: site-source
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bug-ui-005-chromium
+          path: site-source/artifacts/bug-ui-005-*.png
+          if-no-files-found: ignore
