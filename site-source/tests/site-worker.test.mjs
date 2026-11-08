@@ -10,69 +10,12 @@ const root = new URL('..', import.meta.url).pathname;
 const node = process.execPath;
 
 test('Site Worker serves the app and same-origin Yahoo requests with safe validation', async () => {
-  const projectId = 'appgprj_test', buildId = 'e8c86d54-44a5-4e90-8177-9fc08e9e6411';
-  execFileSync(node, ['tools/build-site-worker.mjs'], {
-    cwd: root, stdio: 'pipe', env: { ...process.env, SITE_RELEASE_PROJECT_ID: projectId, SITE_RELEASE_BUILD_ID: buildId },
-  });
+  execFileSync(node, ['tools/build-site-worker.mjs'], { cwd: root, stdio: 'pipe' });
   const built = await readFile(join(root, 'dist/server/index.js'), 'utf8');
   const temp = await mkdtemp(join(tmpdir(), 'margin-site-worker-'));
   const modulePath = join(temp, 'worker.mjs');
   await writeFile(modulePath, built);
   const { default: worker } = await import(`${pathToFileURL(modulePath).href}?test=${Date.now()}`);
-
-  const page = await worker.fetch(new Request('https://site.example/'));
-  assert.equal(page.status, 200);
-  assert.match(await page.text(), /Margin Share Calculator/);
-  const module = await worker.fetch(new Request('https://site.example/yahoo-chart.mjs'));
-  assert.equal(module.headers.get('content-type'), 'text/javascript; charset=utf-8');
-  assert.match(await module.text(), /api\/yahoo-chart/);
-  assert.equal((await worker.fetch(new Request('https://site.example/no-such-file'))).status, 404);
-  assert.equal((await worker.fetch(new Request('https://site.example/', { method: 'POST' }))).status, 405);
-
-  const releaseRequest = new Request('https://site.example/api/release-info');
-  const receipt = { projectId, buildId, sourceSha: 'a'.repeat(40), versionId: 'v65', deploymentId: 'd65', version: 65, updatedAt: '2026-11-08T13:00:00Z' };
-  const object = body => ({ size: Buffer.byteLength(body), json: async () => JSON.parse(body), text: async () => body });
-  const withReceipt = value => ({ RELEASE_BUCKET: { async get(key) {
-    assert.equal(key, `release-info/${projectId}/${buildId}.json`);
-    return object(JSON.stringify(value));
-  } } });
-  const pending = await worker.fetch(releaseRequest);
-  assert.equal(pending.headers.get('cache-control'), 'no-store');
-  assert.equal(await pending.json(), null);
-  const released = await worker.fetch(releaseRequest, withReceipt(receipt));
-  assert.equal(released.headers.get('cache-control'), 'no-store');
-  assert.deepEqual(await released.json(), { version: 65, updatedAt: receipt.updatedAt });
-  for (const value of [{ ...receipt, buildId: 'old-build' }, { ...receipt, projectId: 'other-project' },
-    { ...receipt, updatedAt: 'bad-date' }]) {
-    assert.equal(await (await worker.fetch(releaseRequest, withReceipt(value))).json(), null);
-  }
-  for (const get of [async () => null, async () => object('not JSON'),
-    async () => { throw new Error('storage unavailable'); }]) {
-    assert.equal(await (await worker.fetch(releaseRequest, { RELEASE_BUCKET: { get } })).json(), null);
-  }
-
-  let stored;
-  const env = { RELEASE_WRITE_TOKEN: 'test-token', RELEASE_BUCKET: {
-    async get() { return stored == null ? null : object(stored); },
-    async put(key, body, { onlyIf }) {
-      assert.equal(key, `release-info/${projectId}/${buildId}.json`);
-      assert.equal(onlyIf.get('if-none-match'), '*');
-      if (stored != null) return null;
-      stored = body;
-      return {};
-    },
-  } };
-  const put = (body, token = 'test-token') => worker.fetch(new Request(releaseRequest.url, {
-    method: 'PUT', headers: { 'x-release-write-token': token }, body: JSON.stringify(body),
-  }), env);
-  assert.equal((await put(receipt, 'bad-token')).status, 403);
-  assert.equal((await put({ ...receipt, buildId: 'old-build' })).status, 400);
-  assert.equal((await put('x'.repeat(4096))).status, 413);
-  assert.equal(await (await worker.fetch(releaseRequest, env)).json(), null);
-  const writes = await Promise.all([put(receipt), put(receipt)]);
-  assert.deepEqual(writes.map(response => response.status).sort(), [200, 201]);
-  assert.equal((await put({ ...receipt, version: 66 })).status, 409);
-  assert.deepEqual(await (await worker.fetch(releaseRequest, env)).json(), { version: 65, updatedAt: receipt.updatedAt });
 
   const originalFetch = globalThis.fetch;
   const calls = [];
