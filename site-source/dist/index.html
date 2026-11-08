@@ -51,19 +51,10 @@
     </section>
   </aside>
   <script type="module">
-    import {formatReleaseInfo} from './release-info.mjs';
-    async function showReleaseInfo() {
-      try {
-        const response = await fetch('./api/release-info', {cache:'no-store',signal:AbortSignal.timeout(3000)});
-        if (!response.ok) return;
-        const [version, updated] = formatReleaseInfo(await response.json());
-        document.getElementById('releaseVersion').textContent = version;
-        document.getElementById('releaseUpdated').textContent = updated;
-      } catch {
-        // The static footer remains available when publication metadata cannot be loaded.
-      }
-    }
-    showReleaseInfo();
+    import {SITE_RELEASE_VERSION,SITE_RELEASE_UPDATED_AT,formatReleaseInfo} from './release-info.mjs';
+    const [versionText, updatedText] = formatReleaseInfo(SITE_RELEASE_VERSION, SITE_RELEASE_UPDATED_AT);
+    document.getElementById('releaseVersion').textContent = versionText;
+    document.getElementById('releaseUpdated').textContent = updatedText;
   </script>
   <script type="module">
     import {runBacktest,calculateInitialAllocation,transactionFees} from './engine.mjs';
