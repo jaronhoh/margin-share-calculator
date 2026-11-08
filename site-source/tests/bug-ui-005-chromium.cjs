@@ -104,7 +104,7 @@ const fs = require('node:fs');
       for (const item of series) {
         const expected = colors.variables[item.variable];
         assert.equal(colors.pathColors[item.variable], expected, item.variable + ' curve color');
-        assert(colors.dotStyles[item.variable].includes(expected), item.variable + ' legend color');
+        assert(colors.dotStyles[item.variable].includes(expected), item.variable + ' legend color: expected ' + expected + ', got ' + colors.dotStyles[item.variable]);
       }
       assert.deepEqual(colors.tipColors, tipOrder.map(name => colors.variables[name]), 'tooltip colors match their curves and legend');
       assert.notEqual(colors.variables.loan, colors.variables.price, 'loan and stock price colors are distinguishable');
