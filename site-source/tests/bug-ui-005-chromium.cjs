@@ -94,9 +94,13 @@ const fs = require('node:fs');
           const input = document.querySelector('[data-chart-series="' + dotInputs[name] + '"]');
           const dot = input.closest('label').querySelector('.dot');
           const style = getComputedStyle(dot);
-          const rawSeriesColor = rootStyle.getPropertyValue('--series-' + name).trim();
+          const colorProbe = document.createElement('span');
+          colorProbe.style.color = 'var(--series-' + name + ')';
+          document.body.appendChild(colorProbe);
+          const resolvedSeriesColor = getComputedStyle(colorProbe).color;
+          colorProbe.remove();
           const solidMatches = normalize(style.backgroundColor) === variables[name];
-          const patternedMatches = style.backgroundImage.includes(rawSeriesColor);
+          const patternedMatches = style.backgroundImage.includes(resolvedSeriesColor);
           return [name, solidMatches || patternedMatches];
         }));
         const tipColors = [...document.querySelector('.chart-tip').children].slice(1)
