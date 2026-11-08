@@ -417,3 +417,10 @@ Evidence: 实测 Site URL、页面 VERSION 64；隔离浏览器 DOM/页面状态
 ### BUG-UAT-002 完整区间复核（2026-11-08）
 
 1295.KL 在 2015-01-01 至 2026-11-07 的 24 笔 Yahoo 股息均匹配到唯一第三方付款日候选。红股前 11 笔差异与 5:1 股数基准吻合，红股后 13 笔金额相等。五笔历史 Percentage 的 RM1.00 面值基准由发行人报表确认。已补充界面说明与回归，保持现有金额处理。详见 [数据对照与证据边界](analysis/BUG-UAT-002_PBB_DIVIDEND_BASIS.md)。
+
+### Sites Version 66 发布（2026-11-08）
+
+- GitHub PRD v0.32 已同步至 Draft PR #3，提交 `3c1071d`。应用代码以 `eb02f48` 为基线，Node 43/43、Chromium 隔离回归、Worker build 与 GitHub Actions #206 通过。
+- 现有 Sites 项目从已发布 Version 65 更新到 **Version 66**。部署 `appgdep_6af02e3d86d481919d463c12211da84f` 成功，Sites 源码 `0da0443ddd643b46eec6dbfa82a290c4c2245a09`。发布响应时间为 **2026-11-08 16:09 MYT**。
+- [生产 Site](https://margin-share-calculator-poc-20261021.jaron-hoh.chatgpt.site) 仍仅向所有者开放，策略修订号 1、允许账户 1、外部访客 0。旧地址访问时由平台重定向至此地址。通过正常登录确认新版股息说明和 MAYBANK 24 笔默认记录可见。生产股息数据未编辑。
+- CR-003 页脚和专用发布记录存储随版本上线。生产页脚已确认显示缺少发布记录时的 unavailable 状态。免登录写入凭证生成被审批拒绝，真实发布记录尚未写入；带实际版本及 MYT 时间的生产页脚验收仍待完成。生产股息编辑持久化留待隔离 UAT。
