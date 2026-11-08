@@ -1,25 +1,24 @@
-const myt = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'Asia/Kuala_Lumpur', year: 'numeric', month: '2-digit',
-  day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
-});
+// Update these values from the confirmed existing Site release immediately
+// before packaging each subsequent deployment.
+export const SITE_RELEASE_VERSION = 67;
+export const SITE_RELEASE_UPDATED_AT = '2026-11-08T16:30:00+08:00';
 
-export function isPublicationTime(value) {
-  if (typeof value !== 'string') return false;
-  const match = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.\d{1,9})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(value);
-  if (!match || match[0] !== value || !Number.isFinite(Date.parse(value))) return false;
-  const wallTime = new Date(match[1] + 'Z');
-  return Number.isFinite(wallTime.getTime()) && wallTime.toISOString().slice(0, 19) === match[1];
-}
+const timeZone = 'Asia/Kuala_Lumpur';
 
-export function isReleaseInfo(info) {
-  return Number.isSafeInteger(info?.version) && info.version > 0 && isPublicationTime(info.updatedAt);
-}
-
-export function formatReleaseInfo(info) {
-  if (!isReleaseInfo(info)) return ['Version unavailable', 'Updated: unavailable'];
-  const parts = Object.fromEntries(myt.formatToParts(new Date(info.updatedAt)).map(({ type, value }) => [type, value]));
+export function formatReleaseInfo(version = SITE_RELEASE_VERSION, updatedAt = SITE_RELEASE_UPDATED_AT) {
+  const timestamp = typeof updatedAt === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(updatedAt);
+  const date = timestamp ? updatedAt.slice(0, 10) : '';
+  if (!Number.isSafeInteger(version) || version <= 0 || !timestamp ||
+      !Number.isFinite(Date.parse(updatedAt)) ||
+      new Date(`${date}T00:00:00Z`).toISOString().slice(0, 10) !== date) {
+    return ['Version unavailable', 'Updated: unavailable'];
+  }
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', {
+    timeZone, year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(new Date(updatedAt)).map(({ type, value }) => [type, value]));
   return [
-    `Version ${info.version}`,
+    `Version ${version}`,
     `Updated: ${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute} (MYT)`,
   ];
 }
