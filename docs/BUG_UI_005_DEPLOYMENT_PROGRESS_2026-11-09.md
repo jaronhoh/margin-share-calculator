@@ -17,3 +17,11 @@
 ## Next step when work resumes
 
 Synchronize the tested application source to the existing Site's configured source repository using the supported workflow, package from the pushed Site source commit, save and deploy that matching version, then verify the live behavior. Preserve the existing URL and owner-only access.
+
+## Recovery attempt — 2026-11-09 (Malaysia)
+
+- Rechecked the existing Site: Version 1 remains the only saved version, source `26b0092a38c424c939f33dde624d53fa0d110a9f`. Its access policy remains custom with only the owner listed and no external visitors.
+- GitHub Actions run 42511024635 reports successful `node-tests` and `chromium-ui` jobs. The previous record associates this run with target commit `3542177059ed72a52d71f23e8df2d585991a3cb3`; the jobs endpoint did not independently return the run head SHA in this attempt.
+- Obtained a Site source write credential through the supported Sites API. The source provider is `cloudflare_artifact` and branch is `main`; actual remote HEAD was not independently confirmed in this attempt.
+- Sandbox `git ls-remote` against GitHub failed with `Could not resolve host: github.com`. The supported Site workflow helper could not start because `node` was not found in the execution environment. A request for elevated network access was aborted; no elevated network operation ran.
+- No Site source push, build, new deployment or production UAT was completed in this attempt. BUG-UI-005 remains NOT DEPLOYED / NOT VERIFIED. Existing user data was not changed by this attempt; preservation has not been independently verified.
