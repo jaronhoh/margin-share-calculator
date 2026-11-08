@@ -1,5 +1,13 @@
 # 项目状态 — F05 / P3 工作记录（2026-10-25）
 
+## CR-004 回测参数界面整理（2026-11-08）
+
+- GitHub 分支为 `feat/cr-004-ui-cleanup`，由 `main` 起步。基线使用 Sites Version 69 完整源码 `08ebb4f9175dcc75f1826a3a2d2ab832fd7c2348`，旧 PR #3 已关闭。
+- 已实现日期并排及窄屏换行、参数区分隔线、移除页首私有标签、添加 Spark Finance 参考链接。需求见 [PRD](../prd/PRD文档.md#cr-004-回测参数界面整理2026-11-08)。
+- **本地回归通过**。Node 43/43，Worker 构建及路由检查通过。Chromium 验证 1440、390、320px 的亮暗主题，并通过 Yahoo 行情样本回测、快照恢复和统一股息表回归。两份旧浏览器脚本仍对应历史界面，当前回归以 `yahoo-calendar-ui.cjs` 和 `dividend-single-table-ui.cjs` 为准。
+- **已发布** [独立 staging Version 1](https://margin-share-calculator-cr004-staging.jaron-hoh.chatgpt.site)。Sites 源码提交为 `cd53503573e0784144da0d6aed11818f3c5fb34f`。访问名单仅有所有者，匿名浏览会看到登录门。生产复核仍为 Version 69、原 URL 和仅所有者权限。
+- **线上复核通过**。所有者正常登录后可见 Version 1，桌面和 390px 手机视口日期均并排，无横向溢出，分隔线及 Spark Finance 链接可见，私有标签已移除。使用 Yahoo Finance 行情运行 MAYBANK（1155.KL）2025-02-04 至 2025-02-07，返回 4 条逐日流水。Spark Finance 文章可访问，其页面未提供需求指定的锚点。
+
 ## 交接基线核实
 
 - GitHub 基线读取时 `main` HEAD 为 `4b7d4b5db11df1b047a6cf7072595171c4f7e3e6`；交接 SHA `7539a1e902307531998bde8549f5357a03d8bb6c` 已过时。仓库基线只有文档，无应用源码。

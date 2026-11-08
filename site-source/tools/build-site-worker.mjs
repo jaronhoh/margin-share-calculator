@@ -22,8 +22,11 @@ async function collect(directory) {
 
 await collect(dist);
 if (!assets['index.html']) throw new Error('dist/index.html is required to build the Site Worker.');
-const built = workerTemplate.replace('__SITE_ASSETS__', JSON.stringify(assets));
-if (built === workerTemplate) throw new Error('Worker asset marker was not replaced.');
+for (const marker of ['__SITE_ASSETS__']) {
+  if (!workerTemplate.includes(marker)) throw new Error(`Missing Worker template marker: ${marker}`);
+}
+const built = workerTemplate
+  .replace('__SITE_ASSETS__', () => JSON.stringify(assets));
 const output = join(dist, 'server/index.js');
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, built);

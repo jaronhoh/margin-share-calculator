@@ -214,10 +214,11 @@ export function runBacktest(config, market) {
     }
 
     if (![state.loan, marketValue, state.accruedInterest, state.dividendCash, state.saleCash].every(x => Number.isFinite(x) && x >= 0 && x <= MAX_AMOUNT)) throw new Error('日账金额超出安全计算范围。');
-    rows.push({date: day.date, price: day.price, shares: state.shares, cashShares: state.cashShares, financedShares: state.financedShares, marketValue, loan: state.loan, capitalizedInterest, loanAfterCapitalization, accruedInterest: state.accruedInterest, dailyInterest: interest, dividend, debtPayment, saleDebtPayment, saleCash, saleCashBalance: state.saleCash, dividendCashBalance: state.dividendCash, cashCollateral: state.cashCollateral, lsr, topUp, soldShares, soldFinancedShares, soldCashShares, soldNotional, cashBuyShares, refinanceShares, financedBuyShares: refinanceShares, refinanceNotional, fees, netWorth: marketValue - state.loan, events: events.join(" · ") || "—"});
+    rows.push({date: day.date, price: day.price, carryForward: day.carryForward === true, carryForwardFrom: day.carryForwardFrom, carryForwardReason: day.carryForwardReason, shares: state.shares, cashShares: state.cashShares, financedShares: state.financedShares, marketValue, loan: state.loan, capitalizedInterest, loanAfterCapitalization, accruedInterest: state.accruedInterest, dailyInterest: interest, dividend, debtPayment, saleDebtPayment, saleCash, saleCashBalance: state.saleCash, dividendCashBalance: state.dividendCash, cashCollateral: state.cashCollateral, lsr, topUp, soldShares, soldFinancedShares, soldCashShares, soldNotional, cashBuyShares, refinanceShares, financedBuyShares: refinanceShares, refinanceNotional, fees, netWorth: marketValue - state.loan, events: events.join(" · ") || "—"});
     if (blocked) break;
   }
   return {rows, blocked, summary: {...state, endingMarketValue: rows.at(-1)?.marketValue ?? 0, endingLsr: rows.at(-1)?.lsr ?? null, endingNetWorth: rows.at(-1)?.netWorth ?? 0, days: rows.length}};
 }
 
 const pct = n => `${(n * 100).toFixed(2)}%`;
+
