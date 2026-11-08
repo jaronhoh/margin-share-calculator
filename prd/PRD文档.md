@@ -529,3 +529,14 @@ PR #3 的 `site-source` 与已部署 Site Version 64 对齐。MAYBANK 默认24�
 - 1295.KL 在 2015-01-01 至 2026-11-07 的 24 笔 Yahoo 股息均匹配到唯一第三方付款日候选。红股前 11 笔差异符合 5:1 股数基准，红股后 13 笔金额一致。发行人报表确认五笔历史百分比使用每股 RM1.00 面值。此结论限于该股票及复核区间。[来源与逐笔对照](../docs/analysis/BUG-UAT-002_PBB_DIVIDEND_BASIS.md)
 
 | 2026-11-08 | v0.32 | 追加发布页脚、股息编辑持久化及历史股息口径验收 |
+
+
+## 30. CR-003 实际发布验收（v0.33，2026-11-08）
+
+- 每次发布继续只在 `site-source/dist/release-info.mjs` 硬编码该次 Sites 版本和 MYT 时间；不引入运行时发布接口、回写、凭据、构建标识或 R2。
+- **AC-RELEASE-01 / 02：通过。** 本次现有 Site 发布为 Version 68，Sites 部署时间 2026-11-08 16:50:46 MYT；线上页脚显示 `Version 68 · Updated: 2026-11-08 16:50 (MYT)`。
+- 发布提交 `1606a143bfe4c02fa7d49d18c4d2ba6a5d8e2e0b`，deployment `appgdep_6af037d1ef148191a0fd3ed8b473c5bf`。保留原 Site URL、Owner-only 访问策略与线上股息数据。
+- 回归：Node 43/43、Site Worker build、Chromium 股息单表 E2E 均通过；GitHub Actions Site source tests run 224 成功。
+- BUG-UAT-001 的输入后立即刷新/重跑路径在隔离 Chromium 回归通过；本次未在生产 Site 修改股息数据。BUG-UAT-002 的来源证据与适用范围继续以逐笔分析文档为准。
+
+| 2026-11-08 | v0.33 | 记录 CR-003 简单硬编码的 V68 实际发布与页脚验收 |
