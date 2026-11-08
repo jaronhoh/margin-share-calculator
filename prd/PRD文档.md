@@ -1,6 +1,6 @@
-# Margin Share Calculator — PRD v0.30
+# Margin Share Calculator — PRD v0.32
 
-> 状态：需求持续追加；实现与验证状态以 PROJECT_STATUS 和当前功能验收矩阵为准。2026-10-25，Asia/Kuala_Lumpur。
+> 状态：需求持续追加；实现与验证状态以 PROJECT_STATUS 和当前功能验收矩阵为准。2026-11-08，Asia/Kuala_Lumpur。
 > 本产品与 loan-calculator 是两个独立项目。本文件是产品需求草案，不代表代码已开发。
 
 **需求基线：** [docs/REQUIREMENTS.md](../docs/REQUIREMENTS.md)。现行验收状态以[功能验收矩阵](../docs/ACCEPTANCE_MATRIX.md)为准；待决策项不得作为已完成或已验证的能力。
@@ -508,3 +508,24 @@ PR #3 的 `site-source` 与已部署 Site Version 64 对齐。MAYBANK 默认24�
 - **发布**：现有 owner-only Site Version 64 已发布至原 URL；不创建新 Site、不改变权限或线上数据。
 
 | 2026-10-25 | v0.31 | 同步 PR 源码、R-030 需求及 MAYBANK 日期来源/迁移保护说明 |
+
+
+## 29. 发布页脚与历史股息验收（v0.32，2026-11-08）
+
+### CR-003 · 发布页脚
+
+- 页面底部居中显示 `Version <实际 Sites 版本> · Updated: YYYY-MM-DD HH:mm (MYT)`，使用小号浅灰文字，并适配移动端。
+- 版本来自实际发布的 Sites 版本，时间来自同一次成功发布的可核对时刻。发布记录绑定对应构建，缺失、无效或读取失败时，版本及时间均显示 `unavailable`。
+- **AC-RELEASE-01**：有效记录以马来西亚时间显示并正确跨日。缺失或旧构建记录不显示为当前版本，存储不可用时页面仍可使用。
+- **AC-RELEASE-02**：生产发布须验证原 Site URL 和现有访问权限，并用生产页面确认版本和时间对应本次发布。GitHub CI 与 Sites 发布结果分别记录。[发布步骤](../site-source/README.md#cr-003-release-footer)
+
+### BUG-UAT-001 · 股息编辑持久化
+
+- **AC-PAY-15**：编辑自动确认股息的 Ex-Date、Payment Date 或每股金额后，即使立即刷新或重跑，最新有效输入也须保留。人工修改优先于后续自动匹配。
+
+### BUG-UAT-002 · 股息金额口径
+
+- **AC-PAY-16**：付款日匹配保留现有回测金额和第三方原始单位。界面提示红股或拆股可能造成每股金额基准不同。百分比按原来源展示。
+- 1295.KL 在 2015-01-01 至 2026-11-07 的 24 笔 Yahoo 股息均匹配到唯一第三方付款日候选。红股前 11 笔差异符合 5:1 股数基准，红股后 13 笔金额一致。发行人报表确认五笔历史百分比使用每股 RM1.00 面值。此结论限于该股票及复核区间。[来源与逐笔对照](../docs/analysis/BUG-UAT-002_PBB_DIVIDEND_BASIS.md)
+
+| 2026-11-08 | v0.32 | 追加发布页脚、股息编辑持久化及历史股息口径验收 |
