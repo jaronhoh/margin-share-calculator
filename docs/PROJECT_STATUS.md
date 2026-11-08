@@ -103,16 +103,16 @@
 - **需求与 PRD**：已在 `prd/PRD文档.md` 增加 BUG-UI-005，指定五图例顺序、桌面单行、窄屏图例容器横向滚动、亮暗模式颜色一致与原有显隐交互。
 - **GitHub 开发分支**：`fix/bug-ui-005-chart-legend-colors`，基于 `feat/cr-004-ui-cleanup` 完整 CR-004 源码。修改 `site-source/dist/neutral.css`：五图例单行可滚动、日终贷款橙色与股票价格蓝色区分；修改 `site-source/dist/index.html`：Tooltip 各指标增加与曲线一致的颜色标识。
 - **测试状态**：Node / Worker / Chromium / 1440px / 390px / 320px 尚未执行，不能标记 PASS。
-- **部署状态**：**NOT DEPLOYED**。旧 Production `https://margin-share-calculator.jaron-hoh.chatgpt.site/` 仍为 Version 1，Owner-only；BUG-UI-005 未部署。已取消“必须更新现有 Site、不新建 Site”的旧决策。
-- **发布计划（已更新）**：GitHub 完整源码快照 → 必要构建 → 创建全新 Owner-only Site → 部署完整应用 → 实测生产回测、股息、CR-004、BUG-UI-005、版本及权限 → 成功后删除旧 Site → 回写实际部署 ID、Site ID、版本与源 SHA。若同名/同 URL 必须先删除旧 Site，应先确认可行性并备份可导出的浏览器数据；不得假设 localStorage 自动迁移。
+- **部署状态**：**NOT DEPLOYED**。旧 Production `https://margin-share-calculator.jaron-hoh.chatgpt.site/` 仍为 Version 1，Owner-only；BUG-UI-005 未部署。最终决策为更新现有 Site，不新建或删除 Site。
+- **发布计划（已更新）**：GitHub 完整源码快照 → 必要构建 → 解决现有 Site 绑定分支 HEAD 与发布源码不匹配问题 → 通过受支持的官方发布机制更新**现有 Site** → 实测生产回测、股息、CR-004、BUG-UI-005、版本及权限 → 回写实际 Deployment ID、版本与源 SHA。禁止创建或删除 Site，保留现有 URL、Site ID、Owner-only 与数据。
 
 
-## 2026-11-09 — PRD / GitHub 同步与 Production 重建决策
+## 2026-11-09 — 最终部署决策：保留现有 Site（覆盖先前重建方案）
 
-- **本轮范围**：仅更新 `prd/PRD文档.md` 与 `docs/PROJECT_STATUS.md`；不改应用代码、不创建或删除 Site、不执行 Production 部署。
-- **GitHub Source of Truth**：`jaronhoh/margin-share-calculator`，分支 `fix/bug-ui-005-chart-legend-colors`；BUG-UI-005 应用源码基准 `f595cb783997505722c631d351bad7d751e37586`。本轮文档提交 SHA 与应用源码基准 SHA 不同，不得混淆。
-- **旧 Site**：`appgprj_6af072845a7c8191bed2cd50b876fb54`，`https://margin-share-calculator.jaron-hoh.chatgpt.site/`，最近确认 Version 1、Owner-only。现有 Site 源码绑定 HEAD 与指定 GitHub Commit 不匹配，Work 环境未能取得更新内部 Git 的通道，也未生成部署归档。此前多次部署尝试未产生新的 Deployment ID。
-- **已批准新策略**：放弃修复旧 Site；从 GitHub 完整源码创建全新 Site，目标名称 `margin-share-calculator`、Owner-only；新 Site 部署并完成 Production UAT 后删除旧 Site。若名称冲突需先删除，必须核实平台限制、备妥归档与数据备份；原 URL 不保证重新分配。
-- **用户数据风险**：浏览器 localStorage 按 Origin 隔离，新 Site 不会自动获得旧 Site 本地数据。未完成导出、迁移及验证时不得声称数据保留。
-- **验收状态**：BUG-UI-005 Node / Worker / Chromium / 响应式回归仍为 NOT RUN；新 Site 创建、部署、回测、股息、CR-004 UI、权限及 Production UAT 均为 NOT RUN。BUG-UI-005 仍为 **NOT DEPLOYED**。此前其他版本的历史 PASS 不代表本次版本通过。
-- **后续执行顺序**：先完成 PRD/GitHub 同步；随后单独开展新 Site 创建、部署、Production 验证和旧 Site 清理。只有实际成功后才更新最终 URL、版本及 Deployment ID。
+- **本轮范围**：仅纠正 PRD 和 GitHub 项目状态，不修改应用源码，不部署、不创建或删除 Site。
+- **最终决策**：用户撤销“新建 Site / 删除旧 Site”方案；继续更新现有 Site，ID `appgprj_6af072845a7c8191bed2cd50b876fb54`，URL `https://margin-share-calculator.jaron-hoh.chatgpt.site/`，Owner-only。保留用户数据、配置和权限。
+- **源码基准**：GitHub `jaronhoh/margin-share-calculator`，分支 `fix/bug-ui-005-chart-legend-colors`，BUG-UI-005 应用源码 Commit `f595cb783997505722c631d351bad7d751e37586`。后续文档提交不改变应用源码基准。
+- **部署技术阻塞**：现有 Site 绑定源码分支 HEAD 与 GitHub Commit 不匹配；此前 Work 环境缺少 Sites 内部 Git 更新通道及部署归档。需解决合法源码更新/归档构建，再更新现有 Site；不调查无关历史，也不将 `hosting.json` 改动视为发布成功。
+- **状态**：最近确认 Production Version 1，BUG-UI-005 **NOT DEPLOYED**，无新 Deployment ID；本版本 Node / Worker / Chromium、生产回测、股息、CR-004 UI 与 Production UAT 均未重新验证，不得标记 PASS。
+- **后续顺序**：获取完整源码 → 构建必要归档 → 更新现有 Site → Production 验证 → 记录真实版本、部署 ID 与结果。禁止新建 Site、删除 Site 或改变 URL/权限/数据。
+- **历史说明**：2026-11-09 曾短暂批准 Site 重建方案，但该决定现已撤销；本节为最新有效部署决策。
