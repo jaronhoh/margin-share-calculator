@@ -19,13 +19,13 @@
 
 ## 发布步骤
 
-1. 创建标题/slug 为 `margin-share-calculator` 的新 Site，确认 Owner-only 默认访问策略。
-2. 将创建返回的 opaque project ID 写入 `site-source/.openai/hosting.json`，不沿用被删除 Site 的旧 ID。
-3. 将这次 PRD、部署计划和测试运行器修复提交并推送到指定 GitHub 分支；Site 发布使用与该 commit 一致的 Worker 构建产物。
+1. [x] 创建标题/slug 为 `margin-share-calculator` 的新 Site；创建后访问名单只有 Owner，外部访客、群组及编辑者均为 0。
+2. [x] project ID `appgprj_6af072845a7c8191bed2cd50b876fb54` 已写入 `site-source/.openai/hosting.json`；不沿用被删除 Site 的旧 ID。
+3. [x] PRD、部署计划及测试运行器修复已提交到指定 GitHub 分支 `feat/cr-004-ui-cleanup`，commit `0e0b93780fb024a53c3f51c0587201ce42e50013`；Site 发布使用匹配的完整 Worker 构建产物。
 4. 对最终打包源状态重新运行 Node、Worker 和 Chromium/响应式检查，再使用 Sites 原生私有部署流程发布完整 Worker 应用。
 5. 核对部署状态、URL、Sites 版本与 deployment ID；读取访问策略确认 Owner-only。
 6. 在线执行 MAYBANK 回测和股息页检查；核对四项 CR-004 UI、Spark Finance 目标链接、Footer 版本及移动端无横向溢出。
 
 ## 发布后记录
 
-部署前保持 `PENDING`。发布后仅记录 Sites 工具返回并实际验证的 Site URL、版本号、deployment ID、源 GitHub commit SHA、Owner-only 访问策略和线上检查结果；GitHub 提交、部署成功及线上验证分别记录，不相互替代。
+当前状态：Site 已创建、尚未发布；预期 URL 为 `https://margin-share-calculator.jaron-hoh.chatgpt.site`。发布后再记录已确认的 live URL、版本号、deployment ID、源 GitHub commit SHA、Owner-only 访问策略和线上检查结果；GitHub 提交、部署成功及线上验证分别记录，不相互替代。

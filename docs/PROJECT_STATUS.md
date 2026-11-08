@@ -8,7 +8,7 @@
 - **历史记录**：此前曾发布 [独立 staging Version 1](https://margin-share-calculator-cr004-staging.jaron-hoh.chatgpt.site)，源码提交 `cd53503573e0784144da0d6aed11818f3c5fb34f`；当时在线检查通过。用户随后删除之前两个 Sites，因此该 URL 和旧生产 Version 69 仅作为历史记录，不代表当前仍有站点。
 - **当前任务**：用户要求在完成回归后新建标题/slug 精确为 `margin-share-calculator` 的 Site，默认 Owner-only。PRD 与 [部署计划](analysis/CR004_DEPLOYMENT_PLAN_2026-11-08.md) 已更新；旧 PR #3 保持关闭。
 - **本地回归 PASS**：`npm test` 43/43；Worker 构建成功并包含 19 个静态资源；桌面 Chromium 中 `yahoo-calendar-ui.cjs` 和 `dividend-single-table-ui.cjs` 均通过。覆盖 1440/390/320px、亮暗主题、四项 CR-004 UI、Yahoo 样本回测、快照恢复、股息编辑与原 24 条记录、Footer 版本；无页面错误。
-- **发布状态**：测试通过；新 Site 创建和部署待完成。测试脚本已改为可移植的 Playwright/Chromium 启动方式，避免依赖旧 Mac 绝对路径。
+- **发布状态**：新 Site 已创建但尚未发布，项目 ID `appgprj_6af072845a7c8191bed2cd50b876fb54`，预期 URL `https://margin-share-calculator.jaron-hoh.chatgpt.site`。Sites 访问策略为 custom Owner-only，仅 Owner 一人；外部访客、群组和编辑者均为 0。测试脚本已改为可移植的 Playwright/Chromium 启动方式，避免依赖旧 Mac 绝对路径。
 
 ## 交接基线核实
 
