@@ -86,3 +86,19 @@
 - **GitHub**：PR #2 已合并至 `main`，Squash commit `16753f0053d4de08fd8615d4a4310db9a638a109`；GitHub Actions `Site source tests` run 53 成功。
 - **Sites**：已部署至 Version 37，部署 succeeded；源提交 `eb190a124d94bff2ff5252b13c051d6369fc2617`。原生产 URL、owner-only 权限及现有行情数据保持不变。
 - **存储范围**：保存在同一浏览器配置文件的本地存储；清除浏览器网站数据、使用无痕窗口或更换浏览器/设备时不会同步。可继续使用 JSON 导出备份。
+
+
+---
+
+# CR-004 Production UAT — Verified / Closed (2026-11-08)
+
+- **Status: Production Verified / Closed.** UAT performed against the existing production Site, `https://margin-share-calculator.jaron-hoh.chatgpt.site/`; no Site was created and no deployment was performed.
+- **UI updates: PASS** — date controls remain on one row at 390px and wrap at 320px; separator rules are visible between settings sections; the `PRIVATE · OWNER ONLY` UI label is absent; the transaction-cost section contains the Spark Finance link.
+- **Responsive layout: PASS** — verified at 1440px, 390px, and 320px. At 320px, date inputs wrap vertically as intended.
+- **Live backtest: PASS** — ran Maybank `1155.KL` using Yahoo Finance close data and market calendar, covering 4,330 dates (2015-01-01 through 2026-11-08). Ending market value RM1,731,531.98; loan RM1,123,796.99; net assets RM607,734.99; LSR 64.90%; cumulative dividends RM542,086.00; cumulative interest RM257,268.35; transaction fees RM3,879.68.
+- **Dividend records and calculation: PASS** — 24 original dividend records and 24 online candidates displayed; all listed records were confirmed/included in the tested backtest. The existing source-vs-record amount discrepancy for 2017-05-04 (RM0.32 vs RM0.22) remains visible and was not silently altered.
+- **Persistence: PASS** — the app confirmed saving the run snapshot; state is stored in this browser's local storage. (Reload persistence was not independently rechecked in the browser during this UAT.)
+- **Spark Finance: PASS** — link opened the Spark Spark Finance leverage article at its Malaysia trading-cost section anchor.
+- **Footer: PASS** — displays Version 1.
+- **Access control: PASS** — existing policy remains custom/owner-only, the owner is the only allowed user, and there are no external visitors, groups, or editors; access revision remains 1.
+- **Boundary** — production UAT verifies the tested browser session and configured access policy; unauthenticated visitor access was not tested separately.
