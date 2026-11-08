@@ -7,8 +7,8 @@
 @media(max-width:1100px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}@media(max-width:560px){header{padding:22px 16px 12px;display:block}.tag{margin-top:12px}main{padding:8px 14px 30px}.card{padding:16px}.metric strong{font-size:16px}.pair{gap:8px}.diff{grid-template-columns:minmax(0,1fr)}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 /* Accessible text on muted surfaces; retain the default base tokens. */
 :root{--muted-surface-foreground:color-mix(in oklch,var(--muted-foreground) 85%,var(--foreground))}
-:root{--series-loan:#2563eb;--series-value:#15803d;--series-net:#b45309;--series-lsr:#7e22ce}
-:root[data-theme="dark"]{--series-loan:#60a5fa;--series-value:#4ade80;--series-net:#fbbf24;--series-lsr:#c084fc}
+:root{--series-loan:#ea580c;--series-value:#15803d;--series-net:#b45309;--series-lsr:#7e22ce}
+:root[data-theme="dark"]{--series-loan:#fb923c;--series-value:#4ade80;--series-net:#fbbf24;--series-lsr:#c084fc}
 .metric small,.metric em,.diff span,.tab{color:var(--muted-surface-foreground)}
 
 .ledger-jump{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0}.ledger-jump input{height:38px;min-width:0;border:1px solid var(--input);border-radius:calc(var(--radius) - 4px);padding:0 10px;background:var(--card);color:var(--foreground);font:inherit}.ledger-jump input[type=number]{width:88px}.ledger-jump input[type=date]{width:160px}.ledger-message{min-height:20px;color:var(--foreground);font-size:12px}.located td,.located td:first-child{background:var(--accent);box-shadow:inset 0 2px var(--foreground),inset 0 -2px var(--foreground)}.located td:first-child{font-weight:700}input[readonly]{background:var(--muted);cursor:default}@media(max-width:560px){.ledger-jump{display:grid;grid-template-columns:auto minmax(0,1fr) auto}.ledger-jump input[type=number],.ledger-jump input[type=date]{width:100%}}
@@ -47,3 +47,10 @@
 
 .settings-divider{margin:16px 0;border:0;border-top:1px solid var(--border)}
 @media(max-width:360px){.date-pair{grid-template-columns:minmax(0,1fr)}}
+
+/* BUG-UI-005: keep all five chart series controls on one accessible scrollable row. */
+.chartwrap~.legend{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;text-align:left;gap:14px;overflow-x:auto;overflow-y:hidden;max-width:100%;min-width:0;scrollbar-width:thin;-webkit-overflow-scrolling:touch;padding:4px 2px 10px}
+.chartwrap~.legend>label{display:inline-flex;flex:0 0 auto;align-items:center;white-space:nowrap;gap:3px;cursor:pointer}
+.chartwrap~.legend>label input{flex:0 0 auto}
+.chartwrap~.legend>span{display:none}
+.chartwrap~.legend .dot{flex:0 0 15px}
