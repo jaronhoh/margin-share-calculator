@@ -514,10 +514,10 @@ PR #3 的 `site-source` 与已部署 Site Version 64 对齐。MAYBANK 默认24�
 
 ### CR-003 · 发布页脚
 
-- 页面底部居中显示 `Version <实际 Sites 版本> · Updated: YYYY-MM-DD HH:mm (MYT)`，使用小号浅灰文字，并适配移动端。
-- 版本来自实际发布的 Sites 版本，时间来自同一次成功发布的可核对时刻。发布记录绑定对应构建，缺失、无效或读取失败时，版本及时间均显示 `unavailable`。
-- **AC-RELEASE-01**：有效记录以马来西亚时间显示并正确跨日。缺失或旧构建记录不显示为当前版本，存储不可用时页面仍可使用。
-- **AC-RELEASE-02**：生产发布须验证原 Site URL 和现有访问权限，并用生产页面确认版本和时间对应本次发布。GitHub CI 与 Sites 发布结果分别记录。[发布步骤](../site-source/README.md#cr-003-release-footer)
+- 页面底部居中显示 `Version <Sites 版本> · Updated: YYYY-MM-DD HH:mm (MYT)`，使用小号浅灰文字，并适配移动端。
+- 每次发布前，只需在 `site-source/dist/release-info.mjs` 硬编码该次 Sites 版本号与发布时间，再随正常构建打包部署。
+- **AC-RELEASE-01**：页脚按马来西亚时区显示两个常量；桌面和移动端均可读。
+- **AC-RELEASE-02**：发布后以 Sites 返回版本号和成功时间核对页脚。源码推送或部署未成功时，不得记录为已发布。
 
 ### BUG-UAT-001 · 股息编辑持久化
 
