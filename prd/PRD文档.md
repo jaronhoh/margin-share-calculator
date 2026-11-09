@@ -299,3 +299,11 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 **兼容要求：** 保留融资回测、LSR、每日利息、手动股息、CSV/JSON 导入导出。用户主动导入的历史数据不是系统预设数据。不能以隐藏 UI 取代删除内置数据。旧 Production Version 4 的行为不得视为验收通过。
 
 **交付门禁：** Chat 模式完成 PRD、GitHub 提交与自动化静态检查；用户此前明确禁止 Node.js 测试及 npm test，故不得执行。静态检查必须区分通过与未运行的浏览器测试。Work 只负责部署现有 Site 和浏览器端到端验证；必须保留原 URL，不创建新 Site。未实际部署和验证前，CR-005 状态保持未验收。
+
+### CR-005 发布记录与页脚版本验收（2026-11-09）
+
+- **页脚要求**：发布构建须传入 Sites 版本号和更新时间。原站点发布后，打开生产页面核对页脚版本号与 Sites 发布记录一致；更新时间按马来西亚时间（MYT）显示。
+- **Version 5**：从 GitHub `main` 的 [`ecddc8c`](https://github.com/jaronhoh/margin-share-calculator/commit/ecddc8ccfa1a5180b38b6cb360eca5c6f8eea85e) 构建并发布。Sites 部署成功，但页脚仍显示旧编号 `Version 4`，因此页脚验收未通过。
+- **Version 6**：修正页脚后于 16:41 MYT 发布到[原站点](https://margin-share-calculator.jaron-hoh.chatgpt.site/)。Sites 部署 `appgdep_6af1871f366c8191808e3c50a0d918a9` 状态为 `succeeded`。浏览器确认线上页脚显示 `Version 6`，与 Sites 记录一致。原网址及仅所有者访问权限保持不变。
+- **GitHub 同步**：页脚修正随后提交到 `main` 的 [`b112f28`](https://github.com/jaronhoh/margin-share-calculator/commit/b112f286cc979c37cd01c28e53094a8cea6b2a9d)。该提交是源码同步记录。线上发布由上述 Sites 部署记录确认。
+- **验收范围**：生产部署与页脚验收通过。浏览器核对时首页显示尚未载入行情。本次未执行 Reset、按需行情、股息付款日或回测的完整端到端验证，这些项目仍待验收。
