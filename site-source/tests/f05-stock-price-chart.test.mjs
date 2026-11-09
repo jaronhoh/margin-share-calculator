@@ -20,4 +20,9 @@ assert.match(css, /\.chartwrap~\.legend>span\{white-space:normal\}/);
 assert.match(html, /data-chart-series="price" checked/);
 assert.match(html, /if\(chartSeriesVisible\[key\]\)el/);
 
+assert.match(css, /\/\* UI-008: center all five chart series as a single legend row on desktop\. \*\//);
+assert.match(css, /\.chartwrap~\.legend\{justify-content:center;flex-wrap:nowrap\}/);
+assert.match(css, /@media\(max-width:700px\)\{\.chartwrap~\.legend\{flex-wrap:wrap;overflow-x:visible;overflow-y:visible;justify-content:center/);
+assert.equal((html.match(/data-chart-series="(?:loan|marketValue|netWorth|lsr|price)" checked/g)||[]).length,5);
+
 console.log('PASS F05 chart uses backtest price, independent scale, toggle, tooltip and missing-value gaps');
