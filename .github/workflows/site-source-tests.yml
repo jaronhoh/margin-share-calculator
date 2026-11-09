@@ -1,6 +1,12 @@
 name: Site source tests
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'site-source/**'
+      - '.github/workflows/site-source-tests.yml'
   pull_request:
     paths:
       - 'site-source/**'
