@@ -163,7 +163,7 @@ outOfOrderDates.inputs.startDate='2023-01-05';
 outOfOrderDates.inputs.endDate='2023-01-03';
 outOfOrderDates.marketDataSource.startDate='2023-01-05';
 outOfOrderDates.marketDataSource.endDate='2023-01-03';
-assert.throws(()=>validateImportedConfig(outOfOrderDates,[],{}),/日期必须严格递增且不得重复/);
+assert.throws(()=>validateImportedConfig(outOfOrderDates,[],{}),/JSON 收盘价日期范围无效或超过 5,000 个日历日/);
 
 setYahooMarketCalendar(null);
 console.log('PASS weekend, Bursa and independently verified Yahoo fills retain provenance and rowCount; fabricated and unconfirmed weekday gaps plus duplicate/out-of-order rows are rejected.');
