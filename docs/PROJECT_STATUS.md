@@ -102,3 +102,12 @@
 - **Footer: PASS** — displays Version 1.
 - **Access control: PASS** — existing policy remains custom/owner-only, the owner is the only allowed user, and there are no external visitors, groups, or editors; access revision remains 1.
 - **Boundary** — production UAT verifies the tested browser session and configured access policy; unauthenticated visitor access was not tested separately.
+
+
+## CR-005 checkpoint — 2026-11-09
+
+- GitHub branch feat/cr-005-manual-first created from c28941072345a847b9071f32653be928d0305f8e.
+- Implemented blank initialization and disabled automatic browser persistence in site-source/dist/index.html. Manual market-data import remains the entry point. Start-date price continues to resolve from loaded rows and blocks when unavailable.
+- GitHub write permission verified by creating the branch and updating source files.
+- Production Site mapping verified. hosting.json previously referenced non-existent project appgprj_6ad816b7dd508191a8632550d36f375f. The active Owner-only production Site is appgprj_6af072845a7c8191bed2cd50b876fb54, URL https://margin-share-calculator.jaron-hoh.chatgpt.site.
+- Tests and deployment remain pending until the source syntax and regression suite are run on this branch.
