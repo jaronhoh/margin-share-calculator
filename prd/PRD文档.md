@@ -526,3 +526,13 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 - 已将 `.github/workflows/site-source-tests.yml` 增加 `push` 到 `main` 的自动触发（仅 `site-source/**` 或工作流本身变更），保留 `pull_request` 与 `workflow_dispatch`；提交 `83c3909842aa15635efc320acfd5e6966c4e3d3c`。
 - [GitHub Actions #272](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42658092586) 在上述提交上自动触发，最终状态 `completed`、结论 **SUCCESS**；工作流执行 `site-source` 目录下的 `npm test`。
 - **部署状态：** 此记录仅确认 GitHub CI 通过；截至记录时未执行 ChatGPT Sites 发布，Production 仍为用户确认的 Version 6。UI-008 的 Production 浏览器验收仍待实际部署后执行。
+
+### UI-008 Production 发布与验收（2026-11-10）
+
+- **发布结果**　现有 [Margin Share Calculator Production](https://margin-share-calculator.jaron-hoh.chatgpt.site/) 已发布 Version 10。Sites commit `40a3e901b1153db58414cce7121e5b591a5b96c9`，部署 `appgdep_6af2029c0e04819198e78a584a8d4087`，Sites 返回 `succeeded`，线上页脚显示 Version 10。
+- **发布基准**　发布前浏览器确认线上为 Version 6。以 Sites Version 6 commit `04310755edf18de2016923db4f36919c77f53294` 为基准，同步 GitHub main `3cc1f082582836b1db656122ae98317a8d375286` 的 UI-008 日期和图例改动。最终源码相对 Version 6 仅有 HTML、CSS 和对应的生成 Worker 差异。旧 Version 7 / BUG-007 的业务逻辑保持撤销。
+- **发布过程**　Version 8 发布后，已访问站点的浏览器仍复用了旧 CSS。Version 9 更新 CSS 资源版本标识。Version 10 继续使用同一前端源码，并在构建时填入页脚版本信息。发布前后 Site ID、Production URL 和 Owner-only 访问策略一致，未修改配置或数据。
+- **真实浏览器验收**　首次打开未预选股票，回测开始日为 `2015-01-02`。1440 px 下五项图例同一行，组中心偏差小于 1 px。390 px 下图例换成三行，无横向溢出。逐一切换五个复选框，每个均隐藏并恢复对应曲线。
+- **真实行情及导入**　从 Yahoo Finance 获取 `1155.KL` 和 `^KLSE`，完成 2015-01-02 至 2015-01-09 回测，生成 8 个日历日流水。将同一测试回测导出的 JSON 在重新加载后的 Version 10 中导入，恢复相同标的、日期和 8 个日历日流水。
+- **自动化**　[GitHub Actions #272](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42658092586) 成功。GitHub main 的 `site-source` 本地测试 12/12 通过。
+- **验收中发现的既有问题**　Version 6 和本次更新后的页面均可观察到初始化时 `excelCheck` 尝试访问缺失元素的控制台错误。本次 UI-008 保留既有实现，上述验收项目已逐项通过。
