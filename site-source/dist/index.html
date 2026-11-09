@@ -55,8 +55,8 @@
     </section>
   </aside>
   <script type="module">
-    import {SITE_RELEASE_VERSION,SITE_RELEASE_UPDATED_AT,formatReleaseInfo} from './release-info.mjs';
-    const [versionText, updatedText] = formatReleaseInfo(SITE_RELEASE_VERSION, SITE_RELEASE_UPDATED_AT);
+    import {formatReleaseInfo} from './release-info.mjs';
+    const [versionText, updatedText] = formatReleaseInfo(/* site-release-version */ null, /* site-release-updated-at */ null);
     document.getElementById('releaseVersion').textContent = versionText;
     document.getElementById('releaseUpdated').textContent = updatedText;
   </script>
