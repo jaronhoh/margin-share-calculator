@@ -18,7 +18,7 @@ export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','f
       if(!Number.isFinite(firstTime)||!Number.isFinite(lastTime)||lastTime<firstTime||(lastTime-firstTime)/86400000+1>5000)throw new Error('JSON 收盘价日期范围无效或超过 5,000 个日历日。');
       const sourceRows=new Map(embedded.rows.map(row=>[row.date,row])),rows=[];
       const appendClosedDate=(date,previous)=>{
-        const classification=classifyMarketDate(date,{marketCalendar:source.marketCalendar});
+        const classification=classifyMarketDate(date,{marketCalendar:source.marketCalendar??null});
         if(!['weekend','confirmed-market-holiday','yahoo-market-holiday'].includes(classification.status))throw new Error('JSON 收盘价日期缺少交易日或未核实的休市日 '+date+'；不会自动补造价格。');
         const normalized={date,close:previous.close,carryForward:true,carryForwardFrom:previous.date,reason:classification.status==='weekend'?'weekend':classification.status};
         if(classification.source)normalized.source=classification.source;
@@ -43,7 +43,7 @@ export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','f
         const normalized={date:row.date,close:row.close};
         if(row.carryForward===true){
           if(!['weekend','confirmed-market-holiday','yahoo-market-holiday'].includes(row.reason)||typeof row.carryForwardFrom!=='string'||! /^\d{4}-\d{2}-\d{2}$/.test(row.carryForwardFrom))throw new Error('JSON 收盘价第 '+(i+1)+' 条缺少补齐来源。');
-          const classification=classifyMarketDate(row.date,{marketCalendar:source.marketCalendar}),sourceRow=sourceRows.get(row.carryForwardFrom);
+          const classification=classifyMarketDate(row.date,{marketCalendar:source.marketCalendar??null}),sourceRow=sourceRows.get(row.carryForwardFrom);
           if(!sourceRow||sourceRow.date>=row.date||sourceRow.close!==row.close)throw new Error('JSON 收盘价第 '+(i+1)+' 条前值来源无效。');
           if(row.reason==='weekend'&&classification.status!=='weekend'||row.reason==='confirmed-market-holiday'&&classification.status!=='confirmed-market-holiday'||row.reason==='yahoo-market-holiday'&&classification.status!=='yahoo-market-holiday')throw new Error('JSON 收盘价第 '+(i+1)+' 条补齐原因与交易日历不符。');
           if(['confirmed-market-holiday','yahoo-market-holiday'].includes(classification.status)&&(row.source!==classification.source||row.sourceUrl!==classification.url))throw new Error('JSON 收盘价第 '+(i+1)+' 条休市来源与日历不符。');
