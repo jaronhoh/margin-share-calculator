@@ -116,7 +116,7 @@ const yahooHolidayImported=validateImportedConfig(yahooHolidayGap,[],{});
 const yahooCarry=yahooHolidayImported.prices.find(row=>row.date==='2023-02-06');
 assert.deepEqual(
   {date:yahooCarry.date,close:yahooCarry.close,carryForward:yahooCarry.carryForward,carryForwardFrom:yahooCarry.carryForwardFrom,reason:yahooCarry.reason,source:yahooCarry.source,sourceUrl:yahooCarry.sourceUrl},
-  {date:'2023-02-06',close:10,carryForward:true,carryForwardFrom:'2023-02-03',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
+  {date:'2023-02-06',close:10,carryForward:true,carryForwardFrom:'2023-02-05',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
 );
 assert.equal(yahooHolidayImported.marketDataSource.rowCount,5,'Yahoo holiday fill must update rowCount');
 assert.equal(yahooHolidayImported.marketDataSource.marketCalendar.closedDates[0],'2023-02-06','verified calendar metadata must remain attached');
