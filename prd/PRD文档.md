@@ -454,3 +454,33 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 | 日期 | 版本 | 变更 |
 |---|---|---|
 | 2026-11-09 | v0.22 | 记录 GitHub `main` 的 PR #6 应用文件已发布至现有 Site Production Version 7；确认 URL、Owner-only 权限、配置及数据基线保持一致，并记录线上行情与短区间回测验证结果。 |
+
+
+### BUG-007 Yahoo 假期回测调查（2026-11-09）
+
+- **复现背景：** Version 7 Production 在用户回测范围包含 Yahoo 未提供单日收盘价时，会由 `expandYahooCalendarRows` 按日期逐日分类；无法确认闭市的工作日继续拒绝补价。
+- **Version 6 / Version 7 差异：** 从可访问的 Git 历史比较，V6 与 V7 的 `market-calendar.mjs` 主分类和 `yahoo-calendar.mjs` 行情展开逻辑一致。V7 的日期可信边界变化是 GitHub PR #6：JSON 中声明的 Yahoo 闭市日只有在本次页面会话独立取得的 Yahoo `^KLSE` 日历同样确认时才可信；旧 JSON 或旧行情快照不能自行建立信任。故不能把错误简单归因于 V7 的日期算法回归。V7 开始暴露数据源/历史覆盖证据缺口，是按设计拒绝未经核实的工作日缺价。
+- **已确认根因：** 日历不是完整 Bursa 历史日历，内置逐日休市证据只有少数日期；`^KLSE` 在线日历仅覆盖当次 Yahoo 实际返回日期，覆盖边界外没有完整日期证据。另外，连续多日休市时，展开函数会把合成日期作为下一日期的 `carryForwardFrom`；现改为一直引用最近的实际观察收盘日。
+- **日期证据：** Bursa 官方历史图表引用 2015-02-02；2015-02-03 的 Bursa Securities 直接历史公告尚未取得；同期《The Star》市场日历将该日标记为 Kuala Lumpur Market and Public Holiday，The Business Times 同期报道亦称马来西亚金融市场当日因公共假期休市。该日期现以可追溯的独立市场来源记录，不以公共假期名称单独推断。Bursa 2025 年官方资料明确表示 2025-02-11 Bursa Malaysia 因 Thaipusam 关闭，操作于 2025-02-12 恢复；可加入有来源的 Bursa 休市证据。
+- **修复方案：** 加入 2025-02-11 Bursa 官方来源记录；按 Yahoo `^KLSE` 实际报价日期建立本次运行时闭市日集合；连续休市日 carry-forward 来源指向前一实际观察行情。市场日历仍将 2015–2026 标记 BLOCKED/PARTIAL，未声称完整覆盖。未经独立运行时确认的 JSON Yahoo 闭市声明继续拒绝；未确认工作日缺价继续阻断；不使用未来价格。
+- **新增自动化测试：** BUG-007 两个测试文件覆盖 2015-02-03 的动态 Yahoo 基准闭市识别、2025-02-11 有来源 Bursa Carry Forward、连续闭市 carryForwardFrom、日期数及行数，以及伪造 Yahoo 闭市仍拒绝。既有测试不删减。
+- **尚待验证：** GitHub Actions 全量 CI、PR review/merge、Production 更新与真实浏览器 E2E 尚未执行。2015-02-03 已补充同期市场来源，但完整 2015–2026 官方休市日历仍未覆盖；Production 浏览器被 owner-only 登录门阻挡时需由已登录会话执行。
+- **强制清算：** 规则仍待业务确认，本次不新增强制卖出算法。
+
+### PRD 变更记录（续）
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-11-09 | v0.23 | 记录 BUG-007 初步根因、V6/V7 可访问源码差异、2015-02-03 未确认与 2025-02-11 官方休市证据、新测试覆盖及未完成的 CI/PR/Production 验收。 |
+
+
+
+### BUG-007 执行状态更新（2026-11-09）
+
+- **CI：** GitHub Actions [Site source tests #263](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42639714727) 在提交 `5e90ba889d7e6ad2bab8d57451768ab127ca8da2` 上 SUCCESS；全量 `npm test` 通过。此前失败来自新增测试的日期正则转义、错误复用官方节假日日期、未先注册运行时日历等问题，已修正；未删除或跳过原有测试。
+- **审查结论：** PR #7 尚未合并。当前在线日历通过 `^KLSE` 未出现某工作日记录来推导 Yahoo 闭市日；单凭缺少行情不能构成独立可信的休市证明。2015-02-03 已找到同期 The Star 市场日历及 The Business Times 市场休市报道，可作为独立可追溯来源加入日期证据；仍需真实 Production 回测确认行为。完整 2015–2026 官方休市日历仍未覆盖。
+- **2025-02-11：** 已加入 Bursa 来源证据和自动化回归测试。该测试证明代码路径可按已记录的 Bursa 闭市记录 Carry Forward，但不等于已在 Production 在线回测验收。
+- **Production：** 仍为 Version 7；本轮没有部署。Owner-only 登录页阻止当前真实浏览器会话进入应用。URL 与权限未更改。
+- **状态：** PARTIALLY COMPLETED。PR #7 保持开放、未合并；需先取得对 2015-02-03 可审计的独立休市证据，或由业务明确接受对 Yahoo 数据源闭市声明的证据标准，再完成修复边界审查、合并、Production 发布及浏览器验收。强制清算规则仍待业务确认。
+
+
+- **2015 证据来源补充：** 2015-02-03 同期《The Star》市场日历列为 Kuala Lumpur Market and Public Holiday；《The Business Times》于当日刊载马来西亚金融市场因公共假期休市的报道。已将 2015-02-02 和 2015-02-03 分别记录为有来源的市场休市日，并增加 2015-02-03 回归断言。该证据不表示整个 2015–2026 历史日历已完整核实。
