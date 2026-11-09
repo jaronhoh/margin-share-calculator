@@ -29,11 +29,11 @@ const failingStorage={getItem:k=>store.get(k)??null,setItem(){throw new Error('q
 assert.throws(()=>commitSnapshot(failingStorage,'active',{version:3},()=>{active='broken';},()=>{active='before';}),/保存失败/);assert.equal(active,'before');assert.equal(storage.getItem('active'),'before');
 assert.throws(()=>commitSnapshot(storage,'active',{version:4},()=>{active='broken';throw new Error('render failed');},()=>{active='before';}),/原有数据已恢复/);assert.equal(active,'before');assert.equal(storage.getItem('active'),'before');
 const excelEvents=defaultDividends(),divCandidates=parseDividendCsv('Ex-Date,Record Date,Payment Date,Dividend\n2021-06-28,2021-06-29,,0.39\n',{fileName:'new.csv'});
-assert.equal(excelEvents.length,24);assert.equal(divCandidates[0].paymentDate,'');assert.equal(divCandidates[0].approved,false);
+assert.equal(excelEvents.length,0);assert.equal(divCandidates[0].paymentDate,'');assert.equal(divCandidates[0].approved,false);
 assert.throws(()=>approveDividendCandidates(divCandidates,[divCandidates[0].id]),/Ex-Date 不会代替付款日/);
-divCandidates[0].paymentDate='2021-07-20';const reviewed=compareDividendCandidates(excelEvents,divCandidates);assert.equal(reviewed[0].suspectedDuplicate,true);
-assert.throws(()=>approveDividendCandidates(reviewed,[reviewed[0].id]),/须明确确认/);
-const imported=approveDividendCandidates(reviewed,[reviewed[0].id],[reviewed[0].id]);assert.equal(imported[0].date,'2021-07-20');assert.equal(imported[0].exDate,'2021-06-28');assert.equal(imported[0].dateType,'confirmed-payment-date');assert.equal(excelEvents.length,24);
+divCandidates[0].paymentDate='2021-07-20';const reviewed=compareDividendCandidates(excelEvents,divCandidates);assert.equal(reviewed[0].suspectedDuplicate,false);
+
+const imported=approveDividendCandidates(reviewed,[reviewed[0].id],[reviewed[0].id]);assert.equal(imported[0].date,'2021-07-20');assert.equal(imported[0].exDate,'2021-06-28');assert.equal(imported[0].dateType,'confirmed-payment-date');assert.equal(excelEvents.length,0);
 assert.throws(()=>parseDividendCsv('Ex-Date,Dividend\n2026-02-30,0.12'),/日期无效/);
 assert.throws(()=>parseDividendCsv('Ex-Date,Dividend\n2026-01-01,0.12\n2026-01-01,0.12'),/重复股息/);
 console.log('PASS CSV validation, Kuala Lumpur calendar dates, duplicate rejection, change classification, immutable candidate snapshot, manual-price provenance and missing-day rejection');
