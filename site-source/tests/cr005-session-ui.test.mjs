@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const html=await readFile(new URL('../dist/index.html',import.meta.url),'utf8');
-assert.match(html,/value="" maxlength="24"[^>]*placeholder="例如 1155\.KL"/);
+assert.match(html,/<input id="stockCode" type="text" value="" maxlength="24"[^>]*placeholder="输入股票代码（XXXX\.KL）"/);
 assert.match(html,/id="startDate" type="date"><\/div>/);
 assert.match(html,/id="cashBudget" type="number"[^>]*value=""/);
 assert.match(html,/dividendEvents=\[\]/);
