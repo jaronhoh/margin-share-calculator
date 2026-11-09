@@ -412,11 +412,11 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 - **安全边界：** JSON 内的 `marketDataSource.marketCalendar` 是声明性数据，不能自行授予 Yahoo 休市日可信度。Yahoo 工作日休市只有在同一日期同时存在于当前运行时从 Yahoo Finance `^KLSE` 独立获取的可信日历及待导入快照中，才允许补价。导入过程不会把 JSON 声明写入全局可信日历；与当前可信日历不匹配的嵌入日历会从已接受的来源元数据中移除。
 - **连续性行为：** 周末及代码内逐日维护、来源可追溯的 Bursa 休市日继续允许沿用前收盘价。Yahoo 休市保留 `carryForwardFrom`、`reason`、`source`、`sourceUrl`；补价后来源 `rowCount` 与展开后的行情行数一致。未经独立确认的工作日空档仍拒绝导入；行情连续性检查未关闭。
 - **回归覆盖：** `imported-market-calendar-gaps.test.mjs` 覆盖周末补价、Bursa 已确认休市日补价、可信 Yahoo 休市日补价、伪造 Yahoo 工作日声明拒绝、未确认工作日缺价拒绝、重复及乱序日期拒绝，并检查补价来源字段及 `rowCount`。
-- **GitHub Actions：** [Site source tests #253](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42605365637) 在提交 `16eeb85a7d4d192204b612f88b70ef6e5a1faecf` 上 **SUCCESS**；13 个测试文件通过、0 失败、0 跳过。运行时间为 2026-11-09 19:00 MYT。此次通过的是 GitHub Actions，不运行本地 Node.js/npm 测试。
+- **GitHub Actions：** [Site source tests #254](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42605500870) 在提交 `693a61441ecd64e1cd727165e19d82f4b30b7b49` 上 **SUCCESS**；13 个测试文件通过、0 失败、0 跳过。运行时间为 2026-11-09 19:01 MYT。此次通过的是 GitHub Actions，不运行本地 Node.js/npm 测试。
 - **Production：** 仍为 Version 6；本 PR 未合并、未部署，生产站点未受本次变更影响。
 - **剩余验证：** 修复后的 2023–2025 区间尚未在 Production 浏览器复测；该生产复测仍待完成。强制清算的卖出数量、成交价、费用及还款顺序仍待业务确认，本次不变更该规则。
 
 ### PRD 变更记录（续）
 | 日期 | 版本 | 变更 |
 |---|---|---|
-| 2026-11-09 | v0.20 | 记录 PR #6 导入日历信任边界安全修复、回归覆盖与 GitHub Actions #253 结果；确认 Production Version 6、2023–2025 浏览器复测未完成，强制清算规则仍待定。 |
+| 2026-11-09 | v0.20 | 记录 PR #6 导入日历信任边界安全修复、回归覆盖与 GitHub Actions #254 结果；确认 Production Version 6、2023–2025 浏览器复测未完成，强制清算规则仍待定。 |
