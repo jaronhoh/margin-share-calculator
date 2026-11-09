@@ -520,3 +520,9 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 | 日期 | 版本 | 变更 |
 |---|---|---|
 | 2026-11-10 | v0.25 | UI-008：回测开始日默认 2015-01-02；五项图表 Legend 桌面单行整体居中，窄屏自动换行；增加对应自动化断言。 |
+
+### UI-008 自动化 CI 验证（2026-11-10）
+
+- 已将 `.github/workflows/site-source-tests.yml` 增加 `push` 到 `main` 的自动触发（仅 `site-source/**` 或工作流本身变更），保留 `pull_request` 与 `workflow_dispatch`；提交 `83c3909842aa15635efc320acfd5e6966c4e3d3c`。
+- [GitHub Actions #272](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42658092586) 在上述提交上自动触发，最终状态 `completed`、结论 **SUCCESS**；工作流执行 `site-source` 目录下的 `npm test`。
+- **部署状态：** 此记录仅确认 GitHub CI 通过；截至记录时未执行 ChatGPT Sites 发布，Production 仍为用户确认的 Version 6。UI-008 的 Production 浏览器验收仍待实际部署后执行。
