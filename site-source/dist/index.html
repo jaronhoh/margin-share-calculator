@@ -20,21 +20,20 @@
     </div>
     <section id="dividendPage" class="card hidden" aria-labelledby="dividend-title">
       <div class="toolbar"><div><h2 id="dividend-title">股息事件</h2><p class="foot">原始股息和 Yahoo × KLSE Screener 的 Payment Date 候选共用下表；唯一付款日候选在本次页面会话中采用并重新回测，日期冲突不自动采用。</p><p class="foot">历史红股或拆股可使原始派息与 Yahoo 每股股息采用不同的股数基准。付款日匹配保留回测现有金额，百分比按来源原样显示。</p></div><span class="status" id="dividendCount"></span></div>
-      <div class="notice"><b>股息：</b>首次打开为空；主动获取 MAYBANK 行情后才加载 Yahoo 股息事件并查询 KLSE Screener 付款日期。也可在本次会话手动添加股息事件或导入完整 JSON。零股息按零处理。</div>
+      <div class="notice"><b>股息：</b>首次打开为空；主动获取所选股票行情后才查询 Yahoo 股息事件并查询 KLSE Screener 付款日期。也可在本次会话手动添加股息事件或导入完整 JSON。零股息按零处理。</div>
       <div class="actions dividend-actions"><button id="addDividend" class="secondary" type="button">添加股息事件</button><span class="foot" id="dividendAutoSaveStatus" role="status">编辑会自动保存；点击「回测」返回</span></div>
       <div class="tablebox"><table class="dividend-table"><thead><tr><th>来源日期 / Ex-Date</th><th>每股股息 (RM)</th><th>来源与状态</th><th>Payment Date</th><th>操作</th></tr></thead><tbody id="dividendRows"></tbody></table></div>
       <div id="dividendError" class="error" role="alert"></div>
     </section>
     <section id="referencePage" class="reference-page hidden" aria-label="说明">
-      <div class="card section"><h2>Excel 种子样例核对 <span class="status">5 项通过</span></h2><p class="foot">下表核对 PRD 已确认的 Excel 初始持仓、贷款、市值、LSR 与首日利息。本次已提取新版工作簿 Table1 的 24 条股息。月末资本化规则与 Table2 缓存的逐日差异结果见 GitHub 报告；工作簿本体没有放入 Site；收盘价缓存随 Site 提供。</p><div class="diff" id="diff"></div><div class="foot warn">差异核对不代表 Excel 业务等价通过。此文件 Table2 含 2026-10-22 之后的未来日期缓存；这些日期仅作公式缓存审计，不作为已发生的历史行情。回测直接使用 Table2 Close Price (RM)；价格缓存等价验证仍未通过，参见 GitHub 报告。</div></div>
-      <div class="card section"><h2>PoC 口径与限制</h2><ul class="foot"><li>日历日计息：日初贷款 × 年利率 / 365；于每月最后一天资本化，包含当日日息。</li><li>逐日顺序：按日初贷款计算当日日息 → 月末将累计利息（含当天）加入贷款 → 股息事件偿债 → Margin Call → 再融资买股。</li><li>交易日目前按周一至周五近似标记，不含马股公众假期日历。</li><li>再融资用联立方程求解新增买入额；买卖每手固定100股；买入向下取整，卖出向上取整至解除追缴所需最小整手数。</li><li>现金补仓用于按当日收盘价买入现金持股，所需股数向上取整至最小100股整手，补仓金额含买入成交额及费用；不直接还贷。卖股策略按成交款偿债。买入后 LSR 低于 Margin Call 0.1 个百分点（可调）。</li><li>Site 使用 Excel Table2 收盘价及 Table1/可编辑股息事件；逐日表股息缓存与Table1总额一致，日期仍待付款日核实。交易费用是可编辑估算：佣金、印花税、结算费及SST；不含融资合同费用、开户费或平台费。行情供应商独立验证、强平动作及公司行动仍未确认；禁止将此 PoC 用于真实投资决策。</li></ul></div>
+      <div class="card section"><h2>计算口径与限制</h2><ul class="foot"><li>日历日计息：日初贷款 × 年利率 / 365；于每月最后一天资本化，包含当日日息。</li><li>逐日顺序：按日初贷款计算当日日息 → 月末将累计利息（含当天）加入贷款 → 股息事件偿债 → Margin Call → 再融资买股。</li><li>交易日目前按周一至周五近似标记，不含马股公众假期日历。</li><li>再融资用联立方程求解新增买入额；买卖每手固定100股；买入向下取整，卖出向上取整至解除追缴所需最小整手数。</li><li>现金补仓用于按当日收盘价买入现金持股，所需股数向上取整至最小100股整手，补仓金额含买入成交额及费用；不直接还贷。卖股策略按成交款偿债。买入后 LSR 低于 Margin Call 0.1 个百分点（可调）。</li><li>Site 不内置股票价格或股息历史；行情由用户主动查询 Yahoo Finance，股息付款日期需确认。交易费用是可编辑估算：佣金、印花税、结算费及SST；不含融资合同费用、开户费或平台费。行情供应商独立验证、强平动作及公司行动仍未确认；禁止将此 PoC 用于真实投资决策。</li></ul></div>
     </section>
   </main>
   <footer id="releaseFooter" aria-label="版本信息" style="padding:20px 12px 28px;text-align:center;font-size:14px;font-weight:600;color:var(--muted-foreground, #52525b);line-height:1.6"><span id="releaseVersion">Version unavailable</span> · <span id="releaseUpdated">Updated: unavailable</span></footer>
   <div id="drawerBackdrop" class="drawer-backdrop" data-open="false"></div>
   <aside id="settingsDrawer" class="drawer" data-open="false" role="dialog" aria-modal="true" aria-labelledby="inputs-title" aria-hidden="true" tabindex="-1">
     <section class="card"><div class="drawer-title"><h2 id="inputs-title">回测参数</h2><button id="closeSettings" class="secondary" type="button">关闭</button></div>
-      <div class="field"><label for="stockCode">股票代码</label><div class="ticker-run"><input id="stockCode" type="text" value="" maxlength="24" autocomplete="off" placeholder="例如 1155.KL"><button id="run" class="primary" type="button">获取行情并回测</button></div><small>首次打开没有预选股票。输入 Bursa Malaysia 代码（例如 1155.KL、1066.KL）后，主动点击按钮获取 Yahoo Finance 行情并回测。</small></div>
+      <div class="field"><label for="stockCode">股票代码</label><div class="ticker-run"><input id="stockCode" type="text" value="" maxlength="24" autocomplete="off" placeholder="输入股票代码（XXXX.KL）"><button id="run" class="primary" type="button">获取行情并回测</button></div><small>首次打开没有预选股票。输入 Bursa Malaysia 代码（格式 XXXX.KL）后，主动点击按钮获取 Yahoo Finance 行情并回测。</small></div>
       <div class="pair date-pair"><div class="field"><label for="startDate">回测开始日</label><input id="startDate" type="date"></div><div class="field"><label for="endDate">回测结束日</label><input id="endDate" type="date"><small>留空时默认从 2015-01-01 开始并按请求时的吉隆坡当天结束；未完成的当日行情不会纳入。</small></div></div>
       <div class="field"><label for="cashBudget">手上可用现金 (RM)</label><input id="cashBudget" type="number" min="0" step="0.01" value="" placeholder="运行前输入" aria-describedby="cashBudgetHelp"><small id="cashBudgetHelp">按目标 LSR 自动拆分自有/融资股数，并计入初始买入费用；仅买入100股整手。<span id="allocationEstimate" role="status"></span></small></div>
       <div class="pair"><div class="field"><label for="ownShares">自有股数（自动）</label><input id="ownShares" type="number" min="0" step="100" value="11400" readonly></div><div class="field"><label for="financedShares">融资股数（自动）</label><input id="financedShares" type="number" min="0" step="100" value="17100" readonly></div></div>
@@ -129,7 +128,7 @@
       const previousTicker=String(marketDataSource.ticker||'').toUpperCase(),previousEvents=readDividendEvents(),previousApprovals=paymentDateApprovals.map(x=>({...x}));
       try{
         button.disabled=true;clearRunResults(ticker);$('error').textContent='';$('resultError').textContent='';$('resultStatus').textContent=`正在为 ${ticker} 下载新行情…`;$('resultStatus').className='status';$('autoSaveStatus').textContent=`正在重新获取 ${ticker} 与 ^KLSE 市场日历；旧流水和股息行已清空。`;
-        if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(ticker))throw new Error('请输入 Bursa Malaysia Yahoo Finance 股票代码，例如 1155.KL 或 1066.KL。');
+        if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(ticker))throw new Error('请输入 Bursa Malaysia Yahoo Finance 股票代码，格式如 XXXX.KL。');
         if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||!/^\d{4}-\d{2}-\d{2}$/.test($('endDate').value))throw new Error('请选择有效的回测开始日和结束日。');
         let end=endInput>today?today:endInput;
         if(end<start)throw new Error('回测结束日不能早于开始日。');
