@@ -54,3 +54,7 @@
 .chartwrap~.legend>label input{flex:0 0 auto}
 .chartwrap~.legend>span{display:none}
 .chartwrap~.legend .dot{flex:0 0 15px}
+
+/* UI-008: center all five chart series as a single legend row on desktop. */
+.chartwrap~.legend{justify-content:center;flex-wrap:nowrap}
+@media(max-width:700px){.chartwrap~.legend{flex-wrap:wrap;overflow-x:visible;overflow-y:visible;justify-content:center;gap:10px 14px;padding-bottom:4px}}
