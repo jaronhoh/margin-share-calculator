@@ -1,6 +1,6 @@
 import {runBacktest,calculateInitialAllocation,transactionFees} from './engine.mjs';
 import {normalizeDividend,validateDividends as validateDividendEvents} from './dividend-events.mjs';
-import {classifyMarketDate,validateYahooMarketCalendar} from './market-calendar.mjs';
+import {classifyMarketDate,validateYahooMarketCalendar,getYahooMarketCalendar} from './market-calendar.mjs';
 export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','financedShares','startPrice','annualRate','targetLsr','refinanceTrigger','marginCallLsr','forceSellLsr','callStrategy','safeGap','feeRate','brokerageMinimum','stampDutyRate','clearingFeeRate','sstRate','lotSize'];
     function importedMarketRows(data, priceRows, activeTicker){
       const source=data.marketDataSource,embedded=data.marketData;
@@ -18,7 +18,7 @@ export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','f
       if(!Number.isFinite(firstTime)||!Number.isFinite(lastTime)||lastTime<firstTime||(lastTime-firstTime)/86400000+1>5000)throw new Error('JSON 收盘价日期范围无效或超过 5,000 个日历日。');
       const sourceRows=new Map(embedded.rows.map(row=>[row.date,row])),rows=[];
       const appendClosedDate=(date,previous)=>{
-        const classification=classifyMarketDate(date,{marketCalendar:source.marketCalendar??null});
+        const classification=classifyMarketDate(date,{marketCalendar:source.marketCalendar});
         if(!['weekend','confirmed-market-holiday','yahoo-market-holiday'].includes(classification.status))throw new Error('JSON 收盘价日期缺少交易日或未核实的休市日 '+date+'；不会自动补造价格。');
         const normalized={date,close:previous.close,carryForward:true,carryForwardFrom:previous.date,reason:classification.status==='weekend'?'weekend':classification.status};
         if(classification.source)normalized.source=classification.source;
@@ -43,7 +43,7 @@ export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','f
         const normalized={date:row.date,close:row.close};
         if(row.carryForward===true){
           if(!['weekend','confirmed-market-holiday','yahoo-market-holiday'].includes(row.reason)||typeof row.carryForwardFrom!=='string'||! /^\d{4}-\d{2}-\d{2}$/.test(row.carryForwardFrom))throw new Error('JSON 收盘价第 '+(i+1)+' 条缺少补齐来源。');
-          const classification=classifyMarketDate(row.date,{marketCalendar:source.marketCalendar??null}),sourceRow=sourceRows.get(row.carryForwardFrom);
+          const classification=classifyMarketDate(row.date,{marketCalendar:source.marketCalendar}),sourceRow=sourceRows.get(row.carryForwardFrom);
           if(!sourceRow||sourceRow.date>=row.date||sourceRow.close!==row.close)throw new Error('JSON 收盘价第 '+(i+1)+' 条前值来源无效。');
           if(row.reason==='weekend'&&classification.status!=='weekend'||row.reason==='confirmed-market-holiday'&&classification.status!=='confirmed-market-holiday'||row.reason==='yahoo-market-holiday'&&classification.status!=='yahoo-market-holiday')throw new Error('JSON 收盘价第 '+(i+1)+' 条补齐原因与交易日历不符。');
           if(['confirmed-market-holiday','yahoo-market-holiday'].includes(classification.status)&&(row.source!==classification.source||row.sourceUrl!==classification.url))throw new Error('JSON 收盘价第 '+(i+1)+' 条休市来源与日历不符。');
@@ -89,5 +89,5 @@ export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','f
         if(allocation.totalShares===0)throw new Error('JSON 可用现金不足以买入一手股票及支付费用。');
         if(out.ownShares!==allocation.ownShares||out.financedShares!==allocation.financedShares)throw new Error('JSON 自有/融资股数与可用现金、目标 LSR 或费用参数不匹配。');
       }
-      const f=x=>x==null?null:x/100,probe={ownShares:out.ownShares,financedShares:out.financedShares,startPrice:out.startPrice,annualRate:f(out.annualRate),targetLsr:f(out.targetLsr),refinanceTrigger:f(out.refinanceTrigger),marginCallLsr:f(out.marginCallLsr),forceSellLsr:f(out.forceSellLsr),callStrategy:out.callStrategy,safeGap:f(out.safeGap),...feeConfig,lotSize:100,chargeInitialFees};runBacktest(probe,[{date:out.startDate,price:out.startPrice,dividendPerShare:0}]);return{inputs:{...out,lotSize:100},stockCode,selectedStockCode,events,prices,manualPriceDates,paymentDateApprovals,marketDataSource:source,legacyLotSize:c.lotSize??100,allocationMode:legacy?'legacy-shares':'cash-budget',feeModel,chargeInitialFees};
+      const f=x=>x==null?null:x/100,probe={ownShares:out.ownShares,financedShares:out.financedShares,startPrice:out.startPrice,annualRate:f(out.annualRate),targetLsr:f(out.targetLsr),refinanceTrigger:f(out.refinanceTrigger),marginCallLsr:f(out.marginCallLsr),forceSellLsr:f(out.forceSellLsr),callStrategy:out.callStrategy,safeGap:f(out.safeGap),...feeConfig,lotSize:100,chargeInitialFees};runBacktest(probe,[{date:out.startDate,price:out.startPrice,dividendPerShare:0}]);const trustedCalendar=getYahooMarketCalendar();const importedSource=source?{...source}:null;if(importedSource?.marketCalendar){const claimed=validateYahooMarketCalendar(importedSource.marketCalendar);const isTrusted=trustedCalendar&&claimed.sourceTicker===trustedCalendar.sourceTicker&&claimed.startDate>=trustedCalendar.startDate&&claimed.endDate<=trustedCalendar.endDate&&claimed.closedDates.every(date=>trustedCalendar.closedDates.includes(date))&&claimed.observedTradingDates.every(date=>trustedCalendar.observedTradingDates.includes(date));if(!isTrusted)delete importedSource.marketCalendar;}return{inputs:{...out,lotSize:100},stockCode,selectedStockCode,events,prices,manualPriceDates,paymentDateApprovals,marketDataSource:importedSource,legacyLotSize:c.lotSize??100,allocationMode:legacy?'legacy-shares':'cash-budget',feeModel,chargeInitialFees};
     }
