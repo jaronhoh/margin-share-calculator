@@ -12,6 +12,8 @@ assert.doesNotMatch(html,/ticker==='1155\.KL'\?/);
 assert.match(html,/const events=previousTicker===ticker\?previousEvents:\[\]/);
 assert.match(html,/fetchYahooChart\('\^KLSE',/);
 assert.match(html,/fetchKlsescreenerPaymentDates\(/);
+assert.match(html,/x\.dateType==='confirmed-payment-date'\|\|x\.paymentDateApproved===true/);
+assert.match(html,/loadPaymentDateCandidates\(ticker,data\.dividends\)/);
 assert.match(html,/导入 JSON/);
 assert.doesNotMatch(html,/localStorage/);
 assert.doesNotMatch(html,/restoreSavedSnapshot\(\)|restoreDividendDraft\(\)/);
