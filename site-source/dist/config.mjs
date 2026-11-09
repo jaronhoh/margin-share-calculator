@@ -6,8 +6,8 @@ export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','f
       const source=data.marketDataSource,embedded=data.marketData;
       if(source?.marketCalendar){if(source.type!=='yahoo-chart-confirmed')throw new Error('JSON 市场日历只能来自已确认的 Yahoo 行情。');validateYahooMarketCalendar(source.marketCalendar);}
       if(!source&&!embedded)return priceRows;
-      if(!source||!['excel-table2-close','user-csv-confirmed','yahoo-chart-confirmed'].includes(source.type)||source.ticker!==activeTicker)throw new Error('JSON 行情代码与收盘价来源不匹配。');
-      if(source.type==='excel-table2-close'&&activeTicker!=='1155.KL')throw new Error('默认 Excel 收盘价只对应 MAYBANK 1155.KL。');
+      if(!source||!['user-csv-confirmed','yahoo-chart-confirmed'].includes(source.type)||source.ticker!==activeTicker)throw new Error('JSON 行情代码与收盘价来源不匹配。');
+      
       if(['user-csv-confirmed','yahoo-chart-confirmed'].includes(source.type)&&(!source.fileName||typeof source.fileName!=='string'||typeof source.importedAt!=='string'||!Number.isFinite(Date.parse(source.importedAt))||!Array.isArray(source.manualDates)||source.manualDates.some(d=>typeof d!=='string')))throw new Error('JSON 行情来源或人工确认记录不完整。');
       if(['user-csv-confirmed','yahoo-chart-confirmed'].includes(source.type)&&embedded===undefined)throw new Error('已更新行情 JSON 必须包含完整收盘价快照。');
       if(embedded===undefined){if(source.startDate!==priceRows[0].date||source.endDate!==priceRows.at(-1).date||source.rowCount!==priceRows.length)throw new Error('JSON 未包含收盘价数据，且来源与当前 Site 数据不匹配。');return priceRows;}
@@ -33,7 +33,7 @@ export const CONFIG_INPUT_IDS=['startDate','endDate','cashBudget','ownShares','f
     export function validateImportedConfig(data, priceRows, defaults){
       const ids=CONFIG_INPUT_IDS;
       if(!data||data.schema!=='margin-share-config/v1'||!data.inputs||typeof data.inputs!=='object'||Array.isArray(data.inputs))throw new Error('JSON 版本不符或缺少完整 inputs。');
-      const c=data.inputs,out={},stockCode=String(data.stockCode??c.stockCode??'1155.KL').trim().toUpperCase();if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(stockCode))throw new Error('JSON 股票代码无效；请输入 Bursa Malaysia .KL 代码。');const selectedStockCode=String(data.selectedStockCode??stockCode).trim().toUpperCase();if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(selectedStockCode))throw new Error('JSON 选中的股票代码无效。');const prices=importedMarketRows(data, priceRows, stockCode),legacyFees=!['brokerageMinimum','stampDutyRate','clearingFeeRate','sstRate'].every(k=>Object.hasOwn(c,k));
+      const c=data.inputs,out={},stockCode=String(data.stockCode??c.stockCode??'').trim().toUpperCase();if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(stockCode))throw new Error('JSON 股票代码无效；请输入 Bursa Malaysia .KL 代码。');const selectedStockCode=String(data.selectedStockCode??stockCode).trim().toUpperCase();if(!/^[A-Z0-9][A-Z0-9^=-]{0,14}\.KL$/.test(selectedStockCode))throw new Error('JSON 选中的股票代码无效。');const prices=importedMarketRows(data, priceRows, stockCode),legacyFees=!['brokerageMinimum','stampDutyRate','clearingFeeRate','sstRate'].every(k=>Object.hasOwn(c,k));
       for(const id of ids){let v=c[id];if(v===undefined){if(id==='lotSize')v=100;else if(['cashBudget','brokerageMinimum','stampDutyRate','clearingFeeRate','sstRate'].includes(id))v=legacyFees?(id==='cashBudget'?undefined:0):defaults[id];}
         if(v===undefined){if(id==='cashBudget'&&Number.isFinite(c.ownShares)&&Number.isFinite(c.financedShares))continue;throw new Error(`JSON 缺少参数：${id}。`);}
         if(id==='startDate'||id==='endDate'){if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(v)||!Number.isFinite(Date.parse(v+'T00:00:00Z'))||new Date(v+'T00:00:00Z').toISOString().slice(0,10)!==v||!prices.some(x=>x.date===v))throw new Error(`JSON 日期无效或超出收盘价范围：${id}。`);out[id]=v;}
