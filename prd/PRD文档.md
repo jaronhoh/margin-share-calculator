@@ -438,3 +438,19 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 | 日期 | 版本 | 变更 |
 |---|---|---|
 | 2026-11-09 | v0.21 | 记录 PR #6 已合并及 Actions #256 SUCCESS；说明现有 Site 与 GitHub 无可确认的直接源码绑定、官方源码工作流受限，Production 仍为 Version 6，并将本轮部署后 E2E 标记为 BLOCKED。强制清算规则仍待业务确认。 |
+
+
+### 现有 Site Production 更新完成（2026-11-09）
+
+- **GitHub 源码：** 从 `main` 读取 PR #6 合并后的 Site 应用文件；本次部署在 GitHub 读取时的最新提交为 `cef879204e86d2377bdb6c25f7c57f561d3237b8`。GitHub 上包含本次部署状态记录的后续提交仍属于仓库文档变更，不是本次部署源码。
+- **现有 Site 更新：** 将应用文件同步至原 Site 内部源码仓库并完成打包，Sites 保存并发布 Production Version 7。内部源码提交 SHA 为 `7fb5a6bec70976fa6df117238bda30785b450449`。此内部 SHA 与 GitHub SHA 不同，Site 使用独立的内部源码仓库。
+- **网址与访问：** Production URL 仍为 https://margin-share-calculator.jaron-hoh.chatgpt.site/。部署前后 Site ID、标题、URL、Owner-only 自定义访问策略及权限版本保持一致。环境变量为空，未配置 D1 数据库或绑定。
+- **自动化与构建验证：** GitHub `main` 的 13 个测试文件全部通过；内部 Site 源码工作流再次运行相同 13 个测试，0 失败、0 跳过，并成功构建包含 18 项资源的 Worker。
+- **Production 浏览器验证：** 页面页脚显示 Version 7。使用 `1155.KL`、2025-01-02 至 2025-01-10 运行线上回测，成功取得 Yahoo Finance 行情与 `^KLSE` 市场日历，生成 9 个日历日的回测流水。未对 Production 执行 CRUD 或持久数据变更。
+- **既有限制仍适用：** 使用默认开始日 2015-01-01 时，Yahoo 未返回当日收盘价且工作日休市状态未经确认，应用按设计拒绝自动补价并停止。强制清算的业务规则仍待确认，本次发布未增加该算法。
+- **发布结论：** **COMPLETED**。现有 Site Production Version 7 已部署并完成线上核心流程验证。
+
+### PRD 变更记录（续）
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-11-09 | v0.22 | 记录 GitHub `main` 的 PR #6 应用文件已发布至现有 Site Production Version 7；确认 URL、Owner-only 权限、配置及数据基线保持一致，并记录线上行情与短区间回测验证结果。 |
