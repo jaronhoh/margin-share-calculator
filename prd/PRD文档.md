@@ -490,3 +490,19 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 - **GitHub 基准：** Version 6 的源码同步提交为 `b112f286cc979c37cd01c28e53094a8cea6b2a9d`。PR #6 合并前的 `e50bb909398bde37632a3f23b9891c515f0c3a84` 与该提交仅有 PRD 差异。撤销后的 `site-source/dist` 与这两个 GitHub 提交一致。Sites Version 6 使用独立源码提交 `04310755edf18de2016923db4f36919c77f53294`。
 - **撤销范围：** 撤销 PR #6（`55d0e33fa783ff1e60d430d0e82da154e34b2fa5`）的 JSON 行情缺口补齐及相关日历信任逻辑，以及 PR #7（`b14f237cbd6107c490869c1f44c64ea9970ea2ef`）的 Yahoo/Bursa 休市和补价来源变更。移除三份对应的专项测试。保留 CR-005 空白股票代码界面断言、整手与 P0 审计测试修复及其仅供测试使用的历史行情样本。
 - **当前状态：** 上方 Version 7 发布与 BUG-007 调查属于历史记录。用户已确认 Production 回滚到 Version 6。本次仅调整 GitHub 源码，不执行 Sites 部署或修改，也不扩大为 Yahoo 历史假期的全面回测。
+
+
+### PR #8 撤销合并及 Version 6 基准确认（2026-11-10）
+
+- **GitHub PR #8：** [Revert Version 7 and BUG-007 application changes](https://github.com/jaronhoh/margin-share-calculator/pull/8) 已合并至 `main`；Merge Commit 为 `d4ee758884da77677f4e87c30106e2968c0bdd9e`。此记录写入前已核对该提交为 `main` 的最新提交。
+- **应用源码恢复：** [与 Version 6 GitHub 基准对比](https://github.com/jaronhoh/margin-share-calculator/compare/b112f286cc979c37cd01c28e53094a8cea6b2a9d...main) 显示 `site-source/dist` 无差异；PR #6 的 Version 7 应用变更及 PR #7 的 BUG-007 应用变更均已撤销。Git 历史保留，并非删除历史提交。
+- **保留内容：** PRD 的 Version 7 / BUG-007 调查及发布历史仍作为历史记录保留；独立的 CR-005 界面、整手、P0 审计测试修正与测试专用行情样本不随应用变更撤销。与 Version 6 基准相比，当前剩余差异仅为 PRD 和上述测试相关文件。
+- **CI：** [GitHub Actions Site source tests #271](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42653546244) 已完成，结果 **SUCCESS**；本轮在聊天模式下核对了 GitHub Actions 结果，未重新执行本地测试。
+- **Production：** 用户确认现有 [Margin Share Calculator Site](https://margin-share-calculator.jaron-hoh.chatgpt.site/) 已回滚至 **Version 6**。该状态基于用户确认；本次 PRD 更新未重新访问 Site 或执行浏览器验收。**未部署、创建、删除、重建或修改 Site**；URL、Owner-only 权限及数据不在本次操作范围内。
+- **后续原则：** 当前以 Version 6 为应用基准；不要求 Version 6 进行 Yahoo 历史假期全面验证。Version 7 / BUG-007 变更已撤销，不作为当前 Production 功能或已上线修复。
+- **结果：** GitHub 撤销与源码基准核对 **COMPLETED**；Production Version 6 为用户确认状态，非本次独立验收结果。
+
+### PRD 变更记录（续）
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-11-10 | v0.24 | 补记 PR #8 已合并（`d4ee7588`）、GitHub Actions #271 SUCCESS、`site-source/dist` 恢复 Version 6 基准；保留测试及历史记录，注明 Production Version 6 由用户确认且本次未部署或重新验收。 |
