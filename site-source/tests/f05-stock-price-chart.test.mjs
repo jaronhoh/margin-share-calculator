@@ -12,12 +12,12 @@ assert.match(html, /prices=rows\.map\(r=>r\.price\)/);
 assert.match(html, /minP=prices\.length\?Math\.min\(\.\.\.prices\):0,maxP=prices\.length\?Math\.max\(\.\.\.prices\):0/);
 assert.equal((html.match(/if\(prices\.length\)el\('text',\{x:W-3,y:/g) || []).length, 2);
 assert.match(html, /if\(!Number\.isFinite\(r\.price\)\|\|r\.price<=0\)\{pen=false;return '';\}/);
-assert.match(html, /priceVisible=!priceVisible/);
+assert.match(html, /priceVisible=input.checked/);
 assert.match(html, /drawChart\(lastResult\.rows\)/);
 assert.match(css, /--series-price:/);
 assert.match(css, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 assert.match(css, /\.chartwrap~\.legend>span\{white-space:normal\}/);
-assert.match(css, /\.chartwrap~\.legend>\.chart-legend-button\{max-width:100%/);
-assert.match(css, /\.chart-legend-button\[aria-pressed="false"\]/);
+assert.match(html, /data-chart-series="price" checked/);
+assert.match(html, /if\(chartSeriesVisible\[key\]\)el/);
 
 console.log('PASS F05 chart uses backtest price, independent scale, toggle, tooltip and missing-value gaps');

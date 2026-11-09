@@ -29,7 +29,7 @@ export function parsePriceCsv(text){
   const seen=new Set(),rows=[];
   for(let i=1;i<lines.length;i++){
     const cells=parseCsvLine(lines[i]);if(cells.every(x=>!x))continue;
-    const date=cells[dateIndex],raw=cells[closeIndex],close=Number(raw.replace(/,/g,''));
+    const date=cells[dateIndex],raw=cells[closeIndex]??'',close=Number(raw.replace(/,/g,''));
     if(!validDate(date))throw new Error(`第 ${i+1} 行日期无效：${date||'空值'}。日期必须为 YYYY-MM-DD。`);
     if(seen.has(date))throw new Error(`CSV 日期重复：${date}。`);seen.add(date);
     if(!raw||!Number.isFinite(close)||close<=0||close>1_000_000)throw new Error(`第 ${i+1} 行收盘价无效：${raw||'空值'}。`);
