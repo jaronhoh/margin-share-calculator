@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {validateImportedConfig} from '../dist/config.mjs';
+import {setYahooMarketCalendar} from '../dist/market-calendar.mjs';
 
 const baseInputs={
   startDate:'2022-12-30',
@@ -89,4 +90,71 @@ assert.throws(
   /日期缺少交易日或未核实的休市日 2023-01-04/,
 );
 
-console.log('PASS verified closed-day gaps are carried forward with provenance; unconfirmed weekday gaps remain rejected.');
+
+const trustedYahooCalendar={
+  sourceTicker:'^KLSE',
+  source:'yahoo-chart-market-calendar',
+  startDate:'2023-02-03',
+  endDate:'2023-02-07',
+  observedTradingDates:['2023-02-03','2023-02-07'],
+  closedDates:['2023-02-06'],
+  supplementalObservedDates:[],
+};
+const yahooHolidayGap=configWithPrices([
+  {date:'2023-02-03',close:10},
+  {date:'2023-02-07',close:10.5},
+]);
+yahooHolidayGap.inputs.startDate='2023-02-03';
+yahooHolidayGap.inputs.endDate='2023-02-07';
+yahooHolidayGap.marketDataSource={
+  ...yahooHolidayGap.marketDataSource,
+  type:'yahoo-chart-confirmed',
+  marketCalendar:trustedYahooCalendar,
+};
+setYahooMarketCalendar(trustedYahooCalendar);
+const yahooHolidayImported=validateImportedConfig(yahooHolidayGap,[],{});
+const yahooCarry=yahooHolidayImported.prices.find(row=>row.date==='2023-02-06');
+assert.deepEqual(
+  {date:yahooCarry.date,close:yahooCarry.close,carryForward:yahooCarry.carryForward,carryForwardFrom:yahooCarry.carryForwardFrom,reason:yahooCarry.reason,source:yahooCarry.source,sourceUrl:yahooCarry.sourceUrl},
+  {date:'2023-02-06',close:10,carryForward:true,carryForwardFrom:'2023-02-03',reason:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/'},
+);
+assert.equal(yahooHolidayImported.marketDataSource.rowCount,5,'Yahoo holiday fill must update rowCount');
+assert.equal(yahooHolidayImported.marketDataSource.marketCalendar.closedDates[0],'2023-02-06','verified calendar metadata must remain attached');
+
+setYahooMarketCalendar(null);
+const fabricatedYahooGap=structuredClone(yahooHolidayGap);
+fabricatedYahooGap.marketDataSource.marketCalendar={...trustedYahooCalendar,observedTradingDates:['2023-02-03','2023-02-07'],closedDates:['2023-02-06']};
+assert.throws(
+  ()=>validateImportedConfig(fabricatedYahooGap,[],{}),
+  /日期缺少交易日或未核实的休市日 2023-02-06/,
+  'an imported Yahoo closure declaration must not establish runtime trust',
+);
+assert.equal(
+  fabricatedYahooGap.marketDataSource.marketCalendar.closedDates[0],
+  '2023-02-06',
+  'the attacker-supplied closure is present but must remain untrusted',
+);
+
+const duplicateDates=configWithPrices([
+  {date:'2023-01-03',close:10},
+  {date:'2023-01-03',close:10.5},
+]);
+duplicateDates.inputs.startDate='2023-01-03';
+duplicateDates.inputs.endDate='2023-01-03';
+duplicateDates.marketDataSource.startDate='2023-01-03';
+duplicateDates.marketDataSource.endDate='2023-01-03';
+assert.throws(()=>validateImportedConfig(duplicateDates,[],{}),/日期必须严格递增且不得重复/);
+
+const outOfOrderDates=configWithPrices([
+  {date:'2023-01-05',close:10},
+  {date:'2023-01-03',close:10.5},
+]);
+outOfOrderDates.inputs.startDate='2023-01-05';
+outOfOrderDates.inputs.endDate='2023-01-03';
+outOfOrderDates.marketDataSource.startDate='2023-01-05';
+outOfOrderDates.marketDataSource.endDate='2023-01-03';
+assert.throws(()=>validateImportedConfig(outOfOrderDates,[],{}),/日期范围无效|日期必须严格递增且不得重复/);
+
+setYahooMarketCalendar(null);
+console.log('PASS weekend, Bursa and independently verified Yahoo fills retain provenance and rowCount; fabricated and unconfirmed weekday gaps plus duplicate/out-of-order rows are rejected.');
+
