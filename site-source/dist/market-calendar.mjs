@@ -1,7 +1,7 @@
 // Bursa Securities closure evidence is stored per date. No public-holiday inference is used.
 export const MARKET_HOLIDAYS = Object.freeze([
   {date:'2015-02-02',status:'confirmed-market-holiday',source:'business-times-market-closed-federal-territory-day-2015',url:'https://www.businesstimes.com.sg/companies-markets/capital-markets-currencies/malaysia-markets-closed-monday-public-holiday'},
-  {date:'2015-02-03',status:'confirmed-market-holiday',source:'the-star-market-holiday-thaipusam-2015',url:'https://www.thestar.com.my/Business/Business-News/2015/01/29/Diary-Malaysia-Jan-29/'}
+  {date:'2015-02-03',status:'confirmed-market-holiday',source:'the-star-market-holiday-thaipusam-2015',url:'https://www.thestar.com.my/Business/Business-News/2015/01/29/Diary-Malaysia-Jan-29/'},
   {date:'2022-12-26',status:'confirmed-market-holiday',source:'bursa-christmas-new-year-2022',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-christmas-and-new-year-holidays'},
   {date:'2023-01-02',status:'confirmed-market-holiday',source:'bursa-christmas-new-year-2022',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-christmas-and-new-year-holidays'},
   {date:'2024-09-16',status:'confirmed-market-holiday',source:'bursa-prophet-birthday-malaysia-day-2024',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-prophet-muhammads-birthday-and-malaysia-day-trading-resumes-on-17-september-2024'},
