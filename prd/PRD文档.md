@@ -484,3 +484,9 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 
 
 - **2015 证据来源补充：** 2015-02-03 同期《The Star》市场日历列为 Kuala Lumpur Market and Public Holiday；《The Business Times》于当日刊载马来西亚金融市场因公共假期休市的报道。已将 2015-02-02 和 2015-02-03 分别记录为有来源的市场休市日，并增加 2015-02-03 回归断言。该证据不表示整个 2015–2026 历史日历已完整核实。
+
+### Version 7 / BUG-007 撤销记录（2026-11-10）
+
+- **GitHub 基准：** Version 6 的源码同步提交为 `b112f286cc979c37cd01c28e53094a8cea6b2a9d`。PR #6 合并前的 `e50bb909398bde37632a3f23b9891c515f0c3a84` 与该提交仅有 PRD 差异。撤销后的 `site-source/dist` 与这两个 GitHub 提交一致。Sites Version 6 使用独立源码提交 `04310755edf18de2016923db4f36919c77f53294`。
+- **撤销范围：** 撤销 PR #6（`55d0e33fa783ff1e60d430d0e82da154e34b2fa5`）的 JSON 行情缺口补齐及相关日历信任逻辑，以及 PR #7（`b14f237cbd6107c490869c1f44c64ea9970ea2ef`）的 Yahoo/Bursa 休市和补价来源变更。移除三份对应的专项测试。保留 CR-005 空白股票代码界面断言、整手与 P0 审计测试修复及其仅供测试使用的历史行情样本。
+- **当前状态：** 上方 Version 7 发布与 BUG-007 调查属于历史记录。用户已确认 Production 回滚到 Version 6。本次仅调整 GitHub 源码，不执行 Sites 部署或修改，也不扩大为 Yahoo 历史假期的全面回测。
