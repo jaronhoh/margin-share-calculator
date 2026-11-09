@@ -7,7 +7,7 @@ export const MARKET_HOLIDAYS = Object.freeze([
   {date:'2024-09-16',status:'confirmed-market-holiday',source:'bursa-prophet-birthday-malaysia-day-2024',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-prophet-muhammads-birthday-and-malaysia-day-trading-resumes-on-17-september-2024'},
   {date:'2025-01-29',status:'confirmed-market-holiday',source:'bursa-chinese-new-year-2025',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday'},
   {date:'2025-01-30',status:'confirmed-market-holiday',source:'bursa-chinese-new-year-2025',url:'https://www.bursamalaysia.com/bm/about_bursa/media_centre/closure-of-bursa-malaysia-in-conjunction-with-the-chinese-new-year-public-holiday'},
-  {date:'2025-02-11',status:'confirmed-market-holiday',source:'bursa-thaipusam-2025',url:'https://www.bursamalaysia.com/sites/5d809dcf39fba22790cad230/assets/67b52f98e6414ab7cd5317d2/POA-BMD_Palm_Market_Weekly_Summary_3-7_February_2025.pdf'}
+  {date:'2025-02-11',status:'confirmed-market-holiday',source:'bursa-thaipusam-2025',url:'https://www.thestar.com.my/business/business-news/2025/02/06/bursa-malaysia-to-close-on-feb-11-for-thaipusam'}
 ].map(Object.freeze));
 export const MARKET_CALENDAR_COVERAGE=Object.freeze({
   '2015':'BLOCKED','2016':'BLOCKED','2017':'BLOCKED','2018':'BLOCKED','2019':'BLOCKED','2020':'BLOCKED','2021':'BLOCKED',
