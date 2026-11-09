@@ -5,8 +5,8 @@ import {createYahooMarketCalendar,expandYahooCalendarRows} from '../dist/yahoo-c
 const observations=[{date:'2015-01-30',close:10},{date:'2015-02-04',close:10.5}];
 const calendar=createYahooMarketCalendar([{date:'2015-01-30',close:1800},{date:'2015-02-04',close:1803}],{startDate:'2015-01-30',endDate:'2015-02-04'});
 assert.equal(calendar.closedDates.includes('2015-02-03'),true);
-assert.equal(classifyMarketDate('2015-02-03',{marketCalendar:calendar}).status,'yahoo-market-holiday');
 setYahooMarketCalendar(calendar);
+assert.equal(classifyMarketDate('2015-02-03',{marketCalendar:calendar}).status,'yahoo-market-holiday');
 const rows=expandYahooCalendarRows(observations,{startDate:'2015-02-03',endDate:'2015-02-04',classifyMarketDate,marketCalendar:calendar});
 assert.equal(rows[0].date,'2015-02-03');assert.equal(rows[0].close,10);assert.equal(rows[0].carryForwardFrom,'2015-01-30');assert.equal(rows[0].reason,'yahoo-market-holiday');assert.equal(rows[0].source,'Yahoo Finance ^KLSE');
 
