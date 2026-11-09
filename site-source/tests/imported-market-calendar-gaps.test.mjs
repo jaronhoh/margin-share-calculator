@@ -135,6 +135,16 @@ assert.equal(
   'the attacker-supplied closure is present but must remain untrusted',
 );
 
+const unsortedPrices=configWithPrices([
+  {date:'2023-01-05',close:10},
+  {date:'2023-01-03',close:10.5},
+]);
+unsortedPrices.inputs.startDate='2023-01-05';
+unsortedPrices.inputs.endDate='2023-01-03';
+unsortedPrices.marketDataSource.startDate='2023-01-05';
+unsortedPrices.marketDataSource.endDate='2023-01-03';
+assert.throws(()=>validateImportedConfig(unsortedPrices,[],{}),/JSON 收盘价日期范围无效/);
+
 const duplicateDates=configWithPrices([
   {date:'2023-01-03',close:10},
   {date:'2023-01-03',close:10.5},
@@ -153,7 +163,7 @@ outOfOrderDates.inputs.startDate='2023-01-05';
 outOfOrderDates.inputs.endDate='2023-01-03';
 outOfOrderDates.marketDataSource.startDate='2023-01-05';
 outOfOrderDates.marketDataSource.endDate='2023-01-03';
-assert.throws(()=>validateImportedConfig(outOfOrderDates,[],{}),/日期范围无效|日期必须严格递增且不得重复/);
+assert.throws(()=>validateImportedConfig(outOfOrderDates,[],{}),/日期必须严格递增且不得重复/);
 
 setYahooMarketCalendar(null);
 console.log('PASS weekend, Bursa and independently verified Yahoo fills retain provenance and rowCount; fabricated and unconfirmed weekday gaps plus duplicate/out-of-order rows are rejected.');
