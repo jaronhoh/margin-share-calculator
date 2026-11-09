@@ -420,3 +420,21 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 | 日期 | 版本 | 变更 |
 |---|---|---|
 | 2026-11-09 | v0.20 | 记录 PR #6 导入日历信任边界安全修复、回归覆盖与 GitHub Actions #255 结果；确认 Production Version 6、2023–2025 浏览器复测未完成，强制清算规则仍待定。 |
+
+
+### PR #6 合并与 Production 部署最终状态（2026-11-09）
+
+- **GitHub PR #6：** 已合并至 `main`。PR head 为 `e87c6ba5c2c10537d4351ce1e592eab1ae4c49e1`；Merge Commit 为 `55d0e33fa783ff1e60d430d0e82da154e34b2fa5`。
+- **GitHub Actions #256：** [Site source tests](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42605749811) 状态 SUCCESS；13 个测试文件通过，0 失败、0 跳过。此次运行了 `npm test`。
+- **main 状态：** 本记录写入前，`main` 最新提交为 Merge Commit `55d0e33fa783ff1e60d430d0e82da154e34b2fa5`，包含 PR #6 的行情连续性与 Yahoo 日历信任修复。
+- **Production：** 截至本记录仍为现有 Owner-only Site Version 6，URL 保持不变。本轮没有完成 PR #6 代码的 Production 发布；不得把 PR 合并或 CI 成功当作部署完成。
+- **源仓库关系与阻塞：** Sites API 返回的现有 Site 使用独立的内部源码仓库（Cloudflare artifact repository），并未显示 GitHub 仓库绑定。Version 6 的 Sites 源码提交 SHA 为 `04310755edf18de2016923db4f36919c77f53294`，与 PR #6 GitHub Commit 不同。通过官方 Site 源码工作流打开该内部仓库失败；后续提升权限请求被取消。未绕过限制、未创建新 Site、未改变 URL 或访问设置。
+- **真实浏览器检查：** 在 Safari 打开现有 Production Site，页脚显示 Version 6。当前浏览器恢复的是先前的 1155.KL 会话，因此不作为干净首次会话证据。点击“恢复默认”后，股票代码与可用现金为空、自有/融资股数为 0，并提示“已恢复空白”；这仅验证 Version 6 的 Reset 行为，不能证明 PR #6 已在 Production 生效。
+- **本轮验收范围：** PR #6 的 2023–2025 JSON 行情补价、运行时 Yahoo 日历验证、伪造 Yahoo 休市声明拒绝及部署后核心融资功能回归，均因新版本未发布而 BLOCKED。未尝试将未发布代码冒充 Production 测试；真实 Yahoo 服务本轮未在线验证。
+- **待处理：** 在可运行官方 Site 源码工作流的环境中，将已合并 `main` 的应用文件安全同步至现有 Site 内部源码仓库，发布并核对版本/URL/访问设置后，再执行完整 Production 浏览器验收。强制清算卖出数量、成交价格、费用与还款顺序仍待业务确认，维持触发后停止模拟，不新增算法。
+- **本次交付结论：** **PARTIALLY COMPLETED**。PR 合并及 CI 已完成；Production 部署和依赖新版本的 E2E 未完成。
+
+### PRD 变更记录（续）
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-11-09 | v0.21 | 记录 PR #6 已合并及 Actions #256 SUCCESS；说明现有 Site 与 GitHub 无可确认的直接源码绑定、官方源码工作流受限，Production 仍为 Version 6，并将本轮部署后 E2E 标记为 BLOCKED。强制清算规则仍待业务确认。 |
