@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const html=await readFile(new URL('../dist/index.html',import.meta.url),'utf8');
+assert.match(html,/value="" maxlength="24"[^>]*placeholder="例如 1155\.KL"/);
+assert.match(html,/id="startDate" type="date"><\/div>/);
+assert.match(html,/id="cashBudget" type="number"[^>]*value=""/);
+assert.match(html,/dividendEvents=\[\]/);
+assert.match(html,/fetchYahooChart\(ticker,/);
+assert.match(html,/fetchYahooChart\('\^KLSE',/);
+assert.match(html,/fetchKlsescreenerPaymentDates\(/);
+assert.match(html,/导入 JSON/);
+assert.doesNotMatch(html,/localStorage/);
+assert.doesNotMatch(html,/restoreSavedSnapshot\(\)|restoreDividendDraft\(\)/);
+assert.match(html,/incoming\.find\(row=>row\.date===start\)\?\.close/);
+assert.match(html,/if\(!startPrice\)throw new Error\(`Yahoo 行情无法为开始日/);
+console.log('PASS CR-005 blank launch, user-triggered Yahoo + calendar + Payment Date APIs, JSON fallback, session-only state, and start-day close gate');

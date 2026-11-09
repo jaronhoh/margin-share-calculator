@@ -1,21 +1,12 @@
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const dist = join(root, 'dist');
-const workerTemplate = await readFile(join(root, 'worker/index.js'), 'utf8');
-const runtimeFiles = [
-  'index.html', 'neutral.css', 'engine.mjs', 'config.mjs', 'market-calendar.mjs',
-  'market-data.mjs', 'dividend-data.mjs', 'dividend-events.mjs',
-  'maybank-dividends.mjs', 'release-info.mjs',
-];
-const assets = {};
-for (const file of runtimeFiles) assets[file] = await readFile(join(dist, file), 'utf8');
-
-const built = workerTemplate.replace('__SITE_ASSETS__', () => JSON.stringify(assets));
-if (built === workerTemplate) throw new Error('Worker asset marker was not replaced.');
-const output = join(dist, 'server/index.js');
-await mkdir(dirname(output), { recursive: true });
-await writeFile(output, built);
-console.log(`Built Site Worker with ${runtimeFiles.length} static assets.`);
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const dist=join(root,'dist');
+const template=await readFile(join(root,'worker/index.js'),'utf8');
+const assets={};
+async function collect(dir){for(const e of await readdir(dir,{withFileTypes:true})){if(e.name==='.openai'||e.name==='server')continue;const p=join(dir,e.name);if(e.isDirectory())await collect(p);else if(['.html','.mjs','.css','.json'].includes(extname(p)))assets[relative(dist,p).split('\\').join('/')]=await readFile(p,'utf8');}}
+await collect(dist);
+if(!assets['index.html'])throw Error('dist/index.html missing');
+const out=template.replace('__SITE_ASSETS__',()=>JSON.stringify(assets));
+const target=join(dist,'server/index.js');await mkdir(dirname(target),{recursive:true});await writeFile(target,out);console.log(`Built Worker with ${Object.keys(assets).length} assets`);

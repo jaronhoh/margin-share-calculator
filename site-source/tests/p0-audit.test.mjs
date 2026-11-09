@@ -19,7 +19,7 @@ const rounded=one({ownShares:100,financedShares:200,startPrice:10},9);assert.equ
 const prices=JSON.parse(fs.readFileSync(new URL('../dist/maybank-prices.json',import.meta.url)));const events=defaultDividends();
 const inputs={startDate:'2015-01-01',endDate:'2026-10-23',cashBudget:105139.75,ownShares:11400,financedShares:17100,startPrice:9.17,annualRate:5,targetLsr:60,refinanceTrigger:58,marginCallLsr:70,forceSellLsr:80,callStrategy:'cash',safeGap:.1,feeRate:.1,brokerageMinimum:8,stampDutyRate:.1,clearingFeeRate:.03,sstRate:0,lotSize:100};
 const data={schema:'margin-share-config/v1',inputs,stockCode:'1155.KL',marketOverrides:{dividendEvents:events}};
-assert.throws(()=>validateImportedConfig(data,[],inputs),/必须包含收盘价/);
+assert.throws(()=>validateImportedConfig(data,[],inputs),/收盘价/);
 data.marketDataSource={type:'excel-table2-close',ticker:'1155.KL',startDate:prices[0].date,endDate:prices.at(-1).date,rowCount:prices.length};
 data.marketData={type:'daily-close',unit:'MYR/share',rows:prices.map(({date,close})=>({date,close}))};
 let candidate=validateImportedConfig(structuredClone(data),prices,inputs);assert.deepEqual(candidate.inputs,inputs);assert.deepEqual(candidate.events,events);

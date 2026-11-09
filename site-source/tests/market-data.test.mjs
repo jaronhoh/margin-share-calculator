@@ -19,7 +19,7 @@ const snapshot=buildPriceSnapshot(original,incoming,['2026-01-02','2026-01-03'],
 assert.deepEqual(snapshot.rows,[{date:'2026-01-01',close:9.17},{date:'2026-01-02',close:9.2},{date:'2026-01-03',close:9.3}]);
 assert.deepEqual(snapshot.manualPriceDates,['2026-01-01','2026-01-02']);
 assert.equal(original[1].close,9.1,'candidate must not mutate the active snapshot');
-assert.throws(()=>buildPriceSnapshot([original[0]],parsePriceCsv('Date,Close\n2026-01-03,9.3'),['2026-01-03']),/缺少 2026-01-02/);
+assert.throws(()=>buildPriceSnapshot([original[0]],parsePriceCsv('Date,Close\n2026-01-03,9.3'),['2026-01-03']),/缺少交易日或未核实的休市日 2026-01-02/);
 assert.throws(()=>buildPriceSnapshot(original,incoming,['2026-01-04']),/不在导入数据中/);
 const store=new Map([['active','before']]),storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)};let active='before';
 const old=commitSnapshot(storage,'active',{version:2},()=>{active='after';},()=>{active='before';});

@@ -7,7 +7,7 @@ const css = fs.readFileSync(new URL('../dist/neutral.css', import.meta.url), 'ut
 assert.match(html, /股票价格（RM\/股）/);
 assert.match(html, /右外轴：股票价格 RM\/股/);
 assert.match(html, /回测使用价格：/);
-assert.match(html, /非交易日沿用 \$\{previous\.date\} 收盘价：/);
+assert.match(html, /非交易日沿用 \$\{from\|\|\x27前一有效交易日\x27\} 收盘价/);
 assert.match(html, /prices=rows\.map\(r=>r\.price\)/);
 assert.match(html, /minP=prices\.length\?Math\.min\(\.\.\.prices\):0,maxP=prices\.length\?Math\.max\(\.\.\.prices\):0/);
 assert.equal((html.match(/if\(prices\.length\)el\('text',\{x:W-3,y:/g) || []).length, 2);

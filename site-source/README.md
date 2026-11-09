@@ -1,5 +1,12 @@
-# Margin Share Calculator Site source
+# Margin Share Calculator — Owner-only Site
 
-This directory checks in the current static Site application snapshot so its source and regression suite are reviewable in the project repository. It uses native browser APIs and ES modules; the automated suite needs Node.js only.
+Owner-only ChatGPT Site for Bursa Malaysia daily margin-financing backtests. The first page load starts blank. After entering a Bursa `.KL` ticker and choosing **获取行情并回测**, the app actively requests Yahoo Finance daily closes, market calendar, and dividend events, then looks up KLSE Screener Payment Date candidates. Users can instead import or export a complete JSON configuration. No inputs or results are stored in browser storage; refresh returns to a blank session.
 
-Run `npm test` from this directory. The workbook comparison harness is intentionally excluded because it requires an external workbook path and as-of date. Site publishing is a separate release action and is not performed by this test workflow.
+## Checks
+
+```sh
+node --test tests/*.test.mjs
+node tools/build-site-worker.mjs
+```
+
+The Worker proxies Yahoo Finance and KLSE Screener through same-origin API routes. It does not connect to broker accounts or place trades. Payment dates remain candidates until confirmed according to the matching rules. Missing start-day close data blocks a run; missing data is never silently invented.
