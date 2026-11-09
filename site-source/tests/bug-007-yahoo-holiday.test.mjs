@@ -13,10 +13,10 @@ assert.equal(rows[0].date,'2015-02-03');assert.equal(rows[0].close,10);assert.eq
 const confirmed=classifyMarketDate('2025-02-11');assert.equal(confirmed.status,'confirmed-market-holiday');
 assert.equal(confirmed.source,'bursa-thaipusam-2025');
 
-const multiCalendar={sourceTicker:'^KLSE',source:'yahoo-chart-market-calendar',startDate:'2025-01-24',endDate:'2025-02-03',observedTradingDates:['2025-01-24','2025-01-31','2025-02-03'],closedDates:['2025-01-27','2025-01-28','2025-01-29','2025-01-30'],supplementalObservedDates:[]};
+const multiCalendar={sourceTicker:'^KLSE',source:'yahoo-chart-market-calendar',startDate:'2025-02-28',endDate:'2025-03-07',observedTradingDates:['2025-02-28','2025-03-07'],closedDates:['2025-03-03','2025-03-04','2025-03-05','2025-03-06'],supplementalObservedDates:[]};
 setYahooMarketCalendar(multiCalendar);
-const extended=expandYahooCalendarRows([{date:'2025-01-24',close:9.5},{date:'2025-01-31',close:10},{date:'2025-02-03',close:10.2}],{startDate:'2025-01-24',endDate:'2025-02-03',classifyMarketDate,marketCalendar:multiCalendar});
-for(const row of extended.filter(x=>x.date>='2025-01-27'&&x.date<='2025-01-30')){assert.equal(row.close,9.5);assert.equal(row.carryForwardFrom,'2025-01-24');assert.equal(row.reason,'yahoo-market-holiday');}
-assert.equal(extended.length,11);
+const extended=expandYahooCalendarRows([{date:'2025-02-28',close:9.5},{date:'2025-03-07',close:10},{date:'2025-03-07',close:10.2}],{startDate:'2025-02-28',endDate:'2025-03-07',classifyMarketDate,marketCalendar:multiCalendar});
+for(const row of extended.filter(x=>x.date>='2025-03-03'&&x.date<='2025-03-06')){assert.equal(row.close,9.5);assert.equal(row.carryForwardFrom,'2025-02-28');assert.equal(row.reason,'yahoo-market-holiday');}
+assert.equal(extended.length,5);
 setYahooMarketCalendar(null);
 console.log('PASS BUG-007 confirmed dates, Yahoo calendar carry-forward provenance, and multi-day closure carry-forward source.');
