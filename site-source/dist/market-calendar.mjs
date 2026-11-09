@@ -26,13 +26,16 @@ export function validateYahooMarketCalendar(calendar){
 export function setYahooMarketCalendar(calendar){
   yahooMarketCalendar=validateYahooMarketCalendar(calendar);
 }
+export function getYahooMarketCalendar(){
+  return yahooMarketCalendar;
+}
 export function classifyMarketDate(date,{hasObservedPrice=false,marketCalendar=yahooMarketCalendar}={}){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date+'T00:00:00Z'))||new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date)throw new Error('市场日期无效。');
   const weekday=new Date(date+'T00:00:00Z').getUTCDay();
   if(weekday===0||weekday===6)return{status:'weekend',tradeAllowed:false};
   const closure=holidayByDate.get(date);
   if(closure)return{...closure,tradeAllowed:false};
-  if(marketCalendar?.closedDates?.includes(date))return{date,status:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',url:'https://finance.yahoo.com/quote/%5EKLSE/history/',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/',tradeAllowed:false};
+  if(yahooMarketCalendar?.closedDates?.includes(date)&&marketCalendar?.closedDates?.includes(date))return{date,status:'yahoo-market-holiday',source:'Yahoo Finance ^KLSE',url:'https://finance.yahoo.com/quote/%5EKLSE/history/',sourceUrl:'https://finance.yahoo.com/quote/%5EKLSE/history/',tradeAllowed:false};
   const supplemental=marketCalendar?.supplementalObservedDates?.find(item=>item.date===date);
   if(supplemental)return{status:'normal-trading-day',tradeAllowed:true,source:`Yahoo Finance ${supplemental.ticker}`};
   if(marketCalendar?.observedTradingDates?.includes(date))return{status:'normal-trading-day',tradeAllowed:true,source:'Yahoo Finance ^KLSE'};
