@@ -551,3 +551,15 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 | 日期 | 版本 | 变更 |
 |---|---|---|
 | 2026-11-10 | v0.26 | 记录 excelCheck 最小修复及 Production Version 11、Sites commit/部署 ID、Actions #42792469094 和真实浏览器验收；确认同一 Owner-only Site 与 URL 延续。 |
+
+### excelCheck 发布后自动化复核（2026-11-10）
+
+- **GitHub Actions：** [Site source tests #274 / run 42792469094](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42792469094) 已在 `main` 提交 `50e3c4dd3fcfdc0eb18bb84a9145598970fd7cd9` 上 completed / SUCCESS。
+- **当前 main 本地复核：** 从 GitHub 最新 `main`（当时 HEAD `9129f80aacc3bcc2eda16cb2f2fb02fe09dc1b5c`，包含 PRD Version 11 发布记录）干净检出 `site-source` 后执行 `npm test`：12 项测试全部通过，0 失败、0 跳过。该版本包含 50e3 的应用修复和回归断言。
+- **Sites 内部源码快照诊断：** 另在 Sites 源码提交 `79e332cf7178eb2405ab3c689a753044ad2ea862` 执行相同套件，结果 9 项通过、3 项失败。两项因快照缺少 `dist/maybank-prices.json`（`board-lots` 与 `p0-audit` 测试引用）；一项因 UI 测试期待的代码输入 placeholder 与该 Version 10 来源 HTML 不一致。此 Sites 快照与 GitHub `main` 测试基线不同；这不改变 GitHub CI/当前 main 的 12/12 结果。没有为修复这三项诊断失败而扩大 Version 11 的最小修复范围。
+- **记录边界：** Production Version 11 的真实浏览器验收仍以本节前的发布记录为准；本次仅重新运行自动化测试，没有再次部署或修改站点。
+
+### PRD 变更记录（续）
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-11-10 | v0.27 | 补记 Actions #274 SUCCESS、GitHub main 干净检出后 12/12 自动化结果，以及 Sites 内部源码快照 9/12 的三项基线不一致诊断；注明未扩大 Production 最小修复范围。 |
