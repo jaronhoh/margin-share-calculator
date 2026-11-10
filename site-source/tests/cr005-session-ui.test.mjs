@@ -23,4 +23,5 @@ assert.doesNotMatch(html,/localStorage/);
 assert.doesNotMatch(html,/restoreSavedSnapshot\(\)|restoreDividendDraft\(\)/);
 assert.match(html,/incoming\.find\(row=>row\.date===start\)\?\.close/);
 assert.match(html,/if\(!startPrice\)throw new Error\(`Yahoo 行情无法为开始日/);
+assert.doesNotMatch(html,/function excelCheck\(|excelCheck\(\)|\$\('diff'\)\.innerHTML/);
 console.log('PASS CR-005 blank launch, user-triggered Yahoo + calendar + Payment Date APIs, JSON fallback, session-only state, and start-day close gate');
