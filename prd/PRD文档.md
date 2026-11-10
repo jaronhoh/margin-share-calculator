@@ -536,3 +536,18 @@ Excel 缓存差异的可复现线索是工作簿公式 `P34 = IF(AND(B34=1,,P$3=
 - **真实行情及导入**　从 Yahoo Finance 获取 `1155.KL` 和 `^KLSE`，完成 2015-01-02 至 2015-01-09 回测，生成 8 个日历日流水。将同一测试回测导出的 JSON 在重新加载后的 Version 10 中导入，恢复相同标的、日期和 8 个日历日流水。
 - **自动化**　[GitHub Actions #272](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42658092586) 成功。GitHub main 的 `site-source` 本地测试 12/12 通过。
 - **验收中发现的既有问题**　Version 6 和本次更新后的页面均可观察到初始化时 `excelCheck` 尝试访问缺失元素的控制台错误。本次 UI-008 保留既有实现，上述验收项目已逐项通过。
+
+### excelCheck 最小修复：Production Version 11 发布与验收（2026-11-10）
+
+- **修复范围：** 以现有 Production Version 10（Sites commit `40a3e901b1153db58414cce7121e5b591a5b96c9`）为基准，仅移除 `excelCheck()` 对不存在 DOM `#diff` 的初始化访问；添加回归断言。保留 UI-008、Version 6 业务逻辑与当前源码状态。
+- **GitHub 与 CI：** 修复来源为 GitHub `main` 提交 `50e3c4dd3fcfdc0eb18bb84a9145598970fd7cd9`；[Actions run 42792469094](https://github.com/jaronhoh/margin-share-calculator/actions/runs/42792469094) 已完成且 SUCCESS。
+- **Sites 发布：** 在同一 Site（ID `appgprj_6af072845a7c8191bed2cd50b876fb54`）发布 Production Version 11；Sites 源码 commit `79e332cf7178eb2405ab3c689a753044ad2ea862`；部署 ID `appgdep_6af2e9f536308191967e4fa0511c70fa`，状态 `succeeded`。线上页脚显示 Version 11。URL 保持 [margin-share-calculator.jaron-hoh.chatgpt.site](https://margin-share-calculator.jaron-hoh.chatgpt.site/)。Sites 访问策略仍为 custom allowlist，仅 Owner 一人且无群组；本次没有创建、删除或重建 Site，也没有修改访问或运行时配置。
+- **控制台与默认值：** 部署后真实浏览器重新载入 Production，错误/警告日志为空；首次打开股票代码为空，回测开始日显示 `2015-01-02`。
+- **UI 回归：** 桌面实际页面宽度 1600 CSS px，五项图例单行，图例整体中心与图表/视口中心一致。窄屏下五项图例自动换为两行。对“日终贷款余额”复选框执行关闭及恢复，状态从 checked→unchecked→checked。
+- **线上行情及 JSON：** 在 Production 输入 `1155.KL` 并获取 Yahoo Finance 行情，回测成功，首条为 2015-01-02，流水共 4,327 个日历日（至 Yahoo 返回的 2026-11-06）。随后导出 JSON 并通过站点导入控件重新导入；相同回测结果仍显示，24 项唯一付款日期提示重新出现。浏览器日志仍无 error/warn。
+- **结果：** 部署和本次列出的 Production 验收均完成。此次浏览器复核只对一个图表复选框执行了关闭/恢复，不据此声称已逐一验证五项复选框；移动端测得自动换行，未另行断言横向溢出状态。
+
+### PRD 变更记录（续）
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-11-10 | v0.26 | 记录 excelCheck 最小修复及 Production Version 11、Sites commit/部署 ID、Actions #42792469094 和真实浏览器验收；确认同一 Owner-only Site 与 URL 延续。 |
